@@ -1,16 +1,21 @@
 package com.hiringbell.hbserver.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatus;
 
 public class ApiResponse {
 
-    public String Token;
-    public Object ResponseBody;
-    public int HttpStatusCode;
-    public String Message;
+    @JsonProperty("AuthenticationToken")
+    public String authenticationToken;
+    @JsonProperty("ResponseBody")
+    public Object responseBody;
+    @JsonProperty("HttpStatusCode")
+    public int httpStatusCode;
+    @JsonProperty("HttpStatusMessage")
+    public String httpStatusMessage;
 
     public ApiResponse(String token) {
-        this.Token = token;
+        this.authenticationToken = token;
     }
 
     public ApiResponse() { }
@@ -19,49 +24,56 @@ public class ApiResponse {
         ApiResponse response = new ApiResponse();
         response.setResponseBody(data);
         response.setHttpStatusCode(HttpStatus.OK.value());
-        response.setMessage("successfull");
+        response.setHttpStatusMessage("successfull");
         return response;
     }
 
     public static ApiResponse Ok(Object data, String token) {
         ApiResponse response = new ApiResponse();
         response.setResponseBody(data);
-        response.setMessage("successfull");
-        response.setToken(token);
+        response.setHttpStatusMessage("successfull");
+        response.setAuthenticationToken(token);
         response.setHttpStatusCode(HttpStatus.OK.value());
         return response;
     }
 
-    public String getToken() {
-        return Token;
+    public static ApiResponse BadRequest(Object data) {
+        ApiResponse response = new ApiResponse();
+        response.setResponseBody(data);
+        response.setHttpStatusCode(HttpStatus.BAD_REQUEST.value());
+        response.setHttpStatusMessage("error");
+        return response;
     }
 
-    public void setToken(String token) {
-        Token = token;
+    public String getAuthenticationToken() {
+        return authenticationToken;
     }
 
+    public void setAuthenticationToken(String authenticationToken) {
+        this.authenticationToken = authenticationToken;
+    }
 
     public Object getResponseBody() {
-        return ResponseBody;
+        return responseBody;
     }
 
     public void setResponseBody(Object responseBody) {
-        ResponseBody = responseBody;
+        this.responseBody = responseBody;
     }
 
     public int getHttpStatusCode() {
-        return HttpStatusCode;
+        return httpStatusCode;
     }
 
     public void setHttpStatusCode(int httpStatusCode) {
-        HttpStatusCode = httpStatusCode;
+        this.httpStatusCode = httpStatusCode;
     }
 
-    public String getMessage() {
-        return Message;
+    public String getHttpStatusMessage() {
+        return httpStatusMessage;
     }
 
-    public void setMessage(String message) {
-        Message = message;
+    public void setHttpStatusMessage(String httpStatusMessage) {
+        this.httpStatusMessage = httpStatusMessage;
     }
 }
