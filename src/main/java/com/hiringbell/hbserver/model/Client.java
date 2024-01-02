@@ -30,9 +30,9 @@ public class Client {
     @JsonProperty("Description")
     private String description;
 
-    @Column(name = "ClientType")
-    @JsonProperty("ClientType")
-    private int clientType;
+    @Column(name = "ClientTypeId")
+    @JsonProperty("ClientTypeId")
+    private int clientTypeId;
 
     @Column(name = "Address")
     @JsonProperty("Address")
@@ -50,8 +50,8 @@ public class Client {
     @JsonProperty("AlternateEmail_2")
     private String alternateEmail2;
 
-    @Column(name = "Modile")
-    @JsonProperty("Modile")
+    @Column(name = "Mobile")
+    @JsonProperty("Mobile")
     private String mobile;
 
     @Column(name = "AlternetModile_1")
@@ -105,4 +105,19 @@ public class Client {
     @Column(name = "UpdatedBy")
     @JsonProperty("UpdatedBy")
     private long updatedBy;
+
+    @JsonProperty("IFSC")
+    private transient String iFSC;
+
+    @JsonProperty("BankName")
+    private transient String bankName;
+
+    @JsonProperty("Branch")
+    private transient String branch;
+
+    @JsonProperty("AccountNo")
+    private transient String accountNo;
+
+    @JsonProperty("Total")
+    private transient String total;
 }

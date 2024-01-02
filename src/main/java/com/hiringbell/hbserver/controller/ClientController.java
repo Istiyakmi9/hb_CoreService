@@ -3,18 +3,20 @@ package com.hiringbell.hbserver.controller;
 import com.hiringbell.hbserver.entity.Login;
 import com.hiringbell.hbserver.model.ApiResponse;
 import com.hiringbell.hbserver.model.Client;
+import com.hiringbell.hbserver.model.FilterModel;
 import com.hiringbell.hbserver.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/client")
 public class ClientController {
     @Autowired
     ClientService clientService;
-    @GetMapping("/getAllClient")
-    public ResponseEntity<ApiResponse> getAllClient() throws Exception {
-        var result = clientService.getAllClientService();
+    @PostMapping("/getAllClient")
+    public ResponseEntity<ApiResponse> getAllClient(@RequestBody FilterModel filter) throws Exception {
+        var result = clientService.getAllClientService(filter);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 

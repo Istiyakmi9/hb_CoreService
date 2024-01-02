@@ -1,34 +1,122 @@
 package com.hiringbell.hbserver.serviceImpl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hiringbell.hbserver.Repository.BankAccountRepository;
 import com.hiringbell.hbserver.Repository.ClientRepository;
+import com.hiringbell.hbserver.Repository.ClientTypeRepository;
+import com.hiringbell.hbserver.Repository.CountryRepository;
+import com.hiringbell.hbserver.db.LowLevelExecution;
+import com.hiringbell.hbserver.model.BankAccount;
 import com.hiringbell.hbserver.model.Client;
+import com.hiringbell.hbserver.model.DbParameters;
+import com.hiringbell.hbserver.model.FilterModel;
 import com.hiringbell.hbserver.service.ClientService;
+import jakarta.persistence.RollbackException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ClientServiceImpl implements ClientService {
     @Autowired
     ClientRepository clientRepository;
-    public List<Client> getAllClientService() {
-       return clientRepository.findAll();
+    @Autowired
+    CountryRepository countryRepository;
+    @Autowired
+    ClientTypeRepository clientTypeRepository;
+    @Autowired
+    BankAccountRepository bankAccountRepository;
+    @Autowired
+    LowLevelExecution lowLevelExecution;
+    @Autowired
+    ObjectMapper objectMapper;
+    public List<Client> getAllClientService(FilterModel filter) {
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_searchString", filter.getSearchString(), Types.VARCHAR));
+        dbParameters.add(new DbParameters("_sortBy", filter.getSortBy(), Types.VARCHAR));
+        dbParameters.add(new DbParameters("_pageIndex", filter.getPageIndex(), Types.INTEGER));
+        dbParameters.add(new DbParameters("_pageSize", filter.getPageSize(), Types.INTEGER));
+        var dataSet = lowLevelExecution.executeProcedure("sp_client_getby_filter", dbParameters);
+        return objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<Client>>() {});
     }
 
-    @Override
+    @Transactional(rollbackFor = Exception.class)
     public String mangeClientService(Client client) throws Exception {
         try {
+            validateClientDetail(client);
+            var bankAccountId = manageBankDetail(client);
+            client.setBankDetailId(bankAccountId);
             if (client.getId() == 0) {
                 insertClientDetail(client);
             } else  {
                 updateClientDetail(client);
             }
 
-            return "client destail insert/updated successfully";
+            return "client detail insert/updated successfully";
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+    }
+
+    private void validateClientDetail(Client client) throws Exception {
+        if (client.getCompanyName() == null)
+            throw new Exception("Company name is invalid");
+
+        if (client.getClientTypeId() == 0)
+            throw new Exception("Invalid client type selected");
+
+        if (client.getCountryCode() == null)
+            throw new Exception("Invalid country selected");
+
+        if (client.getMobile() == null)
+            throw new Exception("Mobile number is invalid");
+
+        if (client.getEmail() == null)
+            throw new Exception("Email is invalid");
+
+        if (client.getLegalEntity() == null)
+            throw new Exception("Legal company name is invalid");
+
+        if (client.getAccountNo() == null)
+            throw new Exception("Account number is invalid");
+
+        if (client.getIFSC() == null)
+            throw new Exception("IFSC Code is invalid");
+    }
+
+    private int manageBankDetail(Client client) throws Exception {
+        java.util.Date utilDate = new java.util.Date();
+        var date = new java.sql.Timestamp(utilDate.getTime());
+        BankAccount bankAccount = new BankAccount();
+        if (client.getBankDetailId() == 0) {
+            var lastBankDetail = bankAccountRepository.getLastBankAccount();
+            if (lastBankDetail == null)
+                bankAccount.setBankAccountId(1);
+            else
+                bankAccount.setBankAccountId(lastBankDetail.getBankAccountId() + 1);
+        } else {
+            bankAccount = bankAccountRepository.findById(client.getBankDetailId()).orElse(null);
+            if (bankAccount == null)
+                throw new Exception("Bank detail not found");
+        }
+        bankAccount.setBankName(client.getBankName());
+        bankAccount.setAccountNo(client.getAccountNo());
+        bankAccount.setIfsc(client.getIFSC());
+        bankAccount.setBranch(client.getBranch());
+        bankAccount.setCreatedBy(1L);
+        bankAccount.setUpdatedBy(1L);
+        bankAccount.setCreatedOn(date);
+        bankAccount.setUpdatedOn(date);
+
+        bankAccountRepository.save(bankAccount);
+        return  bankAccount.getBankAccountId();
     }
 
     private void insertClientDetail(Client client) {
@@ -59,7 +147,7 @@ public class ClientServiceImpl implements ClientService {
         clientDetail.setRepresenterId(client.getRepresenterId());
         clientDetail.setCompanyName(client.getCompanyName());
         clientDetail.setDescription(client.getDescription());
-        clientDetail.setClientType(client.getClientType());
+        clientDetail.setClientTypeId(client.getClientTypeId());
         clientDetail.setAddress(client.getAddress());
         clientDetail.setEmail(client.getEmail());
         clientDetail.setAlternateEmail1(client.getAlternateEmail1());
@@ -81,11 +169,27 @@ public class ClientServiceImpl implements ClientService {
 
 
     @Override
-    public Client getClientService(int clientId) {
-        var client = new Client();
-        if (clientId > 0)
+    public Map<String, Object> getClientService(int clientId) throws Exception {
+        Client client = null;
+        if (clientId > 0) {
             client = clientRepository.findById(clientId).get();
+            BankAccount bankAccount= bankAccountRepository.findById(client.getBankDetailId()).get();
+            if (bankAccount == null)
+                throw new Exception("Bank detail not found");
 
-        return client;
+            client.setBankName(bankAccount.getBankName());
+            client.setAccountNo(bankAccount.getAccountNo());
+            client.setIFSC(bankAccount.getIfsc());
+            client.setBranch(bankAccount.getBranch());
+        }
+
+        var country = countryRepository.findAll();
+        var clientType = clientTypeRepository.findAll();
+        Map<String, Object> result = new HashMap<>();
+        result.put("Client", client);
+        result.put("ClientType", clientType);
+        result.put("Country", country);
+
+        return result;
     }
 }
