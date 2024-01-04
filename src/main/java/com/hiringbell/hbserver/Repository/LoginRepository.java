@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LoginRepository extends JpaRepository<Login, Long> {
-    @Query(value = "select l from Login l where l.mobile = :mobile")
-    Login getLoginByMobile(@Param("mobile") String mobile);
-    @Query(value = "select l from Login l where l.email = :email")
-    Login getLoginByEmail(@Param("email") String email);
+    @Query(nativeQuery = true, value = " select l.* from login l where l.Email = :email or l.Mobile = :mobile ")
+    Login getLoginByEmailOrMobile(@Param("mobile") String mobile, @Param("email") String email );
 }
