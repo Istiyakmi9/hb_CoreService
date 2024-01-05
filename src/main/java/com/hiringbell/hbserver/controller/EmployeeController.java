@@ -7,12 +7,10 @@ import com.hiringbell.hbserver.model.JwtTokenModel;
 import com.hiringbell.hbserver.serviceImpl.EmployeeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+
 
 @RestController
 @RequestMapping("/employee")
@@ -21,10 +19,16 @@ public class EmployeeController {
     @Autowired
     EmployeeServiceImpl employeeServiceImpl;
 
+    @PostMapping("/addEmployee")
+    public ResponseEntity<ApiResponse> addEmployee(@RequestBody Employee employee) throws Exception {
+        var result = this.employeeServiceImpl.addEmployeeService(employee);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 
-    public ResponseEntity<ApiResponse> addEmployee(@RequestBody Employee employee){
-        this.employeeServiceImpl.addEmployeeService(employee);
-        return ResponseEntity.ok(ApiResponse.Ok(null));
+    @PutMapping("/updateEmployee/{employeeId}")
+    public ResponseEntity<ApiResponse> updateEmployee(@RequestBody Employee employee, @PathVariable("employeeId") long employeeId ) throws Exception {
+        var result = this.employeeServiceImpl.updateEmployeeService(employee, employeeId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @PostMapping("/testGenerateJwtToken")
@@ -34,5 +38,16 @@ public class EmployeeController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @GetMapping("/getAllEmployee")
+    public ResponseEntity<ApiResponse> getAllEmployee(){
+        var result = this.employeeServiceImpl.getAllEmployeeService();
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("/getEmployeeByEmployeeId/{employeeId}")
+    public ResponseEntity<ApiResponse> getEmployeeByEmployeeId( @PathVariable("employeeId") long employeeId){
+        var result = this.employeeServiceImpl.getEmployeeByEmployeeIdService(employeeId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 
 }
