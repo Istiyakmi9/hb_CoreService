@@ -41,8 +41,8 @@ public class Employee {
         @Column(name = "Mobile")
         String mobile;
 
-        @Column(name = "AlternetNumber")
-        String alternetNumber;
+        @Column(name = "AlternateNumber")
+        String alternateNumber;
 
         @Column(name = "Address")
         String address;
@@ -64,7 +64,6 @@ public class Employee {
 
         @Column(name = "ReporteeId")
         long reporteeId;
-
 
         @Column(name = "CreatedBy")
         Long createdBy;
