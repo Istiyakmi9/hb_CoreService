@@ -20,11 +20,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             validateLoginDetail(login);
             Login loginDetail = null;
-            if (login.getEmail() != null) {
-                loginDetail = loginRepository.getLoginByEmail(login.getEmail());
-            } else {
-                loginDetail = loginRepository.getLoginByMobile(login.getMobile());
-            }
+            loginDetail = loginRepository.getLoginByEmailOrMobile(login.getMobile(), login.getEmail());
 
             if (loginDetail == null)
                 throw new Exception("Login detail not found");
