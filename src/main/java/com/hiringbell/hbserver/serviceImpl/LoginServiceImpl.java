@@ -6,9 +6,13 @@ import com.hiringbell.hbserver.entity.Login;
 import com.hiringbell.hbserver.jwtconfig.JwtGateway;
 import com.hiringbell.hbserver.model.ApplicationConstant;
 import com.hiringbell.hbserver.model.JwtTokenModel;
+import com.hiringbell.hbserver.model.LoginResponse;
+import com.hiringbell.hbserver.model.UserDetail;
 import com.hiringbell.hbserver.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -16,7 +20,7 @@ public class LoginServiceImpl implements LoginService {
     LoginRepository loginRepository;
 
 
-    public String authenticateUserService(Login login) throws Exception {
+    public LoginResponse authenticateUserService(Login login) throws Exception {
         try {
             validateLoginDetail(login);
             Login loginDetail = null;
@@ -46,7 +50,21 @@ public class LoginServiceImpl implements LoginService {
             }
             JwtGateway jwtGateway = JwtGateway.getJwtGateway();
             String result = jwtGateway.generateJwtToken(jwtTokenModel);
-            return result;
+
+            LoginResponse loginResponse = new LoginResponse();
+            UserDetail userDetail = new UserDetail();
+            Date oldDate = new Date(); // oldDate == current time
+            final long hoursInMillis = 60L * 60L * 1000L;
+            Date newDate = new Date(oldDate.getTime() + (2L * hoursInMillis)); // Adds 2 hours
+            userDetail.setToken(result);
+            userDetail.setTokenExpiryDuration(newDate);
+            userDetail.setEmployeeId(loginDetail.getEmployeeId());
+            userDetail.setEmail(loginDetail.getEmail());
+            userDetail.setMobile(loginDetail.getMobile());
+            userDetail.setRoleId(loginDetail.getRoleId());
+            loginResponse.setUserDetail(userDetail);
+
+            return loginResponse;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
