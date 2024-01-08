@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+  config:
+    import: optional:configserver:instead
+
+
+  main:
+    web-application-type: reactive
+
+  datasource:
+    url: jdbc:mysql://192.168.0.101:3308/hiringbell
+    username: root
+    password: live@Bottomhalf_001
+    driver-class-name: com.mysql.cj.jdbc.Driver

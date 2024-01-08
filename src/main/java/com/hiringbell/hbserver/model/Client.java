@@ -90,6 +90,18 @@ public class Client {
     @JsonProperty("CountryCode")
     private String countryCode;
 
+    @Column(name = "State")
+    @JsonProperty("State")
+    private String state;
+
+    @Column(name = "City")
+    @JsonProperty("City")
+    private String city;
+
+    @Column(name = "Pincode")
+    @JsonProperty("Pincode")
+    private int pincode;
+
     @Column(name = "CreatedOn")
     @JsonProperty("CreatedOn")
     private Date createdOn;

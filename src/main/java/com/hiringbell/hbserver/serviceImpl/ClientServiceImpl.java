@@ -162,6 +162,9 @@ public class ClientServiceImpl implements ClientService {
         clientDetail.setWebsite(client.getWebsite());
         clientDetail.setBankDetailId(client.getBankDetailId());
         clientDetail.setCountryCode(client.getCountryCode());
+        clientDetail.setCity(client.getCity());
+        clientDetail.setPincode(client.getPincode());
+        clientDetail.setState(client.getState());
         clientDetail.setUpdatedBy(1L);
         clientDetail.setUpdatedOn(date);
         clientRepository.save(clientDetail);
