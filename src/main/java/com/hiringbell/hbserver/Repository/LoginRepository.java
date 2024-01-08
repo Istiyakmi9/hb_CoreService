@@ -23,4 +23,6 @@ public interface LoginRepository extends JpaRepository<Login, Long> {
 
     @Query(nativeQuery = true, value = "select l.* from login l where l.EmployeeId = :employeeId")
     Login getLoginByEmployeeId(@Param("employeeId") long employeeId);
+    @Query(nativeQuery = true, value = " select l.* from login l where l.Email = :email or l.Mobile = :mobile ")
+    Login getLoginByEmailOrMobile(@Param("mobile") String mobile, @Param("email") String email );
 }
