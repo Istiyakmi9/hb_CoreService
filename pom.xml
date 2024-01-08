@@ -132,6 +132,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>hiringbell_server</finalName>
 	</build>
 
 </project>
