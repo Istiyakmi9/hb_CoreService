@@ -30,4 +30,10 @@ public class UserDetail {
 
     @JsonProperty("RoleId")
     int roleId;
+
+    @JsonProperty("FirstName")
+    String firstName;
+
+    @JsonProperty("LastName")
+    String lastName;
 }

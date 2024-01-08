@@ -9,5 +9,4 @@ public class HbServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HbServerApplication.class, args);
 	}
-
 }

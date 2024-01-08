@@ -1,6 +1,5 @@
 package com.hiringbell.hbserver.controller;
 
-import com.hiringbell.hbserver.entity.Login;
 import com.hiringbell.hbserver.model.ApiResponse;
 import com.hiringbell.hbserver.model.Client;
 import com.hiringbell.hbserver.model.FilterModel;
