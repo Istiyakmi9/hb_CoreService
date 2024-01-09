@@ -65,6 +65,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setCountry(employeeMaster.getCountry());
         employee.setRoleId(employeeMaster.getRoleId());
         employee.setDesignationId(employeeMaster.getDesignationId());
+        employee.setPinCode(employeeMaster.getPinCode());
         employee.setReporteeId(employeeMaster.getReporteeId());
         employee.setCreatedOn(currentDate);
         this.employeeRepository.save(employee);
@@ -91,6 +92,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeDetail.setAadhar(employeeMaster.getAadhar());
         employeeDetail.setPassportNumber(employeeMaster.getPassportNumber());
         employeeDetail.setBankName(employeeMaster.getBankName());
+        employeeDetail.setAccountNo(employeeMaster.getAccountNo());
         employeeDetail.setBranch(employeeMaster.getBranch());
         employeeDetail.setIfscCode(employeeMaster.getIfscCode());
         employeeDetail.setJobTypeId(employeeMaster.getJobTypeId());
@@ -147,6 +149,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setCountry(employeeMaster.getCountry());
         existingEmployee.setRoleId(employeeMaster.getRoleId());
         existingEmployee.setDesignationId(employeeMaster.getDesignationId());
+        existingEmployee.setPinCode(employeeMaster.getPinCode());
         existingEmployee.setReporteeId(employeeMaster.getReporteeId());
         existingEmployee.setUpdatedBy(1L);
         existingEmployee.setUpdatedOn(currentDate);
@@ -177,6 +180,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeDetail.setAadhar(employeeMaster.getAadhar());
         employeeDetail.setPassportNumber(employeeMaster.getPassportNumber());
         employeeDetail.setBankName(employeeMaster.getBankName());
+        employeeDetail.setAccountNo(employeeMaster.getAccountNo());
         employeeDetail.setBranch(employeeMaster.getBranch());
         employeeDetail.setBranch(employeeMaster.getIfscCode());
         employeeDetail.setJobTypeId(employeeMaster.getJobTypeId());
