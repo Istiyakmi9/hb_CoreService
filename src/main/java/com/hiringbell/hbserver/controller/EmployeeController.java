@@ -1,8 +1,8 @@
 package com.hiringbell.hbserver.controller;
 
-import com.hiringbell.hbserver.entity.Employee;
 import com.hiringbell.hbserver.jwtconfig.JwtGateway;
 import com.hiringbell.hbserver.model.ApiResponse;
+import com.hiringbell.hbserver.model.EmployeeMaster;
 import com.hiringbell.hbserver.model.JwtTokenModel;
 import com.hiringbell.hbserver.serviceImpl.EmployeeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +20,14 @@ public class EmployeeController {
     EmployeeServiceImpl employeeServiceImpl;
 
     @PostMapping("/addEmployee")
-    public ResponseEntity<ApiResponse> addEmployee(@RequestBody Employee employee) throws Exception {
-        var result = this.employeeServiceImpl.addEmployeeService(employee);
+    public ResponseEntity<ApiResponse> addEmployee(@RequestBody EmployeeMaster employeeMaster) throws Exception {
+        var result = this.employeeServiceImpl.addEmployeeService(employeeMaster);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @PutMapping("/updateEmployee/{employeeId}")
-    public ResponseEntity<ApiResponse> updateEmployee(@RequestBody Employee employee, @PathVariable("employeeId") long employeeId ) throws Exception {
-        var result = this.employeeServiceImpl.updateEmployeeService(employee, employeeId);
+    public ResponseEntity<ApiResponse> updateEmployee(@RequestBody EmployeeMaster employeeMaster, @PathVariable("employeeId") long employeeId ) throws Exception {
+        var result = this.employeeServiceImpl.updateEmployeeService(employeeMaster, employeeId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 

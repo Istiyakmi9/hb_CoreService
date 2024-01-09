@@ -35,6 +35,9 @@ public class EmployeeDetail {
     @Column(name = "BankName")
     String bankName;
 
+    @Column(name = "AccountNo")
+    String accountNo;
+
     @Column(name = "Branch")
     String branch;
 
