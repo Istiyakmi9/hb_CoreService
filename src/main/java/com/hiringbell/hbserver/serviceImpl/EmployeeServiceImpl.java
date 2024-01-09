@@ -62,7 +62,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setDesignationId(employeeMaster.getDesignationId());
         employee.setReporteeId(employeeMaster.getReporteeId());
         employee.setCreatedOn(currentDate);
-        this.employeeRepository.save(employee);
+        //this.employeeRepository.save(employee);
 
         Login loginDetail;
         loginDetail = new Login();
@@ -79,10 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         loginDetail.setRoleId(employeeMaster.getRoleId());
         loginDetail.setCreatedBy(1L);
         loginDetail.setCreatedOn(currentDate);
-        loginDetail = this.loginRepository.save(loginDetail);
-        if (loginDetail == null)
-                throw new Exception("Fail to create login detail");
-
+        //this.loginRepository.save(loginDetail);
 
         EmployeeDetail employeeDetail = new EmployeeDetail();
         employeeDetail.setEmployeeId(employeeMaster.getEmployeeId());
@@ -101,19 +98,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeDetail.setExpectedSalary(employeeMaster.getExpectedSalary());
         employeeDetail.setCreatedBy(1L);
         employeeDetail.setCreatedOn(currentDate);
-        employeeDetail = this.employeeDetailRepository.save(employeeDetail);
-        if (employeeDetail == null)
-            throw new Exception("Failed to create employee_detail");
-
-//        Login loginDetail;
-//        loginDetail = new Login();
-//        Optional<Login> lastLoginRecord = Optional.ofNullable(this.loginRepository.getLastLoginRecord());
-//        if (lastLoginRecord.isEmpty()){
-//            loginDetail.setLoginId(1L);
-//        }else {
-//            loginDetail.setLoginId(lastLoginRecord.get().getLoginId()+1);
-//        }
-//        loginDetail.setEmployeeId(employeeMaster.getEmployeeId());
+        // this.employeeDetailRepository.save(employeeDetail);
 
         EmployeeMedicalDetail employeeMedicalDetail = new EmployeeMedicalDetail();
         var lastEmployeeMedicalDetailRecord = this.employeeMedicalDetailRepository.getLastEmployeeMedicalDetailRecord();
@@ -122,13 +107,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         }else {
             employeeMedicalDetail.setEmployeeMedicalDetailId(lastEmployeeMedicalDetailRecord.getEmployeeMedicalDetailId()+1);
         }
-        employeeMedicalDetail.setEmployeeId(employeeMaster.getEmployeeId());
-        employeeMedicalDetail.setMedicalConsultancyId(employeeMaster.getMedicalConsultancyId());
-        employeeMedicalDetail.setConsultedBy(employeeMaster.getConsultedBy());
-        employeeMedicalDetail.setConsultedOn(employeeMaster.getConsultedOn());
-        employeeMedicalDetail.setReferenceId(employeeMaster.getReferenceId());
-        employeeMedicalDetail.setReportId(employeeMaster.getReportId());
-        employeeMedicalDetail.setReportPath(employeeMaster.getReportPath());
+//        employeeMedicalDetail.setEmployeeId(employeeMaster.getEmployeeId());
+//        employeeMedicalDetail.setMedicalConsultancyId(employeeMaster.getMedicalConsultancyId());
+//        employeeMedicalDetail.setConsultedBy(employeeMaster.getConsultedBy());
+//        employeeMedicalDetail.setConsultedOn(employeeMaster.getConsultedOn());
+//        employeeMedicalDetail.setReferenceId(employeeMaster.getReferenceId());
+//        employeeMedicalDetail.setReportId(employeeMaster.getReportId());
+//        employeeMedicalDetail.setReportPath(employeeMaster.getReportPath());
 
         return "New Employee has been added in Emploee and Login table";
     }
@@ -190,7 +175,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployeeDetail.setJobTypeId(employeeMaster.getJobTypeId());
         existingEmployeeDetail.setExperienceInMonths(employeeMaster.getExperienceInMonths());
         existingEmployeeDetail.setLastCompanyName(employeeMaster.getLastCompanyName());
-        existingEmployeeDetail.setLastWorkingDate(employeeMaster.getLastWorkingDate());
+        //existingEmployeeDetail.setLastWorkingDate(employeeMaster.getLastWorkingDate());
         existingEmployeeDetail.setDesignation(employeeMaster.getDesignation());
         existingEmployeeDetail.setSalary(employeeMaster.getSalary());
         existingEmployeeDetail.setExpectedSalary(employeeMaster.getExpectedSalary());

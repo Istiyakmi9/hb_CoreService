@@ -62,6 +62,9 @@ public class Employee {
         @Column(name = "DesignationId")
         int designationId;
 
+        @Column(name = "PinCode")
+        int pinCode;
+
         @Column(name = "ReporteeId")
         long reporteeId;
 

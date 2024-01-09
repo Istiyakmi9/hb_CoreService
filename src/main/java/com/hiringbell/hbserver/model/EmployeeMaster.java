@@ -1,6 +1,5 @@
 package com.hiringbell.hbserver.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +26,7 @@ public class EmployeeMaster {
     String country;
     int roleId;
     int designationId;
+    int pinCode;
     long reporteeId;
 
     //employee_detail fields
@@ -35,31 +35,31 @@ public class EmployeeMaster {
     String passportNumber;
     String bankName;
     String branch;
-    String IfscCode;
+    String ifscCode;
     int jobTypeId;
     int experienceInMonths;
     String LastCompanyName;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    Date lastWorkingDate;
+    Date lastWorkingDate = new Date();
     String designation;
     BigDecimal salary;
     BigDecimal expectedSalary;
     String expectedDesignation;
+    String accountNo;
 
     //employee_medical_detail fields
-    long employeeMedicalDetailId;
-    long medicalConsultancyId;
-    String ConsultedBy;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    Date consultedOn;
-    long referenceId;
-    long reportId;
-    String ReportPath;
-    Long createdBy;
-    Long updatedBy;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    Date createdOn;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    Date updatedOn;
+//    long employeeMedicalDetailId;
+//    long medicalConsultancyId;
+//    String ConsultedBy;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    Date consultedOn;
+//    long referenceId;
+//    long reportId;
+//    String ReportPath;
+//    Long createdBy;
+//    Long updatedBy;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    Date createdOn;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    Date updatedOn;
 
 }

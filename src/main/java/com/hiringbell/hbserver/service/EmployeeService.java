@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface EmployeeService {
 
     public String addEmployeeService(EmployeeMaster employeeMaster) throws Exception;
-    public String updateEmployeeService(Employee employee, long employeeId) throws Exception;
+    public String updateEmployeeService(EmployeeMaster employeeMaster, long employeeId) throws Exception;
     public ArrayList<Employee> getAllEmployeeService();
     public Optional<Employee> getEmployeeByEmployeeIdService(long employeeId);
 
