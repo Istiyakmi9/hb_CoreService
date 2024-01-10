@@ -34,7 +34,7 @@ jobs:
       name: Build & push Docker image
       with:
         image: istiyaqmi9/hiringbell_coreservice
-        tags: latest
+        tags: staging
         registry: docker.io
         dockerfile: Dockerfile-staging
         username: ${{ secrets.DOCKER_USERNAME }}
