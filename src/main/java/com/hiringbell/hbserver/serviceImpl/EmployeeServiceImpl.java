@@ -1,13 +1,17 @@
 package com.hiringbell.hbserver.serviceImpl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hiringbell.hbserver.Repository.EmployeeDetailRepository;
 import com.hiringbell.hbserver.Repository.EmployeeMedicalDetailRepository;
 import com.hiringbell.hbserver.Repository.EmployeeRepository;
 import com.hiringbell.hbserver.Repository.LoginRepository;
+import com.hiringbell.hbserver.db.LowLevelExecution;
 import com.hiringbell.hbserver.entity.Employee;
 import com.hiringbell.hbserver.entity.EmployeeDetail;
 import com.hiringbell.hbserver.entity.EmployeeMedicalDetail;
 import com.hiringbell.hbserver.entity.Login;
+import com.hiringbell.hbserver.model.DbParameters;
 import com.hiringbell.hbserver.model.EmployeeMaster;
 import com.hiringbell.hbserver.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,18 +28,18 @@ import java.util.Optional;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-
     @Autowired
     EmployeeRepository employeeRepository;
-
     @Autowired
     LoginRepository loginRepository;
-
     @Autowired
     EmployeeDetailRepository employeeDetailRepository;
-
     @Autowired
     EmployeeMedicalDetailRepository employeeMedicalDetailRepository;
+    @Autowired
+    LowLevelExecution lowLevelExecution;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public String addEmployeeService(EmployeeMaster employeeMaster) throws Exception {
@@ -60,45 +65,46 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setCountry(employeeMaster.getCountry());
         employee.setRoleId(employeeMaster.getRoleId());
         employee.setDesignationId(employeeMaster.getDesignationId());
+        employee.setPinCode(employeeMaster.getPinCode());
         employee.setReporteeId(employeeMaster.getReporteeId());
         employee.setCreatedOn(currentDate);
-        //this.employeeRepository.save(employee);
+        this.employeeRepository.save(employee);
 
-        Login loginDetail;
-        loginDetail = new Login();
-        Optional<Login> lastLoginRecord = Optional.ofNullable(this.loginRepository.getLastLoginRecord());
-        if (lastLoginRecord.isEmpty()){
+        Login loginDetail = new Login();
+        var lastLoginRecord = this.loginRepository.getLastLoginRecord();
+        if (lastLoginRecord == null){
             loginDetail.setLoginId(1L);
         }else {
-            loginDetail.setLoginId(lastLoginRecord.get().getLoginId()+1);
+            loginDetail.setLoginId(lastLoginRecord.getLoginId()+1);
         }
-        loginDetail.setEmployeeId(employeeMaster.getEmployeeId());
+        loginDetail.setEmployeeId(employee.getEmployeeId());
         loginDetail.setEmail(employeeMaster.getEmail());
         loginDetail.setMobile(employeeMaster.getMobile());
         loginDetail.setPassword("emp123");
         loginDetail.setRoleId(employeeMaster.getRoleId());
         loginDetail.setCreatedBy(1L);
         loginDetail.setCreatedOn(currentDate);
-        //this.loginRepository.save(loginDetail);
+        this.loginRepository.save(loginDetail);
 
         EmployeeDetail employeeDetail = new EmployeeDetail();
-        employeeDetail.setEmployeeId(employeeMaster.getEmployeeId());
+        employeeDetail.setEmployeeId(employee.getEmployeeId());
         employeeDetail.setPan(employeeMaster.getPan());
         employeeDetail.setAadhar(employeeMaster.getAadhar());
         employeeDetail.setPassportNumber(employeeMaster.getPassportNumber());
         employeeDetail.setBankName(employeeMaster.getBankName());
+        employeeDetail.setAccountNo(employeeMaster.getAccountNo());
         employeeDetail.setBranch(employeeMaster.getBranch());
         employeeDetail.setIfscCode(employeeMaster.getIfscCode());
         employeeDetail.setJobTypeId(employeeMaster.getJobTypeId());
         employeeDetail.setExperienceInMonths(employeeMaster.getExperienceInMonths());
         employeeDetail.setLastCompanyName(employeeMaster.getLastCompanyName());
-        employeeDetail.setLastWorkingDate(employeeMaster.getLastWorkingDate());
+        employeeDetail.setLastWorkingDate(utilDate);
         employeeDetail.setDesignation(employeeMaster.getDesignation());
         employeeDetail.setSalary(employeeMaster.getSalary());
         employeeDetail.setExpectedSalary(employeeMaster.getExpectedSalary());
         employeeDetail.setCreatedBy(1L);
         employeeDetail.setCreatedOn(currentDate);
-        // this.employeeDetailRepository.save(employeeDetail);
+         this.employeeDetailRepository.save(employeeDetail);
 
         EmployeeMedicalDetail employeeMedicalDetail = new EmployeeMedicalDetail();
         var lastEmployeeMedicalDetailRecord = this.employeeMedicalDetailRepository.getLastEmployeeMedicalDetailRecord();
@@ -107,13 +113,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         }else {
             employeeMedicalDetail.setEmployeeMedicalDetailId(lastEmployeeMedicalDetailRecord.getEmployeeMedicalDetailId()+1);
         }
-//        employeeMedicalDetail.setEmployeeId(employeeMaster.getEmployeeId());
-//        employeeMedicalDetail.setMedicalConsultancyId(employeeMaster.getMedicalConsultancyId());
-//        employeeMedicalDetail.setConsultedBy(employeeMaster.getConsultedBy());
-//        employeeMedicalDetail.setConsultedOn(employeeMaster.getConsultedOn());
-//        employeeMedicalDetail.setReferenceId(employeeMaster.getReferenceId());
-//        employeeMedicalDetail.setReportId(employeeMaster.getReportId());
-//        employeeMedicalDetail.setReportPath(employeeMaster.getReportPath());
+        employeeMedicalDetail.setEmployeeId(employee.getEmployeeId());
+        employeeMedicalDetail.setMedicalConsultancyId(employeeMaster.getMedicalConsultancyId());
+        employeeMedicalDetail.setConsultedBy(employeeMaster.getConsultedBy());
+        employeeMedicalDetail.setConsultedOn(utilDate);
+        employeeMedicalDetail.setReferenceId(employeeMaster.getReferenceId());
+        employeeMedicalDetail.setReportId(employeeMaster.getReportId());
+        employeeMedicalDetail.setReportPath(employeeMaster.getReportPath());
+        employeeMedicalDetail.setCreatedBy(1L);
+        employeeMedicalDetail.setCreatedOn(currentDate);
+        this.employeeMedicalDetailRepository.save(employeeMedicalDetail);
 
         return "New Employee has been added in Emploee and Login table";
     }
@@ -140,6 +149,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setCountry(employeeMaster.getCountry());
         existingEmployee.setRoleId(employeeMaster.getRoleId());
         existingEmployee.setDesignationId(employeeMaster.getDesignationId());
+        existingEmployee.setPinCode(employeeMaster.getPinCode());
         existingEmployee.setReporteeId(employeeMaster.getReporteeId());
         existingEmployee.setUpdatedBy(1L);
         existingEmployee.setUpdatedOn(currentDate);
@@ -162,31 +172,45 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         EmployeeDetail employeeDetail;
-        Optional<EmployeeDetail> employeeDetailResult = this.employeeDetailRepository.findById(employeeId);
+        Optional<EmployeeDetail> employeeDetailResult = Optional.ofNullable(this.employeeDetailRepository.getEmployeeDetailByEmployeeId(employeeId));
         if (employeeDetailResult.isEmpty())
             throw new Exception("EmployeeDetail not found");
-        EmployeeDetail existingEmployeeDetail = employeeDetailResult.get();
-        existingEmployeeDetail.setPan(employeeMaster.getPan());
-        existingEmployeeDetail.setAadhar(employeeMaster.getAadhar());
-        existingEmployeeDetail.setPassportNumber(employeeMaster.getPassportNumber());
-        existingEmployeeDetail.setBankName(employeeMaster.getBankName());
-        existingEmployeeDetail.setBranch(employeeMaster.getBranch());
-        existingEmployeeDetail.setBranch(employeeMaster.getIfscCode());
-        existingEmployeeDetail.setJobTypeId(employeeMaster.getJobTypeId());
-        existingEmployeeDetail.setExperienceInMonths(employeeMaster.getExperienceInMonths());
-        existingEmployeeDetail.setLastCompanyName(employeeMaster.getLastCompanyName());
-        //existingEmployeeDetail.setLastWorkingDate(employeeMaster.getLastWorkingDate());
-        existingEmployeeDetail.setDesignation(employeeMaster.getDesignation());
-        existingEmployeeDetail.setSalary(employeeMaster.getSalary());
-        existingEmployeeDetail.setExpectedSalary(employeeMaster.getExpectedSalary());
-        existingEmployeeDetail.setExpectedDesignation(employeeMaster.getExpectedDesignation());
-        existingEmployeeDetail.setUpdatedBy(1L);
-        existingEmployeeDetail.setUpdatedOn(currentDate);
-        EmployeeDetail employeeDetailData = this.employeeDetailRepository.save(existingEmployeeDetail);
-        if (employeeDetailData == null){
+        employeeDetail = employeeDetailResult.get();
+        employeeDetail.setPan(employeeMaster.getPan());
+        employeeDetail.setAadhar(employeeMaster.getAadhar());
+        employeeDetail.setPassportNumber(employeeMaster.getPassportNumber());
+        employeeDetail.setBankName(employeeMaster.getBankName());
+        employeeDetail.setAccountNo(employeeMaster.getAccountNo());
+        employeeDetail.setBranch(employeeMaster.getBranch());
+        employeeDetail.setBranch(employeeMaster.getIfscCode());
+        employeeDetail.setJobTypeId(employeeMaster.getJobTypeId());
+        employeeDetail.setExperienceInMonths(employeeMaster.getExperienceInMonths());
+        employeeDetail.setLastCompanyName(employeeMaster.getLastCompanyName());
+        employeeDetail.setLastWorkingDate(utilDate);
+        employeeDetail.setDesignation(employeeMaster.getDesignation());
+        employeeDetail.setSalary(employeeMaster.getSalary());
+        employeeDetail.setExpectedSalary(employeeMaster.getExpectedSalary());
+        employeeDetail.setExpectedDesignation(employeeMaster.getExpectedDesignation());
+        employeeDetail.setUpdatedBy(1L);
+        employeeDetail.setUpdatedOn(currentDate);
+        EmployeeDetail employeeDetailData = this.employeeDetailRepository.save(employeeDetail);
+        if (employeeDetail == null){
             throw new Exception("fail to update EmployeeDetail");
         }
-
+        EmployeeMedicalDetail employeeMedicalDetail;
+        EmployeeMedicalDetail employeeMedicalDetailResult = this.employeeMedicalDetailRepository.getEmployeeMedicalDetailByEmployeeId(employeeId);
+        if (employeeMedicalDetailResult == null){
+            throw new Exception("EmployeeMedicalDetail not found");
+        }
+        employeeMedicalDetailResult.setMedicalConsultancyId(employeeMaster.getMedicalConsultancyId());
+        employeeMedicalDetailResult.setConsultedBy(employeeMaster.getConsultedBy());
+        employeeMedicalDetailResult.setConsultedOn(utilDate);
+        employeeMedicalDetailResult.setReferenceId(employeeMaster.getReferenceId());
+        employeeMedicalDetailResult.setReportId(employeeMaster.getReportId());
+        employeeMedicalDetailResult.setReportPath(employeeMaster.getReportPath());
+        employeeMedicalDetailResult.setUpdatedBy(1L);
+        employeeMedicalDetailResult.setUpdatedOn(currentDate);
+        EmployeeMedicalDetail employeeMedicalDetailData = this.employeeMedicalDetailRepository.save(employeeMedicalDetailResult);
         return "Employee has been updated";
     }
 
@@ -196,8 +220,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         return (ArrayList<Employee>) result;
     }
 
-    public Optional<Employee> getEmployeeByEmployeeIdService(long employeeId) {
-        Optional<Employee> result = this.employeeRepository.findById(employeeId);
-        return result;
+    public EmployeeMaster getEmployeeByEmployeeIdService(long employeeId) {
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_EmployeeId", employeeId, Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_Employee_getByEmployeeId", dbParameters);
+        var data =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<EmployeeMaster>>() {
+        });
+        if (data != null)
+            return data.get(0);
+        else
+            return null;
     }
 }

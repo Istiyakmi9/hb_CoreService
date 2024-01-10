@@ -45,7 +45,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/getEmployeeByEmployeeId/{employeeId}")
-    public ResponseEntity<ApiResponse> getEmployeeByEmployeeId( @PathVariable("employeeId") long employeeId){
+    public ResponseEntity<ApiResponse> getEmployeeByEmployeeId( @PathVariable("employeeId") long employeeId) throws Exception {
         var result = this.employeeServiceImpl.getEmployeeByEmployeeIdService(employeeId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
