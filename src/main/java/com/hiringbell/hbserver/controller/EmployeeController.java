@@ -13,7 +13,7 @@ import java.io.IOException;
 
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/hb/api/employee")
 public class EmployeeController {
 
     @Autowired
