@@ -3,6 +3,9 @@ spring:
     config:
       enabled: false
 
+  application:
+    name: hiringbel-service
+
   config:
     import: optional:configserver:instead
 
@@ -15,3 +18,9 @@ spring:
     username: root
     password: live@Bottomhalf_001
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: http://localhost:8080/eureka
