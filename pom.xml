@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hiringbell</groupId>
-	<artifactId>hb_server</artifactId>
+	<artifactId>hb_CoreService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>hb_server</name>
+	<name>hb_CoreService</name>
 	<description>HiringBell server</description>
 	<properties>
 		<java.version>17</java.version>
