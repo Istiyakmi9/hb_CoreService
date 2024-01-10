@@ -12,6 +12,6 @@ FROM openjdk:17-oracle
 WORKDIR /app
 EXPOSE 80
 
-COPY --from=MAVEN /build/target/hiringbell_server.jar /app/
+COPY --from=MAVEN /build/target/hiringbell_coreservice.jar /app/
 
-ENTRYPOINT ["java", "-jar", "hiringbell_server.jar", "--spring.profiles.active=staging"]
+ENTRYPOINT ["java", "-jar", "hiringbell_coreservice.jar", "--spring.profiles.active=staging"]
