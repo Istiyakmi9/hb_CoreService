@@ -67,6 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setDesignationId(employeeMaster.getDesignationId());
         employee.setPinCode(employeeMaster.getPinCode());
         employee.setReporteeId(employeeMaster.getReporteeId());
+        employee.setActive(true);
         employee.setCreatedOn(currentDate);
         this.employeeRepository.save(employee);
 
@@ -82,6 +83,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         loginDetail.setMobile(employeeMaster.getMobile());
         loginDetail.setPassword("emp123");
         loginDetail.setRoleId(employeeMaster.getRoleId());
+        loginDetail.setActive(true);
         loginDetail.setCreatedBy(1L);
         loginDetail.setCreatedOn(currentDate);
         this.loginRepository.save(loginDetail);
@@ -230,5 +232,24 @@ public class EmployeeServiceImpl implements EmployeeService {
             return data.get(0);
         else
             return null;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String deleteEmployeeByEmployeeIdService(long employeeId) throws Exception {
+        Optional<Employee> result = this.employeeRepository.findById(employeeId);
+        if (result.isEmpty()) {
+            throw new Exception("employee record not found");
+        }
+        Employee existingEmployee = result.get();
+        existingEmployee.setActive(false);
+        this.employeeRepository.save(existingEmployee);
+
+        Login loginResult = this.loginRepository.getLoginByEmployeeId(employeeId);
+        if (loginResult == null){
+            throw new Exception("login record not found");
+        }
+        loginResult.setActive (false);
+        this.loginRepository.save(loginResult);
+        return "Employee data is De-active";
     }
 }

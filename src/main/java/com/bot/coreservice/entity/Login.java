@@ -40,6 +40,10 @@ public class Login {
     @JsonProperty("RoleId")
     int roleId;
 
+    @Column(name = "IsActive")
+    @JsonProperty("IsActive")
+    boolean isActive;
+
     @Column(name = "CreatedBy")
     @JsonProperty("CreatedBy")
     Long createdBy;

@@ -68,6 +68,9 @@ public class Employee {
         @Column(name = "ReporteeId")
         long reporteeId;
 
+        @Column(name = "IsActive")
+        boolean isActive;
+
         @Column(name = "CreatedBy")
         Long createdBy;
 

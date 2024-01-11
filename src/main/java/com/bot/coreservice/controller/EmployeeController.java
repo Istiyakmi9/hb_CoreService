@@ -50,4 +50,10 @@ public class EmployeeController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @DeleteMapping("/deleteEmployeeByEmployeeId/{employeeId}")
+    public ResponseEntity<ApiResponse> deleteEmployeeByEmployeeId( @PathVariable("employeeId") long employeeId) throws Exception {
+        var result = this.employeeServiceImpl.deleteEmployeeByEmployeeIdService(employeeId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
 }
