@@ -11,5 +11,6 @@ public interface EmployeeService {
     public String updateEmployeeService(EmployeeMaster employeeMaster, long employeeId) throws Exception;
     public ArrayList<Employee> getAllEmployeeService();
     public EmployeeMaster getEmployeeByEmployeeIdService(long employeeId);
+    public String deleteEmployeeByEmployeeIdService(long employeeId) throws Exception;
 
 }
