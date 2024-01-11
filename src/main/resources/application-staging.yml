@@ -3,12 +3,6 @@ spring:
     config:
       enabled: false
 
-  application:
-    name: hiringbel-service
-
-  config:
-    import: optional:configserver:instead
-
   #Local-server(Remote)
   datasource:
     url: jdbc:mysql://192.168.0.101:3308/hiringbell

@@ -3,16 +3,6 @@ spring:
     config:
       enabled: false
 
-  application:
-    name: hiringbel-service
-
-  config:
-    import: optional:configserver:instead
-
-
-  main:
-    web-application-type: reactive
-
   datasource:
     url: jdbc:mysql://192.168.0.101:3308/hiringbell
     username: root

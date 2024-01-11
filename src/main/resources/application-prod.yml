@@ -3,13 +3,6 @@ spring:
     config:
       enabled: false
 
-  application:
-    name: hiringbel-service
-
-  config:
-    import: optional:configserver:instead
-
-
   main:
     web-application-type: reactive
   #Local-server(Remote)
