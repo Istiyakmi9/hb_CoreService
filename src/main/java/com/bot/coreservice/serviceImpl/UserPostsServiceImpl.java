@@ -32,6 +32,8 @@ public class UserPostsServiceImpl implements UserPostsService {
         this.userPostsRepository.save(userPost);
 
         return "Posted successfully";
+
+
     }
 
     public String updateUserPostService(UserPosts userPost, long userPostId) throws Exception {
@@ -45,10 +47,9 @@ public class UserPostsServiceImpl implements UserPostsService {
         existingUserPost.setShortDescription(userPost.getShortDescription());
         existingUserPost.setCompleteDescription(userPost.getCompleteDescription());
         existingUserPost.setCatagoryTypeId(1);
-        existingUserPost.setPostInternalDetailId(1);
+        existingUserPost.setJobRequirementId(1);
         existingUserPost.setUpdatedOn(currentDate);
         this.userPostsRepository.save(existingUserPost);
-
         return "User post has been updated";
     }
 

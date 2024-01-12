@@ -36,9 +36,9 @@ public class UserPosts {
         @JsonProperty("CatagoryTypeId")
         int catagoryTypeId;
 
-        @Column(name = "PostInternalDetailId")
-        @JsonProperty("PostInternalDetailId")
-        int postInternalDetailId;
+        @Column(name = "JobRequirementId")
+        @JsonProperty("JobRequirementId")
+        int jobRequirementId;
 
         @Column(name = "PostedBy")
         @JsonProperty("PostedBy")
