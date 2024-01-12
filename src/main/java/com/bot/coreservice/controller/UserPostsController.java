@@ -33,28 +33,28 @@ public class UserPostsController {
 
 
     @GetMapping("getAllUserPosts")
-    public ResponseEntity<ApiResponse> getAllUserPosts(){
+    public ResponseEntity<ApiResponse> getAllUserPosts() {
         var result = this.userPostsService.getAllUserPosts();
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @GetMapping("getUserPostByUserPostId/{userPostId}")
-    public ResponseEntity<ApiResponse> getUserPostByUserPostId(@PathVariable("userPostId") long userPostId){
+    public ResponseEntity<ApiResponse> getUserPostByUserPostId(@PathVariable("userPostId") long userPostId) {
         var result = this.userPostsService.getUserPostByUserPostIdService(userPostId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @DeleteMapping("deleteUserPostByUserPostId/{userPostId}")
-    public ResponseEntity<ApiResponse> deleteUserPostByUserPostId(@PathVariable("userPostId") long userPostId){
+    public ResponseEntity<ApiResponse> deleteUserPostByUserPostId(@PathVariable("userPostId") long userPostId) {
         var result = this.userPostsService.deleteUserPostByUserPostIdService(userPostId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @PostMapping("uploadUserPosts")
     public ResponseEntity<ApiResponse> uploadUserPosts(
-            @RequestPart("userPost")String userPost,
-            @RequestPart(value = "postImages", required = false) FilePart postImages) {
-        var result = userPostsService.uploadUserPostsService(new UploadRequestFormData());
+            @RequestPart("userPost") String userPost,
+            @RequestPart(value = "postImages", required = false) FilePart postImages) throws JsonProcessingException {
+        var result = userPostsService.uploadUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }

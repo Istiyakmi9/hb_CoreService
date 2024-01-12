@@ -1,6 +1,7 @@
 package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.UserPostsRepository;
+import com.bot.coreservice.entity.JobRequirement;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.UploadRequestFormData;
 import com.bot.coreservice.model.UserPostRequest;
@@ -8,6 +9,7 @@ import com.bot.coreservice.contracts.IUserPostsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,9 +77,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return "User post has been deleted";
     }
 
-    public String uploadUserPostsService(UploadRequestFormData userPost) {
-        String userPostDetail = userPost.getUserPost();
-        // UserPostRequest userPostRequest = objectMapper.readValue(userPostDetail, UserPostRequest.class);
+    public String uploadUserPostsService(String userPost, FilePart postImages) throws JsonProcessingException{
+        UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
+
+        JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
+
+        UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         return null;
     }
 }

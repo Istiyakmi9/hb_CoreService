@@ -4,6 +4,7 @@ import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.UploadRequestFormData;
 import com.bot.coreservice.model.UserPostRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -16,5 +17,5 @@ public interface IUserPostsService {
     public ArrayList<UserPosts> getAllUserPosts();
     public Optional<UserPosts> getUserPostByUserPostIdService(long userPostId);
     public String deleteUserPostByUserPostIdService(long userPostId);
-    public String uploadUserPostsService(UploadRequestFormData userPost);
+    public String uploadUserPostsService(String userPost, FilePart postImages) throws JsonProcessingException;
 }
