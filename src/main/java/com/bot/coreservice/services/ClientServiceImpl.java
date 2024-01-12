@@ -1,4 +1,4 @@
-package com.bot.coreservice.serviceImpl;
+package com.bot.coreservice.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,7 @@ import com.bot.coreservice.model.BankAccount;
 import com.bot.coreservice.model.Client;
 import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.FilterModel;
-import com.bot.coreservice.service.ClientService;
+import com.bot.coreservice.contracts.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

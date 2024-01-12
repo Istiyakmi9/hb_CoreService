@@ -2,49 +2,58 @@ package com.bot.coreservice.controller;
 
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.ApiResponse;
-import com.bot.coreservice.serviceImpl.UserPostsServiceImpl;
+import com.bot.coreservice.contracts.IUserPostsService;
+import com.bot.coreservice.model.UploadRequestFormData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
-@RequestMapping("/hb/api/userposts")
+@RequestMapping("/hb/api/userposts/")
 public class UserPostsController {
 
     @Autowired
-    UserPostsServiceImpl userPostsServiceImpl;
+    IUserPostsService userPostsService;
 
-    @PostMapping("/addUserPost")
+    @PostMapping("addUserPost")
     public ResponseEntity<ApiResponse> addUserPost(@RequestBody UserPosts userPost) {
-        var result = this.userPostsServiceImpl.addUserPostService(userPost);
+        var result = this.userPostsService.addUserPostService(userPost);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-    @PutMapping("/updateUserPost/{userPostId}")
+    @PutMapping("updateUserPost/{userPostId}")
     public ResponseEntity<ApiResponse> updateUserPost(@RequestBody UserPosts userPost, @PathVariable("userPostId") long userPostId) throws Exception {
-        var result = this.userPostsServiceImpl.updateUserPostService(userPost, userPostId);
+        var result = this.userPostsService.updateUserPostService(userPost, userPostId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
 
-    @GetMapping("/getAllUserPosts")
+    @GetMapping("getAllUserPosts")
     public ResponseEntity<ApiResponse> getAllUserPosts(){
-        var result = this.userPostsServiceImpl.getAllUserPosts();
+        var result = this.userPostsService.getAllUserPosts();
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-    @GetMapping("/getUserPostByUserPostId/{userPostId}")
+    @GetMapping("getUserPostByUserPostId/{userPostId}")
     public ResponseEntity<ApiResponse> getUserPostByUserPostId(@PathVariable("userPostId") long userPostId){
-        var result = this.userPostsServiceImpl.getUserPostByUserPostIdService(userPostId);
+        var result = this.userPostsService.getUserPostByUserPostIdService(userPostId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-    @DeleteMapping("/deleteUserPostByUserPostId/{userPostId}")
+    @DeleteMapping("deleteUserPostByUserPostId/{userPostId}")
     public ResponseEntity<ApiResponse> deleteUserPostByUserPostId(@PathVariable("userPostId") long userPostId){
-        var result = this.userPostsServiceImpl.deleteUserPostByUserPostIdService(userPostId);
+        var result = this.userPostsService.deleteUserPostByUserPostIdService(userPostId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-
+    @PostMapping("uploadUserPosts")
+    public ResponseEntity<ApiResponse> uploadUserPosts(
+            @RequestParam("userPost")String userPost,
+            @RequestParam("postImages")MultipartFile postImages) {
+        var result = userPostsService.uploadUserPostsService(new UploadRequestFormData());
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 }

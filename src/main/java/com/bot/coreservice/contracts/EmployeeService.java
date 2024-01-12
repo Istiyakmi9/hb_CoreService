@@ -1,4 +1,4 @@
-package com.bot.coreservice.service;
+package com.bot.coreservice.contracts;
 
 import com.bot.coreservice.entity.Employee;
 import com.bot.coreservice.model.EmployeeMaster;

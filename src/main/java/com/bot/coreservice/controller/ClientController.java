@@ -3,7 +3,7 @@ package com.bot.coreservice.controller;
 import com.bot.coreservice.model.ApiResponse;
 import com.bot.coreservice.model.Client;
 import com.bot.coreservice.model.FilterModel;
-import com.bot.coreservice.service.ClientService;
+import com.bot.coreservice.contracts.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

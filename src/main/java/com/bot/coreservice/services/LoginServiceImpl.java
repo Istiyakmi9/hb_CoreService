@@ -1,4 +1,4 @@
-package com.bot.coreservice.serviceImpl;
+package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.LoginRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,7 @@ import com.bot.coreservice.model.ApplicationConstant;
 import com.bot.coreservice.model.JwtTokenModel;
 import com.bot.coreservice.model.LoginResponse;
 import com.bot.coreservice.model.UserDetail;
-import com.bot.coreservice.service.LoginService;
+import com.bot.coreservice.contracts.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

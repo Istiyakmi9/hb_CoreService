@@ -4,7 +4,7 @@ import com.bot.coreservice.jwtconfig.JwtGateway;
 import com.bot.coreservice.model.ApiResponse;
 import com.bot.coreservice.model.EmployeeMaster;
 import com.bot.coreservice.model.JwtTokenModel;
-import com.bot.coreservice.serviceImpl.EmployeeServiceImpl;
+import com.bot.coreservice.services.EmployeeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

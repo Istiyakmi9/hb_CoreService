@@ -1,10 +1,15 @@
-package com.bot.coreservice.serviceImpl;
+package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.UserPostsRepository;
 import com.bot.coreservice.entity.UserPosts;
-import com.bot.coreservice.service.UserPostsService;
+import com.bot.coreservice.model.UploadRequestFormData;
+import com.bot.coreservice.model.UserPostRequest;
+import com.bot.coreservice.contracts.IUserPostsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,11 +18,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserPostsServiceImpl implements UserPostsService {
+public class UserPostsServiceImpl implements IUserPostsService {
 
     @Autowired
     UserPostsRepository userPostsRepository;
 
+    @Autowired
+    ObjectMapper objectMapper;
 
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
@@ -66,5 +73,11 @@ public class UserPostsServiceImpl implements UserPostsService {
     public String deleteUserPostByUserPostIdService(long userPostId) {
         this.userPostsRepository.deleteById(userPostId);
         return "User post has been deleted";
+    }
+
+    public String uploadUserPostsService(UploadRequestFormData userPost) {
+        String userPostDetail = userPost.getUserPost();
+        // UserPostRequest userPostRequest = objectMapper.readValue(userPostDetail, UserPostRequest.class);
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-package com.bot.coreservice.service;
+package com.bot.coreservice.contracts;
 
 import com.bot.coreservice.model.Client;
 import com.bot.coreservice.model.FilterModel;
