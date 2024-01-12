@@ -1,5 +1,6 @@
 package com.bot.coreservice.entity;
 
+import com.bot.coreservice.model.FileDetail;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
@@ -11,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -32,13 +34,18 @@ public class UserPosts {
         @JsonProperty("CompleteDescription")
         String completeDescription;
 
+        @Column(name = "FileDetail")
+        @JsonProperty("FileDetail")
+        String fileDetail;
+
+
         @Column(name = "CatagoryTypeId")
         @JsonProperty("CatagoryTypeId")
-        int catagoryTypeId;
+        long catagoryTypeId;
 
         @Column(name = "JobRequirementId")
         @JsonProperty("JobRequirementId")
-        int jobRequirementId;
+        long jobRequirementId;
 
         @Column(name = "PostedBy")
         @JsonProperty("PostedBy")
@@ -52,4 +59,9 @@ public class UserPosts {
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         Date updatedOn;
 
+        @JsonProperty("FullName")
+        private transient String fullName;
+
+        @JsonProperty("Files")
+        private transient List<FileDetail> files;
 }

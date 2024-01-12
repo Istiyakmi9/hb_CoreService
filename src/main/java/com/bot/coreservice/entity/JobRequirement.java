@@ -92,9 +92,9 @@ public class JobRequirement {
     @JsonProperty("MaximunCTC")
     private Long maximunCTC;
 
-    @Column(name = "IsOTIncludex")
-    @JsonProperty("IsOTIncludex")
-    private Boolean isOTIncludex;
+    @Column(name = "IsOTIncluded")
+    @JsonProperty("IsOTIncluded")
+    private Boolean isOTIncluded;
 
     @Column(name = "MaxOTHours")
     @JsonProperty("MaxOTHours")
