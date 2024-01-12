@@ -18,4 +18,6 @@ public interface IUserPostsService {
     public Optional<UserPosts> getUserPostByUserPostIdService(long userPostId);
     public String deleteUserPostByUserPostIdService(long userPostId);
     public String uploadUserPostsService(String userPost, FilePart postImages) throws JsonProcessingException;
+
+    public String updateUserPostsService(String userPost, FilePart postImages) throws Exception;
 }

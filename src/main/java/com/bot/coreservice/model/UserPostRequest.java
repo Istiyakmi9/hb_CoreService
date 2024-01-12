@@ -21,7 +21,7 @@ public class UserPostRequest extends JobRequirement {
     String completeDescription;
 
     @JsonProperty("CatagoryTypeId")
-    int catagoryTypeId;
+    Long catagoryTypeId;
 
     @JsonProperty("PostedBy")
     Long postedBy;

@@ -34,11 +34,11 @@ public class UserPosts {
 
         @Column(name = "CatagoryTypeId")
         @JsonProperty("CatagoryTypeId")
-        int catagoryTypeId;
+        Long catagoryTypeId;
 
         @Column(name = "JobRequirementId")
         @JsonProperty("JobRequirementId")
-        int jobRequirementId;
+        Long jobRequirementId;
 
         @Column(name = "PostedBy")
         @JsonProperty("PostedBy")

@@ -50,6 +50,7 @@ public class UserPostsController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+
     @PostMapping("uploadUserPosts")
     public ResponseEntity<ApiResponse> uploadUserPosts(
             @RequestPart("userPost") String userPost,
@@ -57,4 +58,13 @@ public class UserPostsController {
         var result = userPostsService.uploadUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
+
+    @PostMapping("updateUserPosts")
+    public ResponseEntity<ApiResponse> updateUserPosts(
+            @RequestPart("userPost") String userPost,
+            @RequestPart(value = "postImages", required = false) FilePart postImages) throws Exception {
+        var result = userPostsService.updateUserPostsService(userPost, postImages);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
 }
