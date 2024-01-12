@@ -7,6 +7,7 @@ import com.bot.coreservice.model.UploadRequestFormData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,8 +52,8 @@ public class UserPostsController {
 
     @PostMapping("uploadUserPosts")
     public ResponseEntity<ApiResponse> uploadUserPosts(
-            @RequestParam("userPost")String userPost,
-            @RequestParam("postImages")MultipartFile postImages) {
+            @RequestPart("userPost")String userPost,
+            @RequestPart(value = "postImages", required = false) FilePart postImages) {
         var result = userPostsService.uploadUserPostsService(new UploadRequestFormData());
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
