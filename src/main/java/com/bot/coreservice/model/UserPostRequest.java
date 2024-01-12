@@ -21,7 +21,7 @@ public class UserPostRequest extends JobRequirement {
     String completeDescription;
 
     @JsonProperty("CatagoryTypeId")
-    int catagoryTypeId;
+    long catagoryTypeId;
 
     @JsonProperty("PostedBy")
     Long postedBy;
@@ -31,5 +31,8 @@ public class UserPostRequest extends JobRequirement {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date updatedOn;
+
+    @JsonProperty("FileDetail")
+    String fileDetail;
 }
 

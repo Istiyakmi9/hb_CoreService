@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
 
 
 @RestController
@@ -53,8 +54,16 @@ public class UserPostsController {
     @PostMapping("uploadUserPosts")
     public ResponseEntity<ApiResponse> uploadUserPosts(
             @RequestPart("userPost") String userPost,
-            @RequestPart(value = "postImages", required = false) FilePart postImages) throws JsonProcessingException {
+            @RequestPart(value = "postImages", required = false)Flux<FilePart> postImages) throws Exception {
         var result = userPostsService.uploadUserPostsService(userPost, postImages);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @PostMapping("updateUserPosts")
+    public ResponseEntity<ApiResponse> updateUserPosts(
+            @RequestPart("userPost") String userPost,
+            @RequestPart(value = "postImages", required = false) Flux<FilePart> postImages) throws Exception {
+        var result = userPostsService.updateUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }
