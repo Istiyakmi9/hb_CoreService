@@ -24,18 +24,23 @@ public class FileManager {
 
     @Autowired
     public FileManager(FileStorageProperties fileStorageProperties, ResourceLoader resourceLoader) throws IOException {
+        try {
+            logger.info("Getting static folder class path");
+            Resource resource = resourceLoader.getResource("classpath:");
+            File file = resource.getFile();
 
-        logger.info("Getting static folder class path");
-        Resource resource = resourceLoader.getResource("classpath:");
-        File file = resource.getFile();
+            logger.info("[INFO]: Classpath location: " + file.getAbsolutePath());
 
-        // Assuming that the resources folder is at the same level as the classpath root
-        File resourcesFolder = new File(file.getParent(), "resources");
+            // Assuming that the resources folder is at the same level as the classpath root
+            File resourcesFolder = new File(file.getParent(), "resources");
 
-        basePath = resourcesFolder.getAbsolutePath();
+            basePath = resourcesFolder.getAbsolutePath();
 
-        // Print the absolute path
-        logger.info("Current Working Directory: " + basePath);
+            // Print the absolute path
+            logger.info("[INFO]: Current Working Directory: " + basePath);
+        } catch (Exception ex) {
+            logger.error("[ERROR]: Fail: " + ex.getMessage());
+        }
     }
 
     public String uploadFile(FilePart file, long userId, String fileName) throws Exception {
