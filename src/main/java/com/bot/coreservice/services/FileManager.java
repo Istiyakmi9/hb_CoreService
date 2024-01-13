@@ -2,10 +2,10 @@ package com.bot.coreservice.services;
 
 import com.bot.coreservice.model.FileDetail;
 import com.bot.coreservice.model.FileStorageProperties;
-import org.hibernate.boot.ResourceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.codec.multipart.FilePart;
@@ -28,18 +28,23 @@ public class FileManager {
 
         try {
             logger.info("Getting static folder class path");
-            // Get the current working directory
-            logger.info("[INFO]: "+ System.getProperty("user.dir"));
 
-            Resource resource = resourceLoader.getResource("classpath:");
-            File file = resource.getFile();
+            if (fileStorageProperties.getActive().equals("dev")) {
+                Resource resource = resourceLoader.getResource("classpath:");
+                File file = resource.getFile();
 
-            logger.info("[INFO]: Classpath location: " + file.getAbsolutePath());
+                logger.info("[INFO]: Classpath location: " + file.getAbsolutePath());
 
-            // Assuming that the resources folder is at the same level as the classpath root
-            File resourcesFolder = new File(file.getParent(), "resources");
+                // Assuming that the resources folder is at the same level as the classpath root
+                File resourcesFolder = new File(file.getParent(), "resources");
 
-            basePath = resourcesFolder.getAbsolutePath();
+                basePath = resourcesFolder.getAbsolutePath();
+            } else {
+                basePath = System.getProperty("user.dir") + File.separator + "resources";
+
+                // Get the current working directory
+                logger.info("[INFO]: " + basePath);
+            }
 
             // Print the absolute path
             logger.info("[INFO]: Current Working Directory: " + basePath);

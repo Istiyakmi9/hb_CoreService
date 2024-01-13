@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: ${profile:prod}
+    active: dev
   application:
     name: coreservice-service
 
@@ -34,9 +34,6 @@ servlet:
   multipart.file-size-threshold: 1024KB
   multipart.max-file-size: 2MB
   multipart.max-request-size: 3MB
-
-file:
-  upload-dir: ./applicationfiles
 
 eureka:
   client:

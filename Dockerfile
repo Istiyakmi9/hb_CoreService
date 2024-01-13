@@ -13,6 +13,6 @@ WORKDIR /app
 EXPOSE 80
 
 COPY --from=MAVEN /build/target/hiringbell_coreservice.jar /app/
-COPY src/main/resources /app/resources
+COPY /build/target/resources /app/resources
 
 ENTRYPOINT ["java", "-jar", "hiringbell_coreservice.jar", "--spring.profiles.active=prod"]
