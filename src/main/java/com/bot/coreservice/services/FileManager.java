@@ -2,12 +2,16 @@ package com.bot.coreservice.services;
 
 import com.bot.coreservice.model.FileDetail;
 import com.bot.coreservice.model.FileStorageProperties;
+import org.hibernate.boot.ResourceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,17 +23,25 @@ public class FileManager {
     private final String basePath;
 
     @Autowired
-    public FileManager(FileStorageProperties fileStorageProperties) throws IOException {
+    public FileManager(FileStorageProperties fileStorageProperties, ResourceLoader resourceLoader) throws IOException {
+
         logger.info("Getting static folder class path");
-        // basePath = getClass().getClassLoader().getResource("static").getPath();
-        basePath = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize().toString();
-        logger.info("Static folder class path: " + basePath);
+        Resource resource = resourceLoader.getResource("classpath:");
+        File file = resource.getFile();
+
+        // Assuming that the resources folder is at the same level as the classpath root
+        File resourcesFolder = new File(file.getParent(), "resources");
+
+        basePath = resourcesFolder.getAbsolutePath();
+
+        // Print the absolute path
+        logger.info("Current Working Directory: " + basePath);
     }
 
     public String uploadFile(FilePart file, long userId, String fileName) throws Exception {
         FileDetail fileDetail = null;
         String name = file.filename();
-        if (file != null && name != null && !name.isEmpty()) {
+        if (!name.isEmpty()) {
             fileDetail = new FileDetail();
             String ext = name.substring(name.lastIndexOf(".") + 1);
             String nameOnly = name.substring(0, name.lastIndexOf("."));

@@ -74,7 +74,7 @@ public class JwtGateway {
 
                 // Print the response
                 System.out.println("Response: " + response.toString());
-                tokenResult = response.toString();
+                tokenResult = response.toString().replaceAll("\"", "");
             }
 
             // Close the connection
