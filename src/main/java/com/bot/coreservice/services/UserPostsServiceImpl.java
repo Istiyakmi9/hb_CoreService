@@ -6,9 +6,8 @@ import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.JobRequirement;
 import com.bot.coreservice.entity.UserPosts;
-import com.bot.coreservice.model.DbParameters;
-import com.bot.coreservice.model.FileDetail;
-import com.bot.coreservice.model.UserPostRequest;
+import com.bot.coreservice.model.*;
+import com.bot.coreservice.model.Currency;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.*;
 
 @Service
@@ -88,9 +88,21 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return result;
     }
 
-    public Optional<UserPosts> getUserPostByUserPostIdService(long userPostId) {
-        Optional<UserPosts> result = this.userPostsRepository.findById(userPostId);
-        return result;
+    public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception {
+        if (userPostId == 0)
+            throw new Exception("Invalid post selected");
+
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_UserPostId", userPostId, Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getbyid", dbParameters);
+        var userPost = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPostRequest>>() {});
+        var countries = objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<Country>>() {});
+        var currencies = objectMapper.convertValue(dataSet.get("#result-set-3"), new TypeReference<List<Currency>>() {});
+        Map<String, Object> result = new HashMap<>();
+        result.put("UserPost", userPost);
+        result.put("Countries", countries);
+        result.put("currencies", currencies);
+        return  result;
     }
 
     public String deleteUserPostByUserPostIdService(long userPostId) {
@@ -108,9 +120,17 @@ public class UserPostsServiceImpl implements IUserPostsService {
         jobRequirement.setJobTypeId(userPosts.getCatagoryTypeId());
 
         var jobRequirementId = addJobRequirement(jobRequirement);
+        var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
+        if (lastUserPostRecord == null)
+            userPosts.setUserPostId(1L);
+        else
+            userPosts.setUserPostId(lastUserPostRecord.getUserPostId()+1);
+
         userPosts.setJobRequirementId(jobRequirementId);
-        var filepath = saveUpdateFileDetail(userPostRequest, postImages);
-        userPosts.setFileDetail(filepath);
+        userPostRequest.setUserPostId(userPosts.getUserPostId());
+
+        var fileDetail = saveUpdateFileDetail(userPostRequest, postImages);
+        userPosts.setFileDetail(fileDetail);
         addUserPostDetailService(userPosts);
 
         return "New userPost and jobRequirement has been added";
@@ -119,12 +139,6 @@ public class UserPostsServiceImpl implements IUserPostsService {
     private void addUserPostDetailService(UserPosts userPosts) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
-        var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
-        if (lastUserPostRecord == null)
-            userPosts.setUserPostId(1L);
-        else
-            userPosts.setUserPostId(lastUserPostRecord.getUserPostId()+1);
-
         userPosts.setPostedBy(1L);
         userPosts.setPostedOn(currentDate);
         this.userPostsRepository.save(userPosts);
@@ -215,7 +229,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (files != null) {
             List<FileDetail> existingFiles;
             if (userPostRequest.getFileDetail() != null && userPostRequest.getFileDetail() != "[]") {
-                existingFiles = objectMapper.convertValue(userPostRequest.getFileDetail(), new TypeReference<List<FileDetail>>() {
+                existingFiles = objectMapper.readValue(userPostRequest.getFileDetail(), new TypeReference<List<FileDetail>>() {
                 });
             } else {
                 existingFiles = new ArrayList<>();

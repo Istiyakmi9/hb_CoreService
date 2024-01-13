@@ -138,10 +138,11 @@ public class JobRequirement {
 
     @Column(name = "CreatedOn")
     @JsonProperty("CreatedOn")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Date createdOn;
+
     @Column(name = "UpdatedOn")
     @JsonProperty("UpdatedOn")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Date updatedOn;
 }

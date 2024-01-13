@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -17,22 +18,20 @@ public class UserPostRequest extends JobRequirement {
     @JsonProperty("ShortDescription")
     String shortDescription;
 
-    @JsonProperty("CompleteDescription")
-    String completeDescription;
-
     @JsonProperty("CatagoryTypeId")
     long catagoryTypeId;
 
     @JsonProperty("PostedBy")
     Long postedBy;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonProperty("PostedOn")
     Date postedOn;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    Date updatedOn;
 
     @JsonProperty("FileDetail")
     String fileDetail;
+
+    @JsonProperty("Files")
+    List<FileDetail> files;
 }
 
