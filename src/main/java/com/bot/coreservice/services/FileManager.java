@@ -28,6 +28,9 @@ public class FileManager {
 
         try {
             logger.info("Getting static folder class path");
+            // Get the current working directory
+            logger.info("[INFO]: "+ System.getProperty("user.dir"));
+
             Resource resource = resourceLoader.getResource("classpath:");
             File file = resource.getFile();
 
