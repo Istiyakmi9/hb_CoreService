@@ -111,7 +111,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
@@ -133,7 +133,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         userPosts.setFileDetail(fileDetail);
         addUserPostDetailService(userPosts);
 
-        return "New userPost and jobRequirement has been added";
+        return getAllUserPosts();
     }
 
     private void addUserPostDetailService(UserPosts userPosts) {
