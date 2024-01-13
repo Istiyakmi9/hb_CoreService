@@ -53,6 +53,10 @@ public class FileManager {
         }
     }
 
+    public String getBasePath() {
+        return basePath;
+    }
+
     public String uploadFile(FilePart file, long userId, String fileName) throws Exception {
         FileDetail fileDetail = null;
         String name = file.filename();
