@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 @Component
 public class FileManager {
     private final Logger logger = LoggerFactory.getLogger(FileManager.class);
-    private final String basePath;
+    private String basePath;
 
     @Autowired
     public FileManager(FileStorageProperties fileStorageProperties, ResourceLoader resourceLoader) throws IOException {
