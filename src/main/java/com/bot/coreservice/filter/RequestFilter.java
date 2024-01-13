@@ -19,6 +19,7 @@ public class RequestFilter implements Filter {
 
     @Autowired
     ObjectMapper objectMapper;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
