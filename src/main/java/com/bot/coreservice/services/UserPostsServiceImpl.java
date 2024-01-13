@@ -236,4 +236,22 @@ public class UserPostsServiceImpl implements IUserPostsService {
         }
         return fileDetails;
     }
+
+    @Override
+    public String deleteImagesService(Long userPostId, int fileDetailId) throws Exception {
+        var existingUserPostData = this.userPostsRepository.findById(userPostId);
+        var existingUserPost = existingUserPostData.get();
+        if (existingUserPost == null){
+            throw new Exception("userPostId does not exists");
+        }else {
+            if (existingUserPost.getFileDetail() != null || existingUserPost.getFileDetail() != "{}"){
+                var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>(){
+                });
+                var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
+                existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
+                userPostsRepository.save(existingUserPost);
+            }
+        }
+        return "Images has been deleted";
+    }
 }

@@ -66,4 +66,10 @@ public class UserPostsController {
         var result = userPostsService.updateUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
+
+    @DeleteMapping("deleteImages/{userPostId}/{fileDetailId}")
+    public ResponseEntity<ApiResponse> deleteImages(@PathVariable("userPostId") Long userPostId, @PathVariable("fileDetailId") int fileDetailId) throws Exception {
+        var result = this.userPostsService.deleteImagesService(userPostId, fileDetailId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 }
