@@ -24,6 +24,8 @@ public class FileManager {
 
     @Autowired
     public FileManager(FileStorageProperties fileStorageProperties, ResourceLoader resourceLoader) throws IOException {
+        basePath = "";
+
         try {
             logger.info("Getting static folder class path");
             Resource resource = resourceLoader.getResource("classpath:");
