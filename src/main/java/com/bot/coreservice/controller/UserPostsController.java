@@ -40,7 +40,7 @@ public class UserPostsController {
     }
 
     @GetMapping("getUserPostByUserPostId/{userPostId}")
-    public ResponseEntity<ApiResponse> getUserPostByUserPostId(@PathVariable("userPostId") long userPostId) {
+    public ResponseEntity<ApiResponse> getUserPostByUserPostId(@PathVariable("userPostId") long userPostId) throws Exception {
         var result = this.userPostsService.getUserPostByUserPostIdService(userPostId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
