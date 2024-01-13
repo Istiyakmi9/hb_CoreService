@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
 import java.util.List;
@@ -52,6 +53,7 @@ public class UserPosts {
         Long postedBy;
 
         @Column(name = "PostedOn")
+        @JsonProperty("PostedOn")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         Date postedOn;
 
@@ -60,8 +62,10 @@ public class UserPosts {
         Date updatedOn;
 
         @JsonProperty("FullName")
-        private transient String fullName;
+        @Transient
+        String fullName;
 
         @JsonProperty("Files")
+        @Transient
         private transient List<FileDetail> files;
 }
