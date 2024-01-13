@@ -3,9 +3,9 @@ package com.bot.coreservice.services;
 import com.bot.coreservice.Repository.JobRequirementRepository;
 import com.bot.coreservice.Repository.UserPostsRepository;
 import com.bot.coreservice.contracts.IUserPostsService;
+import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.JobRequirement;
 import com.bot.coreservice.entity.UserPosts;
-import com.bot.coreservice.model.Client;
 import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.FileDetail;
 import com.bot.coreservice.model.UserPostRequest;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.*;
 
 @Service
@@ -33,6 +32,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
     FileManager fileManager;
     @Autowired
     JobRequirementRepository jobRequirementRepository;
+    @Autowired
+    LowLevelExecution lowLevelExecution;
 
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
@@ -69,7 +70,9 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     public List<UserPosts> getAllUserPosts() {
-        var result = userPostsRepository.getAllUserPosts();
+        List<DbParameters> dbParameters = new ArrayList<>();
+        var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getall", dbParameters);
+        var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
         if (result != null && result.size() > 0) {
             result.forEach(x -> {
                 if (!Objects.equals(x.getFileDetail(), "[]")){
