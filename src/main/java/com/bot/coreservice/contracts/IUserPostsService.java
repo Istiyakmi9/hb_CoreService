@@ -21,4 +21,6 @@ public interface IUserPostsService {
     public String deleteUserPostByUserPostIdService(long userPostId);
     public String uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
     String updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
+
+    public String deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
 }
