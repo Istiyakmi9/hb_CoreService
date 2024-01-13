@@ -4,16 +4,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "file")
+@ConfigurationProperties(prefix = "spring.profiles")
 
 public class FileStorageProperties {
-    private String uploadDir;
+    private String active;
 
-    public String getUploadDir() {
-        return uploadDir;
+    public String getActive() {
+        return active;
     }
 
-    public void setUploadDir(String uploadDir) {
-        this.uploadDir = uploadDir;
+    public void setActive(String active) {
+        this.active = active;
     }
 }
