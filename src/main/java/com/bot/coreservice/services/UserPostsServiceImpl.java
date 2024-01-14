@@ -127,7 +127,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         userPosts.setJobRequirementId(jobRequirementId);
         userPostRequest.setUserPostId(userPosts.getUserPostId());
 
-        var fileDetail = saveUpdateFileDetail(userPostRequest, postImages);
+        var fileDetail = saveUpdateFileDetail(userPostRequest.getFileDetail(), postImages, userPosts.getUserPostId());
         if (fileDetail != null) {
             var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
             userPosts.setFileDetail(jsonFileDetail);
@@ -172,13 +172,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
             throw new Exception("Invalid Job requirement id");
 
         updateJobRequirementService(userPostRequest);
-        var fileDetail = saveUpdateFileDetail(userPostRequest, postImages);
-        updateUserPostService(userPostRequest, fileDetail);
+        updateUserPostService(userPostRequest, postImages);
 
         return getAllUserPosts();
     }
 
-    private void updateUserPostService(UserPostRequest userPostRequest, List<FileDetail> fileDetail) throws Exception {
+    private void updateUserPostService(UserPostRequest userPostRequest, Flux<FilePart> postImages) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var data = this.userPostsRepository.findById(userPostRequest.getUserPostId());
@@ -189,19 +188,10 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingUserPost.setShortDescription(userPostRequest.getShortDescription());
         existingUserPost.setCompleteDescription(userPostRequest.getCompleteDescription());
         existingUserPost.setCatagoryTypeId(userPostRequest.getCatagoryTypeId());
+        var fileDetail = saveUpdateFileDetail(existingUserPost.getFileDetail(), postImages, userPostRequest.getUserPostId());
 
-        List<FileDetail> existingFiles;
-        if (existingUserPost.getFileDetail() != null && existingUserPost.getFileDetail() != "[]") {
-            existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>() {
-            });
-        } else {
-            existingFiles = new ArrayList<>();
-        }
         if (fileDetail != null && fileDetail.size() > 0) {
-            fileDetail.forEach(x -> {
-                existingFiles.add(x);
-            });
-            var jsonFileDetail = objectMapper.writeValueAsString(existingFiles);
+            var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
             existingUserPost.setFileDetail(jsonFileDetail);
         }
         existingUserPost.setUpdatedOn(currentDate);
@@ -242,27 +232,31 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingjobRequirement.setUpdatedOn(currentDate);
     }
 
-    private List<FileDetail> saveUpdateFileDetail(UserPostRequest userPostRequest, Flux<FilePart> files) throws Exception {
+    private List<FileDetail> saveUpdateFileDetail(String fileDetailJSON, Flux<FilePart> files, long userPostId) throws Exception {
         if (files != null) {
             List<FileDetail> existingFiles;
-            if (userPostRequest.getFileDetail() != null && userPostRequest.getFileDetail() != "[]") {
-                existingFiles = objectMapper.readValue(userPostRequest.getFileDetail(), new TypeReference<List<FileDetail>>() {
+            int id = 0;
+            if (fileDetailJSON != null && !fileDetailJSON.equals("[]")) {
+                existingFiles = objectMapper.readValue(fileDetailJSON, new TypeReference<List<FileDetail>>() {
                 });
+                Collections.sort(existingFiles, Comparator.comparingInt(FileDetail::getFileDetailId).reversed());
+                id = existingFiles.get(0).getFileDetailId();
             } else {
                 existingFiles = new ArrayList<>();
             }
-            files.toIterable().forEach(x -> {
+
+            for (var x : files.toIterable()) {
                 FileDetail fileDetail = new FileDetail();
                 String filepath = null;
                 try {
-                    filepath = fileManager.uploadFile(x, userPostRequest.getUserPostId(), "post_" + new Date().getTime());
+                    filepath = fileManager.uploadFile(x, userPostId, "post_" + new Date().getTime());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                fileDetail.setFileDetailId(existingFiles.size() + 1);
+                fileDetail.setFileDetailId(id++);
                 fileDetail.setFilePath(filepath);
                 existingFiles.add(fileDetail);
-            });
+            }
             return existingFiles;
         }
         return null;
