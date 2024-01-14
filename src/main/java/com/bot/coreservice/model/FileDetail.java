@@ -7,6 +7,7 @@ import lombok.Data;
 public class FileDetail {
     @JsonProperty("FileDetailId")
     private int fileDetailId;
+
     @JsonProperty("FilePath")
     private String filePath;
 }

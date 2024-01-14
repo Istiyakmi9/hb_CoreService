@@ -89,9 +89,6 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception {
-        if (userPostId == 0)
-            throw new Exception("Invalid post selected");
-
         List<DbParameters> dbParameters = new ArrayList<>();
         dbParameters.add(new DbParameters("_UserPostId", userPostId, Types.BIGINT));
         var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getbyid", dbParameters);
@@ -111,7 +108,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
@@ -133,7 +130,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         userPosts.setFileDetail(fileDetail);
         addUserPostDetailService(userPosts);
 
-        return "New userPost and jobRequirement has been added";
+        return getAllUserPosts();
     }
 
     private void addUserPostDetailService(UserPosts userPosts) {
@@ -252,20 +249,19 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Override
-    public String deleteImagesService(Long userPostId, int fileDetailId) throws Exception {
+    public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception {
         var existingUserPostData = this.userPostsRepository.findById(userPostId);
         var existingUserPost = existingUserPostData.get();
-        if (existingUserPost == null){
-            throw new Exception("userPostId does not exists");
-        }else {
-            if (existingUserPost.getFileDetail() != null || existingUserPost.getFileDetail() != "{}"){
-                var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>(){
-                });
-                var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
-                existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
-                userPostsRepository.save(existingUserPost);
-            }
-        }
-        return "Images has been deleted";
+        if (existingUserPost == null)
+            throw new Exception("UserPostId does not exists");
+
+        if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail() == "{}")
+            throw new Exception("File not found");
+        var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>(){
+        });
+        var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
+        existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
+        userPostsRepository.save(existingUserPost);
+        return updatedFiles;
     }
 }
