@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.*;
@@ -127,7 +128,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
         userPostRequest.setUserPostId(userPosts.getUserPostId());
 
         var fileDetail = saveUpdateFileDetail(userPostRequest, postImages);
-        userPosts.setFileDetail(fileDetail);
+        if (fileDetail != null) {
+            var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
+            userPosts.setFileDetail(jsonFileDetail);
+        } else  {
+            userPosts.setFileDetail("[]");
+        }
         addUserPostDetailService(userPosts);
 
         return getAllUserPosts();
@@ -158,7 +164,6 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
     @Transactional(rollbackFor = Exception.class)
     public String updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
-
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
@@ -166,13 +171,14 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (userPostRequest.getJobRequirementId() == 0)
             throw new Exception("Invalid Job requirement id");
 
-        updateUserPostService(userPostRequest);
         updateJobRequirementService(userPostRequest);
-        saveUpdateFileDetail(userPostRequest, postImages);
+        var fileDetail = saveUpdateFileDetail(userPostRequest, postImages);
+        updateUserPostService(userPostRequest, fileDetail);
+
         return "userPost and jobRequirement has been updated";
     }
 
-    private void updateUserPostService(UserPostRequest userPostRequest) throws Exception {
+    private void updateUserPostService(UserPostRequest userPostRequest, List<FileDetail> fileDetail) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var data = this.userPostsRepository.findById(userPostRequest.getUserPostId());
@@ -183,6 +189,21 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingUserPost.setShortDescription(userPostRequest.getShortDescription());
         existingUserPost.setCompleteDescription(userPostRequest.getCompleteDescription());
         existingUserPost.setCatagoryTypeId(userPostRequest.getCatagoryTypeId());
+
+        List<FileDetail> existingFiles;
+        if (existingUserPost.getFileDetail() != null && existingUserPost.getFileDetail() != "[]") {
+            existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>() {
+            });
+        } else {
+            existingFiles = new ArrayList<>();
+        }
+        if (fileDetail != null && fileDetail.size() > 0) {
+            fileDetail.forEach(x -> {
+                existingFiles.add(x);
+            });
+            var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
+            existingUserPost.setFileDetail(jsonFileDetail);
+        }
         existingUserPost.setUpdatedOn(currentDate);
         this.userPostsRepository.save(existingUserPost);
     }
@@ -221,8 +242,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingjobRequirement.setUpdatedOn(currentDate);
     }
 
-    private String saveUpdateFileDetail(UserPostRequest userPostRequest, Flux<FilePart> files) throws Exception {
-        String fileDetails = "[]";
+    private List<FileDetail> saveUpdateFileDetail(UserPostRequest userPostRequest, Flux<FilePart> files) throws Exception {
         if (files != null) {
             List<FileDetail> existingFiles;
             if (userPostRequest.getFileDetail() != null && userPostRequest.getFileDetail() != "[]") {
@@ -243,9 +263,9 @@ public class UserPostsServiceImpl implements IUserPostsService {
                 fileDetail.setFilePath(filepath);
                 existingFiles.add(fileDetail);
             });
-            fileDetails = objectMapper.writeValueAsString(existingFiles);
+            return existingFiles;
         }
-        return fileDetails;
+        return null;
     }
 
     @Override
@@ -255,7 +275,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (existingUserPost == null)
             throw new Exception("UserPostId does not exists");
 
-        if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail() == "{}")
+        if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail() == "[]")
             throw new Exception("File not found");
         var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>(){
         });
