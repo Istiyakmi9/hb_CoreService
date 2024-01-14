@@ -1,6 +1,7 @@
 package com.bot.coreservice.contracts;
 
 import com.bot.coreservice.entity.UserPosts;
+import com.bot.coreservice.model.FileDetail;
 import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Flux;
 
@@ -16,5 +17,5 @@ public interface IUserPostsService {
     public String deleteUserPostByUserPostIdService(long userPostId);
     public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
     public String updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
-    public String deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
+    public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
 }
