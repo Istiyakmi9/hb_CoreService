@@ -6,8 +6,8 @@ import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.JobRequirement;
 import com.bot.coreservice.entity.UserPosts;
-import com.bot.coreservice.model.*;
 import com.bot.coreservice.model.Currency;
+import com.bot.coreservice.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
-import java.io.File;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.*;
@@ -269,12 +268,18 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (existingUserPost == null)
             throw new Exception("UserPostId does not exists");
 
-        if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail() == "[]")
+        if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail().equals("[]"))
             throw new Exception("File not found");
+
         var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>(){
         });
+        var file = existingFiles.stream().filter(x -> x.getFileDetailId() == fileDetailId).findFirst().orElse(null);
+        if (file == null)
+            throw new Exception("File detail not found");
+
         var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
         existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
+        fileManager.DeleteFile(file.getFilePath());
         userPostsRepository.save(existingUserPost);
         return updatedFiles;
     }
