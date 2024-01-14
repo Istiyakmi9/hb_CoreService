@@ -32,6 +32,10 @@ public class RequestFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         try {
             ServerHttpRequest request = exchange.getRequest();
+            String path = request.getPath().toString();
+            if ("/hb/api/authenticate".equals(path)) {
+                return chain.filter(exchange); // Skip the filter for other endpoints
+            }
             HttpHeaders headers = request.getHeaders();
             Object headerUserDetail = headers.getFirst("userDetail");
             if(headerUserDetail == null || headerUserDetail.toString().isEmpty()) {
