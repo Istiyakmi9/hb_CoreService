@@ -16,6 +16,6 @@ public interface IUserPostsService {
     public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception;
     public String deleteUserPostByUserPostIdService(long userPostId);
     public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
-    public String updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
+    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
 }

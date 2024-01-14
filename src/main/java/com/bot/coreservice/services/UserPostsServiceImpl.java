@@ -142,7 +142,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
     private void addUserPostDetailService(UserPosts userPosts) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
-        userPosts.setPostedBy(1L);
+        userPosts.setPostedBy(3L);
         userPosts.setPostedOn(currentDate);
         this.userPostsRepository.save(userPosts);
     }
@@ -163,7 +163,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
@@ -175,7 +175,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         var fileDetail = saveUpdateFileDetail(userPostRequest, postImages);
         updateUserPostService(userPostRequest, fileDetail);
 
-        return "userPost and jobRequirement has been updated";
+        return getAllUserPosts();
     }
 
     private void updateUserPostService(UserPostRequest userPostRequest, List<FileDetail> fileDetail) throws Exception {
@@ -201,7 +201,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
             fileDetail.forEach(x -> {
                 existingFiles.add(x);
             });
-            var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
+            var jsonFileDetail = objectMapper.writeValueAsString(existingFiles);
             existingUserPost.setFileDetail(jsonFileDetail);
         }
         existingUserPost.setUpdatedOn(currentDate);
