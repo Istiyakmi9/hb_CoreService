@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/hb/api/employee")
+@RequestMapping("/hb/api/core/employee")
 public class EmployeeController {
 
     @Autowired

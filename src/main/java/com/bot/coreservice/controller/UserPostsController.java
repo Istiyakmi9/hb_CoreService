@@ -14,7 +14,7 @@ import reactor.core.publisher.Flux;
 
 
 @RestController
-@RequestMapping("/hb/api/userposts/")
+@RequestMapping("/hb/api/core/userposts/")
 public class UserPostsController {
 
     @Autowired

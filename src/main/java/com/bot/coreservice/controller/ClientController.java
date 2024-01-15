@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/hb/api/client/")
+@RequestMapping("/hb/api/core/client/")
 public class ClientController {
     @Autowired
     ClientService clientService;
