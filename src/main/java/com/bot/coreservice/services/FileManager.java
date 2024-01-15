@@ -5,7 +5,6 @@ import com.bot.coreservice.model.FileStorageProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.codec.multipart.FilePart;
@@ -89,5 +88,15 @@ public class FileManager {
         } else {
             return name;
         }
+    }
+
+    public void DeleteFile(String filepath) throws Exception {
+        Path existingFile = Paths.get(basePath, filepath)
+                .toAbsolutePath()
+                .normalize();
+        if(Files.exists(existingFile))
+            Files.delete(existingFile);
+        else
+            throw new Exception("File path not exist");
     }
 }
