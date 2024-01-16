@@ -19,9 +19,9 @@ public class Login {
     @JsonProperty("LoginId")
     Long loginId;
 
-    @Column(name = "EmployeeId")
-    @JsonProperty("EmployeeId")
-    Long employeeId;
+    @Column(name = "UserId")
+    @JsonProperty("UserId")
+    Long userId;
 
     @Column(name = "Email")
     @JsonProperty("Email")

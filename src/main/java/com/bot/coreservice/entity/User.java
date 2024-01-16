@@ -16,12 +16,12 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="employee")
-public class Employee {
+@Table(name="user")
+public class User {
 
         @Id
-        @Column(name = "EmployeeId")
-        Long employeeId;
+        @Column(name = "UserId")
+        Long userId;
 
         @Column(name = "FirstName")
         String firstName;

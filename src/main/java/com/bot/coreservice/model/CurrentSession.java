@@ -1,7 +1,6 @@
 package com.bot.coreservice.model;
 
 
-import com.bot.coreservice.entity.Employee;
 import com.bot.coreservice.entity.Login;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,7 @@ import java.util.Date;
 @RequestScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentSession {
     Date timeZoneNow;
-    Login employee;
+    Login user;
 
     public Date getTimeZoneNow() {
         return timeZoneNow;
@@ -24,10 +23,10 @@ public class CurrentSession {
     }
 
     public Login getEmployee() {
-        return employee;
+        return user;
     }
 
     public void setEmployee(Login employee) {
-        this.employee = employee;
+        this.user = employee;
     }
 }
