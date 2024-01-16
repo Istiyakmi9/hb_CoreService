@@ -14,10 +14,9 @@ public interface UserPostsRepository extends JpaRepository<UserPosts, Long> {
     @Query(nativeQuery = true, value = "select up.* from userposts up order by up.UserPostId desc limit 1")
     UserPosts getLastUserPostRecord();
 
-    @Query(nativeQuery = true, value = "select u.*, concat(e.FirstName, ' ', e.LastName) as FullName from userposts u inner join employee e on e.EmployeeId = u.PostedBy")
+    @Query(nativeQuery = true, value = "select u.*, concat(e.FirstName, ' ', e.LastName) as FullName from userposts u inner join employee e on e.UserId = u.PostedBy")
     List<UserPosts> getAllUserPosts();
 
     @Query(nativeQuery = true, value = "select up.* from userposts up where up.UserPostId = :userPostId")
     UserPosts getUserPostByUserPostId(@Param("userPostId") long userPostId);
-
 }

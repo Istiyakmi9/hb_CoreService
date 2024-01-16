@@ -1,23 +1,20 @@
 package com.bot.coreservice.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeMaster {
+public class UserMaster {
 
 
-    @JsonProperty("EmployeeId")
-    Long employeeId;
+    @JsonProperty("UserId")
+    Long userId;
 
     @JsonProperty("FirstName")
     String firstName;
@@ -115,8 +112,8 @@ public class EmployeeMaster {
 
 //    employee_medical_detail fields
 
-    @JsonProperty("EmployeeMedicalDetailId")
-    long employeeMedicalDetailId;
+    @JsonProperty("UserMedicalDetailId")
+    long userMedicalDetailId;
 
     @JsonProperty("MedicalConsultancyId")
     long medicalConsultancyId;
