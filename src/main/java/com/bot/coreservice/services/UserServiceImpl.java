@@ -1,16 +1,10 @@
 package com.bot.coreservice.services;
 
+import com.bot.coreservice.Repository.*;
+import com.bot.coreservice.entity.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.bot.coreservice.Repository.UserDetailRepository;
-import com.bot.coreservice.Repository.UserMedicalDetailRepository;
-import com.bot.coreservice.Repository.UserRepository;
-import com.bot.coreservice.Repository.LoginRepository;
 import com.bot.coreservice.db.LowLevelExecution;
-import com.bot.coreservice.entity.User;
-import com.bot.coreservice.entity.UserDetail;
-import com.bot.coreservice.entity.UserMedicalDetail;
-import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.UserMaster;
 import com.bot.coreservice.contracts.UserService;
@@ -37,6 +31,8 @@ public class UserServiceImpl implements UserService {
     UserDetailRepository userDetailRepository;
     @Autowired
     UserMedicalDetailRepository userMedicalDetailRepository;
+    @Autowired
+    UserInterestsRepository userInterestsRepository;
     @Autowired
     LowLevelExecution lowLevelExecution;
     @Autowired
@@ -261,5 +257,15 @@ public class UserServiceImpl implements UserService {
         loginResult.setActive (false);
         this.loginRepository.save(loginResult);
         return "User data is De-active";
+    }
+
+    public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest, ServerWebExchange exchange) throws Exception {
+        ArrayList<UserInterests> userInterestList = new ArrayList<UserInterests>();
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+        for (var item: userInterest){
+            userInterestList.add(new UserInterests(currentUser.getUserId(), item));
+        }
+        userInterestsRepository.saveAll(userInterestList);
+        return userInterestList;
     }
 }

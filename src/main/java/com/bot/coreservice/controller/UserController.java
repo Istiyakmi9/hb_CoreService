@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/hb/api/core/user")
@@ -48,4 +50,9 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @PostMapping("/updateUserInterest")
+    public ResponseEntity<ApiResponse> updateUserInterest(@RequestBody List<Integer> userInterest, ServerWebExchange exchange) throws Exception {
+        var result = this.userServiceImpl.updateUserInterestService(userInterest, exchange);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 }
