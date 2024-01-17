@@ -1,5 +1,6 @@
 package com.bot.coreservice.contracts;
 
+import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.FileDetail;
 import org.springframework.http.codec.multipart.FilePart;
@@ -12,7 +13,7 @@ public interface IUserPostsService {
 
     public String addUserPostService(UserPosts userPost);
     public String updateUserPostService(UserPosts userPost, long userPostId) throws Exception;
-    public List<UserPosts> getAllUserPosts();
+    public List<UserPosts> getAllUserPosts(Login login);
     public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception;
     public String deleteUserPostByUserPostIdService(long userPostId);
     public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;

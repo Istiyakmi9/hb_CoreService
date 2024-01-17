@@ -1,24 +1,30 @@
 package com.bot.coreservice.controller;
 
+import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.ApiResponse;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.model.UploadRequestFormData;
+import com.bot.coreservice.services.UserContextDetail;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @RestController
 @RequestMapping("/hb/api/core/userposts/")
 public class UserPostsController {
-
     @Autowired
     IUserPostsService userPostsService;
+
+    @Autowired
+    UserContextDetail userContextDetail;
 
     @PostMapping("addUserPost")
     public ResponseEntity<ApiResponse> addUserPost(@RequestBody UserPosts userPost) {
@@ -34,8 +40,8 @@ public class UserPostsController {
 
 
     @GetMapping("getAllUserPosts")
-    public ResponseEntity<ApiResponse> getAllUserPosts() {
-        var result = this.userPostsService.getAllUserPosts();
+    public ResponseEntity<ApiResponse> getAllUserPosts(ServerWebExchange exchange) throws Exception {
+        var result = this.userPostsService.getAllUserPosts(userContextDetail.getCurrentUserDetail(exchange));
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 

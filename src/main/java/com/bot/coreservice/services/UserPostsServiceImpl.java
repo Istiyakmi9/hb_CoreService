@@ -5,6 +5,7 @@ import com.bot.coreservice.Repository.UserPostsRepository;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.JobRequirement;
+import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.Currency;
 import com.bot.coreservice.model.*;
@@ -69,7 +70,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return "User post has been updated";
     }
 
-    public List<UserPosts> getAllUserPosts() {
+    public List<UserPosts> getAllUserPosts(Login login) {
         List<DbParameters> dbParameters = new ArrayList<>();
         var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getall", dbParameters);
         var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
@@ -135,7 +136,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         }
         addUserPostDetailService(userPosts);
 
-        return getAllUserPosts();
+        return getAllUserPosts(null);
     }
 
     private void addUserPostDetailService(UserPosts userPosts) {
@@ -173,7 +174,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         updateJobRequirementService(userPostRequest);
         updateUserPostService(userPostRequest, postImages);
 
-        return getAllUserPosts();
+        return getAllUserPosts(null);
     }
 
     private void updateUserPostService(UserPostRequest userPostRequest, Flux<FilePart> postImages) throws Exception {
