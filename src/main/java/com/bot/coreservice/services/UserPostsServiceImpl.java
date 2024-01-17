@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
@@ -37,9 +38,10 @@ public class UserPostsServiceImpl implements IUserPostsService {
     JobRequirementRepository jobRequirementRepository;
     @Autowired
     LowLevelExecution lowLevelExecution;
-
     @Autowired
     JobTypeRepository jobTypeRepository;
+    @Autowired
+    UserContextDetail userContextDetail;
 
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
@@ -75,7 +77,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return "User post has been updated";
     }
 
-    public List<UserPosts> getAllUserPosts(Login login) {
+    public List<UserPosts> getAllUserPosts() {
         List<DbParameters> dbParameters = new ArrayList<>();
         var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getall", dbParameters);
         var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
@@ -116,15 +118,16 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
 
         jobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
         jobRequirement.setJobTypeId(userPosts.getCatagoryTypeId());
 
-        var jobRequirementId = addJobRequirement(jobRequirement);
+        var jobRequirementId = addJobRequirement(jobRequirement, currentUser);
         var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
         if (lastUserPostRecord == null)
             userPosts.setUserPostId(1L);
@@ -141,20 +144,20 @@ public class UserPostsServiceImpl implements IUserPostsService {
         } else  {
             userPosts.setFileDetail("[]");
         }
-        addUserPostDetailService(userPosts);
+        addUserPostDetailService(userPosts, currentUser);
 
-        return getAllUserPosts(null);
+        return getAllUserPosts();
     }
 
-    private void addUserPostDetailService(UserPosts userPosts) {
+    private void addUserPostDetailService(UserPosts userPosts, Login currentUser) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
-        userPosts.setPostedBy(3L);
+        userPosts.setPostedBy(currentUser.getUserId());
         userPosts.setPostedOn(currentDate);
         this.userPostsRepository.save(userPosts);
     }
 
-    private long addJobRequirement(JobRequirement jobRequirement) {
+    private long addJobRequirement(JobRequirement jobRequirement, Login currentUser) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var lastJobRequirementRecord = this.jobRequirementRepository.getLastJobRequirementRecord();
@@ -163,25 +166,26 @@ public class UserPostsServiceImpl implements IUserPostsService {
         else
             jobRequirement.setJobRequirementId(lastJobRequirementRecord.getJobRequirementId()+1);
 
-        jobRequirement.setCreatedBy(1L);
+        jobRequirement.setCreatedBy(currentUser.getUserId());
         jobRequirement.setCreatedOn(currentDate);
         this.jobRequirementRepository.save(jobRequirement);
         return jobRequirement.getJobRequirementId();
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
+        Login currentUser = userContextDetail.getCurrentUserDetail(exchange);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
 
         if (userPostRequest.getJobRequirementId() == 0)
             throw new Exception("Invalid Job requirement id");
 
-        updateJobRequirementService(userPostRequest);
+        updateJobRequirementService(userPostRequest, currentUser);
         updateUserPostService(userPostRequest, postImages);
 
-        return getAllUserPosts(null);
+        return getAllUserPosts();
     }
 
     private void updateUserPostService(UserPostRequest userPostRequest, Flux<FilePart> postImages) throws Exception {
@@ -205,7 +209,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         this.userPostsRepository.save(existingUserPost);
     }
 
-    private void updateJobRequirementService(UserPostRequest userPostRequest) throws Exception {
+    private void updateJobRequirementService(UserPostRequest userPostRequest, Login currentUser) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var result = this.jobRequirementRepository.findById(userPostRequest.getJobRequirementId());
@@ -235,7 +239,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingjobRequirement.setNoOfPosts(userPostRequest.getNoOfPosts());
         existingjobRequirement.setSalaryCurrency(userPostRequest.getSalaryCurrency());
         existingjobRequirement.setContractPeriodInMonths(userPostRequest.getContractPeriodInMonths());
-        existingjobRequirement.setUpdatedBy(1L);
+        existingjobRequirement.setUpdatedBy(currentUser.getUserId());
         existingjobRequirement.setUpdatedOn(currentDate);
     }
 
