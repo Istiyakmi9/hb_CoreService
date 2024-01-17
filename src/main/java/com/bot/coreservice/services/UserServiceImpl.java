@@ -259,10 +259,11 @@ public class UserServiceImpl implements UserService {
         return "User data is De-active";
     }
 
-    public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest, Integer userId) {
+    public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest, ServerWebExchange exchange) throws Exception {
         ArrayList<UserInterests> userInterestList = new ArrayList<UserInterests>();
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
         for (var item: userInterest){
-            userInterestList.add(new UserInterests(userId, item));
+            userInterestList.add(new UserInterests(currentUser.getUserId(), item));
         }
         userInterestsRepository.saveAll(userInterestList);
         return userInterestList;
