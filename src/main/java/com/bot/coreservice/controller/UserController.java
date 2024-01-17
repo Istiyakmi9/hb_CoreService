@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.server.ServerWebExchange;
 
 
 @RestController
@@ -21,14 +22,16 @@ public class UserController {
     UserServiceImpl userServiceImpl;
 
     @PostMapping("/addUser")
-    public ResponseEntity<ApiResponse> addUser(@RequestBody UserMaster userMaster) throws Exception {
-        var result = this.userServiceImpl.addUserService(userMaster);
+    public ResponseEntity<ApiResponse> addUser(@RequestBody UserMaster userMaster, ServerWebExchange exchange) throws Exception {
+        var result = this.userServiceImpl.addUserService(userMaster, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @PutMapping("/updateUser/{userId}")
-    public ResponseEntity<ApiResponse> updateUser(@RequestBody UserMaster userMaster, @PathVariable("userId") long userId ) throws Exception {
-        var result = this.userServiceImpl.updateUserService(userMaster, userId);
+    public ResponseEntity<ApiResponse> updateUser(@RequestBody UserMaster userMaster,
+                                                  @PathVariable("userId") long userId,
+                                                  ServerWebExchange exchange) throws Exception {
+        var result = this.userServiceImpl.updateUserService(userMaster, userId, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 

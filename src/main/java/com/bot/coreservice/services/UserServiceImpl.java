@@ -11,6 +11,7 @@ import com.bot.coreservice.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ServerWebExchange;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -37,8 +38,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    UserContextDetail userContextDetail;
+
     @Transactional(rollbackFor = Exception.class)
-    public String addUserService(UserMaster userMaster) throws Exception {
+    public String addUserService(UserMaster userMaster, ServerWebExchange exchange) throws Exception {
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         User user = new User();
@@ -82,7 +87,7 @@ public class UserServiceImpl implements UserService {
         loginDetail.setPassword("emp123");
         loginDetail.setRoleId(userMaster.getRoleId());
         loginDetail.setActive(true);
-        loginDetail.setCreatedBy(1L);
+        loginDetail.setCreatedBy(currentUser.getUserId());
         loginDetail.setCreatedOn(currentDate);
         this.loginRepository.save(loginDetail);
 
@@ -102,7 +107,7 @@ public class UserServiceImpl implements UserService {
         userDetail.setDesignation(userMaster.getDesignation());
         userDetail.setSalary(userMaster.getSalary());
         userDetail.setExpectedSalary(userMaster.getExpectedSalary());
-        userDetail.setCreatedBy(1L);
+        userDetail.setCreatedBy(currentUser.getUserId());
         userDetail.setCreatedOn(currentDate);
         userDetailRepository.save(userDetail);
 
@@ -120,7 +125,7 @@ public class UserServiceImpl implements UserService {
         userMedicalDetail.setReferenceId(userMaster.getReferenceId());
         userMedicalDetail.setReportId(userMaster.getReportId());
         userMedicalDetail.setReportPath(userMaster.getReportPath());
-        userMedicalDetail.setCreatedBy(1L);
+        userMedicalDetail.setCreatedBy(currentUser.getUserId());
         userMedicalDetail.setCreatedOn(currentDate);
         userMedicalDetailRepository.save(userMedicalDetail);
 
@@ -129,7 +134,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public String updateUserService(UserMaster userMaster, long userId) throws Exception {
+    public String updateUserService(UserMaster userMaster, long userId, ServerWebExchange exchange) throws Exception {
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         Optional<User> result = this.userRepository.findById(userId);
@@ -152,7 +158,7 @@ public class UserServiceImpl implements UserService {
         existingUser.setDesignationId(userMaster.getDesignationId());
         existingUser.setPinCode(userMaster.getPinCode());
         existingUser.setReporteeId(userMaster.getReporteeId());
-        existingUser.setUpdatedBy(1L);
+        existingUser.setUpdatedBy(currentUser.getUserId());
         existingUser.setUpdatedOn(currentDate);
 
         userRepository.save(existingUser);
@@ -165,7 +171,7 @@ public class UserServiceImpl implements UserService {
         login = loginResult.get();
         login.setEmail(userMaster.getEmail());
         login.setMobile(userMaster.getMobile());
-        login.setUpdatedBy(1L);
+        login.setUpdatedBy(currentUser.getUserId());
         login.setUpdatedOn(currentDate);
         Login loginData = this.loginRepository.save(login);
         if (loginData == null){
@@ -193,7 +199,7 @@ public class UserServiceImpl implements UserService {
         userDetail.setSalary(userMaster.getSalary());
         userDetail.setExpectedSalary(userMaster.getExpectedSalary());
         userDetail.setExpectedDesignation(userMaster.getExpectedDesignation());
-        userDetail.setUpdatedBy(1L);
+        userDetail.setUpdatedBy(currentUser.getUserId());
         userDetail.setUpdatedOn(currentDate);
         UserDetail userDetailData = userDetailRepository.save(userDetail);
         if (userDetail == null){
@@ -210,7 +216,7 @@ public class UserServiceImpl implements UserService {
         userMedicalDetailResult.setReferenceId(userMaster.getReferenceId());
         userMedicalDetailResult.setReportId(userMaster.getReportId());
         userMedicalDetailResult.setReportPath(userMaster.getReportPath());
-        userMedicalDetailResult.setUpdatedBy(1L);
+        userMedicalDetailResult.setUpdatedBy(currentUser.getUserId());
         userMedicalDetailResult.setUpdatedOn(currentDate);
         UserMedicalDetail userMedicalDetailData = this.userMedicalDetailRepository.save(userMedicalDetailResult);
         return "User has been updated";

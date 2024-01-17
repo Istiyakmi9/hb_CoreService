@@ -1,24 +1,30 @@
 package com.bot.coreservice.controller;
 
+import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.ApiResponse;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.model.UploadRequestFormData;
+import com.bot.coreservice.services.UserContextDetail;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @RestController
 @RequestMapping("/hb/api/core/userposts/")
 public class UserPostsController {
-
     @Autowired
     IUserPostsService userPostsService;
+
+    @Autowired
+    UserContextDetail userContextDetail;
 
     @PostMapping("addUserPost")
     public ResponseEntity<ApiResponse> addUserPost(@RequestBody UserPosts userPost) {
@@ -32,9 +38,8 @@ public class UserPostsController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-
     @GetMapping("getAllUserPosts")
-    public ResponseEntity<ApiResponse> getAllUserPosts() {
+    public ResponseEntity<ApiResponse> getAllUserPosts() throws Exception {
         var result = this.userPostsService.getAllUserPosts();
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
@@ -54,22 +59,28 @@ public class UserPostsController {
     @PostMapping("uploadUserPosts")
     public ResponseEntity<ApiResponse> uploadUserPosts(
             @RequestPart("userPost") String userPost,
-            @RequestPart(value = "postImages", required = false)Flux<FilePart> postImages) throws Exception {
-        var result = userPostsService.uploadUserPostsService(userPost, postImages);
+            @RequestPart(value = "postImages", required = false)Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
+        var result = userPostsService.uploadUserPostsService(userPost, postImages, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @PostMapping("updateUserPosts")
     public ResponseEntity<ApiResponse> updateUserPosts(
             @RequestPart("userPost") String userPost,
-            @RequestPart(value = "postImages", required = false) Flux<FilePart> postImages) throws Exception {
-        var result = userPostsService.updateUserPostsService(userPost, postImages);
+            @RequestPart(value = "postImages", required = false) Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
+        var result = userPostsService.updateUserPostsService(userPost, postImages, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @DeleteMapping("deleteImages/{userPostId}/{fileDetailId}")
     public ResponseEntity<ApiResponse> deleteImages(@PathVariable("userPostId") Long userPostId, @PathVariable("fileDetailId") int fileDetailId) throws Exception {
         var result = this.userPostsService.deleteImagesService(userPostId, fileDetailId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("getAllJobType")
+    public ResponseEntity<ApiResponse> getAllJobType() {
+        var result = this.userPostsService.getAllJobTypeService();
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }

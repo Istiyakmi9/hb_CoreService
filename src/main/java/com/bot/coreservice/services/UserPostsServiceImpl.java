@@ -1,10 +1,13 @@
 package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.JobRequirementRepository;
+import com.bot.coreservice.Repository.JobTypeRepository;
 import com.bot.coreservice.Repository.UserPostsRepository;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.JobRequirement;
+import com.bot.coreservice.entity.JobType;
+import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.Currency;
 import com.bot.coreservice.model.*;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
@@ -34,6 +38,10 @@ public class UserPostsServiceImpl implements IUserPostsService {
     JobRequirementRepository jobRequirementRepository;
     @Autowired
     LowLevelExecution lowLevelExecution;
+    @Autowired
+    JobTypeRepository jobTypeRepository;
+    @Autowired
+    UserContextDetail userContextDetail;
 
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
@@ -95,10 +103,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
         var userPost = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPostRequest>>() {});
         var countries = objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<Country>>() {});
         var currencies = objectMapper.convertValue(dataSet.get("#result-set-3"), new TypeReference<List<Currency>>() {});
+        var jobTypes = objectMapper.convertValue(dataSet.get("#result-set-4"), new TypeReference<List<JobType>>() {});
         Map<String, Object> result = new HashMap<>();
         result.put("UserPost", userPost);
         result.put("Countries", countries);
-        result.put("currencies", currencies);
+        result.put("Currencies", currencies);
+        result.put("JobTypes", jobTypes);
         return  result;
     }
 
@@ -107,8 +117,18 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return "User post has been deleted";
     }
 
+    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+
+        // Save user post
+        saveUserPostedData(userPost, postImages, currentUser);
+
+        // Get latest data
+        return getAllUserPosts();
+    }
+
     @Transactional(rollbackFor = Exception.class)
-    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public void saveUserPostedData(String userPost, Flux<FilePart> postImages, Login currentUser) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
@@ -116,7 +136,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         jobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
         jobRequirement.setJobTypeId(userPosts.getCatagoryTypeId());
 
-        var jobRequirementId = addJobRequirement(jobRequirement);
+        var jobRequirementId = addJobRequirement(jobRequirement, currentUser);
         var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
         if (lastUserPostRecord == null)
             userPosts.setUserPostId(1L);
@@ -133,20 +153,19 @@ public class UserPostsServiceImpl implements IUserPostsService {
         } else  {
             userPosts.setFileDetail("[]");
         }
-        addUserPostDetailService(userPosts);
 
-        return getAllUserPosts();
+        addUserPostDetailService(userPosts, currentUser);
     }
 
-    private void addUserPostDetailService(UserPosts userPosts) {
+    private void addUserPostDetailService(UserPosts userPosts, Login currentUser) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
-        userPosts.setPostedBy(3L);
+        userPosts.setPostedBy(currentUser.getUserId());
         userPosts.setPostedOn(currentDate);
         this.userPostsRepository.save(userPosts);
     }
 
-    private long addJobRequirement(JobRequirement jobRequirement) {
+    private long addJobRequirement(JobRequirement jobRequirement, Login currentUser) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var lastJobRequirementRecord = this.jobRequirementRepository.getLastJobRequirementRecord();
@@ -155,14 +174,22 @@ public class UserPostsServiceImpl implements IUserPostsService {
         else
             jobRequirement.setJobRequirementId(lastJobRequirementRecord.getJobRequirementId()+1);
 
-        jobRequirement.setCreatedBy(1L);
+        jobRequirement.setCreatedBy(currentUser.getUserId());
         jobRequirement.setCreatedOn(currentDate);
         this.jobRequirementRepository.save(jobRequirement);
         return jobRequirement.getJobRequirementId();
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
+        Login currentUser = userContextDetail.getCurrentUserDetail(exchange);
+        saveUpdatedUserPosts(userPost, postImages, currentUser);
+
+        return getAllUserPosts();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void saveUpdatedUserPosts(String userPost, Flux<FilePart> postImages, Login currentUser) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
@@ -170,10 +197,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (userPostRequest.getJobRequirementId() == 0)
             throw new Exception("Invalid Job requirement id");
 
-        updateJobRequirementService(userPostRequest);
+        updateJobRequirementService(userPostRequest, currentUser);
         updateUserPostService(userPostRequest, postImages);
-
-        return getAllUserPosts();
     }
 
     private void updateUserPostService(UserPostRequest userPostRequest, Flux<FilePart> postImages) throws Exception {
@@ -197,7 +222,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         this.userPostsRepository.save(existingUserPost);
     }
 
-    private void updateJobRequirementService(UserPostRequest userPostRequest) throws Exception {
+    private void updateJobRequirementService(UserPostRequest userPostRequest, Login currentUser) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var result = this.jobRequirementRepository.findById(userPostRequest.getJobRequirementId());
@@ -227,7 +252,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingjobRequirement.setNoOfPosts(userPostRequest.getNoOfPosts());
         existingjobRequirement.setSalaryCurrency(userPostRequest.getSalaryCurrency());
         existingjobRequirement.setContractPeriodInMonths(userPostRequest.getContractPeriodInMonths());
-        existingjobRequirement.setUpdatedBy(1L);
+        existingjobRequirement.setUpdatedBy(currentUser.getUserId());
         existingjobRequirement.setUpdatedOn(currentDate);
     }
 
@@ -282,5 +307,9 @@ public class UserPostsServiceImpl implements IUserPostsService {
         fileManager.DeleteFile(file.getFilePath());
         userPostsRepository.save(existingUserPost);
         return updatedFiles;
+    }
+
+    public List<JobType> getAllJobTypeService() {
+        return jobTypeRepository.findAll();
     }
 }
