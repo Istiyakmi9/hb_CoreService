@@ -117,12 +117,21 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return "User post has been deleted";
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+
+        // Save user post
+        saveUserPostedData(userPost, postImages, currentUser);
+
+        // Get latest data
+        return getAllUserPosts();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void saveUserPostedData(String userPost, Flux<FilePart> postImages, Login currentUser) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
-        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
 
         jobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
         jobRequirement.setJobTypeId(userPosts.getCatagoryTypeId());
@@ -144,9 +153,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
         } else  {
             userPosts.setFileDetail("[]");
         }
-        addUserPostDetailService(userPosts, currentUser);
 
-        return getAllUserPosts();
+        addUserPostDetailService(userPosts, currentUser);
     }
 
     private void addUserPostDetailService(UserPosts userPosts, Login currentUser) {
@@ -174,8 +182,15 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
     @Transactional(rollbackFor = Exception.class)
     public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
-        UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         Login currentUser = userContextDetail.getCurrentUserDetail(exchange);
+        saveUpdatedUserPosts(userPost, postImages, currentUser);
+
+        return getAllUserPosts();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void saveUpdatedUserPosts(String userPost, Flux<FilePart> postImages, Login currentUser) throws Exception {
+        UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
 
@@ -184,8 +199,6 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
         updateJobRequirementService(userPostRequest, currentUser);
         updateUserPostService(userPostRequest, postImages);
-
-        return getAllUserPosts();
     }
 
     private void updateUserPostService(UserPostRequest userPostRequest, Flux<FilePart> postImages) throws Exception {
