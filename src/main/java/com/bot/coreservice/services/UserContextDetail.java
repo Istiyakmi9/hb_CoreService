@@ -33,6 +33,7 @@ public class UserContextDetail {
             if (userData == null)
                 throw new Exception("Invalid token found. Please contact to admin.");
 
+            LOGGER.info("[Current user]: " + userData.getUserDetail());
             loginDetail = objectMapper.readValue(userData.getUserDetail(), Login.class);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
