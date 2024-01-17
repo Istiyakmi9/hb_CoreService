@@ -38,7 +38,6 @@ public class UserPostsController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-
     @GetMapping("getAllUserPosts")
     public ResponseEntity<ApiResponse> getAllUserPosts(ServerWebExchange exchange) throws Exception {
         var result = this.userPostsService.getAllUserPosts(userContextDetail.getCurrentUserDetail(exchange));
@@ -76,6 +75,12 @@ public class UserPostsController {
     @DeleteMapping("deleteImages/{userPostId}/{fileDetailId}")
     public ResponseEntity<ApiResponse> deleteImages(@PathVariable("userPostId") Long userPostId, @PathVariable("fileDetailId") int fileDetailId) throws Exception {
         var result = this.userPostsService.deleteImagesService(userPostId, fileDetailId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("getAllJobType")
+    public ResponseEntity<ApiResponse> getAllJobType() {
+        var result = this.userPostsService.getAllJobTypeService();
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }

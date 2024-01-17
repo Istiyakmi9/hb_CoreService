@@ -1,5 +1,6 @@
 package com.bot.coreservice.contracts;
 
+import com.bot.coreservice.entity.JobType;
 import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.FileDetail;
@@ -19,4 +20,5 @@ public interface IUserPostsService {
     public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
     public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
+    public  List<JobType> getAllJobTypeService();
 }

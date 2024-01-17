@@ -1,10 +1,12 @@
 package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.JobRequirementRepository;
+import com.bot.coreservice.Repository.JobTypeRepository;
 import com.bot.coreservice.Repository.UserPostsRepository;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.JobRequirement;
+import com.bot.coreservice.entity.JobType;
 import com.bot.coreservice.entity.Login;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.Currency;
@@ -35,6 +37,9 @@ public class UserPostsServiceImpl implements IUserPostsService {
     JobRequirementRepository jobRequirementRepository;
     @Autowired
     LowLevelExecution lowLevelExecution;
+
+    @Autowired
+    JobTypeRepository jobTypeRepository;
 
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
@@ -96,10 +101,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
         var userPost = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPostRequest>>() {});
         var countries = objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<Country>>() {});
         var currencies = objectMapper.convertValue(dataSet.get("#result-set-3"), new TypeReference<List<Currency>>() {});
+        var jobTypes = objectMapper.convertValue(dataSet.get("#result-set-4"), new TypeReference<List<JobType>>() {});
         Map<String, Object> result = new HashMap<>();
         result.put("UserPost", userPost);
         result.put("Countries", countries);
-        result.put("currencies", currencies);
+        result.put("Currencies", currencies);
+        result.put("JobTypes", jobTypes);
         return  result;
     }
 
@@ -283,5 +290,9 @@ public class UserPostsServiceImpl implements IUserPostsService {
         fileManager.DeleteFile(file.getFilePath());
         userPostsRepository.save(existingUserPost);
         return updatedFiles;
+    }
+
+    public List<JobType> getAllJobTypeService() {
+        return jobTypeRepository.findAll();
     }
 }
