@@ -7,6 +7,7 @@ import com.bot.coreservice.contracts.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 
 @RestController
 @RequestMapping("/hb/api/core/client/")
@@ -20,8 +21,8 @@ public class ClientController {
     }
 
     @PostMapping("manageClient")
-    public ResponseEntity<ApiResponse> manageClient(@RequestBody Client client) throws Exception {
-        var result = clientService.mangeClientService(client);
+    public ResponseEntity<ApiResponse> manageClient(@RequestBody Client client, ServerWebExchange exchange) throws Exception {
+        var result = clientService.mangeClientService(client, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 

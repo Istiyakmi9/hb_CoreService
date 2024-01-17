@@ -39,8 +39,8 @@ public class UserPostsController {
     }
 
     @GetMapping("getAllUserPosts")
-    public ResponseEntity<ApiResponse> getAllUserPosts(ServerWebExchange exchange) throws Exception {
-        var result = this.userPostsService.getAllUserPosts(userContextDetail.getCurrentUserDetail(exchange));
+    public ResponseEntity<ApiResponse> getAllUserPosts() throws Exception {
+        var result = this.userPostsService.getAllUserPosts();
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
@@ -59,16 +59,16 @@ public class UserPostsController {
     @PostMapping("uploadUserPosts")
     public ResponseEntity<ApiResponse> uploadUserPosts(
             @RequestPart("userPost") String userPost,
-            @RequestPart(value = "postImages", required = false)Flux<FilePart> postImages) throws Exception {
-        var result = userPostsService.uploadUserPostsService(userPost, postImages);
+            @RequestPart(value = "postImages", required = false)Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
+        var result = userPostsService.uploadUserPostsService(userPost, postImages, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @PostMapping("updateUserPosts")
     public ResponseEntity<ApiResponse> updateUserPosts(
             @RequestPart("userPost") String userPost,
-            @RequestPart(value = "postImages", required = false) Flux<FilePart> postImages) throws Exception {
-        var result = userPostsService.updateUserPostsService(userPost, postImages);
+            @RequestPart(value = "postImages", required = false) Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
+        var result = userPostsService.updateUserPostsService(userPost, postImages, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
