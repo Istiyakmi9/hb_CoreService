@@ -73,6 +73,8 @@ public class UserServiceImpl implements UserService {
         user.setPinCode(userMaster.getPinCode());
         user.setReporteeId(userMaster.getReporteeId());
         user.setActive(true);
+        user.setFriends("[]");
+        user.setFollowers("[]");
         user.setCreatedOn(currentDate);
         userRepository.save(user);
 
