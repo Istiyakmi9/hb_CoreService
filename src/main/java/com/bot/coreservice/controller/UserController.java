@@ -1,5 +1,7 @@
 package com.bot.coreservice.controller;
 
+import com.bot.coreservice.entity.User;
+import com.bot.coreservice.entity.UserInterests;
 import com.bot.coreservice.model.ApiResponse;
 import com.bot.coreservice.model.UserMaster;
 import com.bot.coreservice.services.UserServiceImpl;
@@ -7,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -46,4 +50,9 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @PutMapping("/updateUserInterest/{userId}/")
+    public ResponseEntity<ApiResponse> updateUserInterest(List<Integer> userInterest, @PathVariable("userId") Integer userId){
+        var result = this.userServiceImpl.updateUserInterestService(userInterest, userId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 }
