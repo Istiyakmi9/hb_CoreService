@@ -119,10 +119,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
     public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
         var currentUser = userContextDetail.getCurrentUserDetail(exchange);
-
         // Save user post
         saveUserPostedData(userPost, postImages, currentUser);
-
         // Get latest data
         return getAllUserPosts();
     }
@@ -180,7 +178,6 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return jobRequirement.getJobRequirementId();
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
         Login currentUser = userContextDetail.getCurrentUserDetail(exchange);
         saveUpdatedUserPosts(userPost, postImages, currentUser);
@@ -267,6 +264,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
                 id = existingFiles.get(0).getFileDetailId();
             } else {
                 existingFiles = new ArrayList<>();
+                id = 1;
             }
 
             for (var x : files.toIterable()) {
@@ -288,25 +286,29 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
     @Override
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception {
-        var existingUserPostData = this.userPostsRepository.findById(userPostId);
-        var existingUserPost = existingUserPostData.get();
-        if (existingUserPost == null)
-            throw new Exception("UserPostId does not exists");
+        try {
+            var existingUserPostData = this.userPostsRepository.findById(userPostId);
+            var existingUserPost = existingUserPostData.get();
+            if (existingUserPost == null)
+                throw new Exception("UserPostId does not exists");
 
-        if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail().equals("[]"))
-            throw new Exception("File not found");
+            if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail().equals("[]"))
+                throw new Exception("File not found");
 
-        var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>(){
-        });
-        var file = existingFiles.stream().filter(x -> x.getFileDetailId() == fileDetailId).findFirst().orElse(null);
-        if (file == null)
-            throw new Exception("File detail not found");
+            var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>() {
+            });
+            var file = existingFiles.stream().filter(x -> x.getFileDetailId() == fileDetailId).findFirst().orElse(null);
+            if (file == null)
+                throw new Exception("File detail not found");
 
-        var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
-        existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
-        fileManager.DeleteFile(file.getFilePath());
-        userPostsRepository.save(existingUserPost);
-        return updatedFiles;
+            var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
+            existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
+            fileManager.DeleteFile(file.getFilePath());
+            userPostsRepository.save(existingUserPost);
+            return updatedFiles;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
     public List<JobType> getAllJobTypeService() {
