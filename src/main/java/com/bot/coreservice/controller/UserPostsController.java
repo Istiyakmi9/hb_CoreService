@@ -51,8 +51,9 @@ public class UserPostsController {
     }
 
     @DeleteMapping("deleteUserPostByUserPostId/{userPostId}")
-    public ResponseEntity<ApiResponse> deleteUserPostByUserPostId(@PathVariable("userPostId") long userPostId) {
-        var result = this.userPostsService.deleteUserPostByUserPostIdService(userPostId);
+    public ResponseEntity<ApiResponse> deleteUserPostByUserPostId(@PathVariable("userPostId") long userPostId,
+                                                                  ServerWebExchange exchange) throws Exception {
+        var result = this.userPostsService.deleteUserPostByUserPostIdService(userPostId, exchange);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
@@ -81,6 +82,12 @@ public class UserPostsController {
     @GetMapping("getAllJobType")
     public ResponseEntity<ApiResponse> getAllJobType() {
         var result = this.userPostsService.getAllJobTypeService();
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("getPostByUserId/{userId}")
+    public ResponseEntity<ApiResponse> getPostByUserId(@PathVariable("userId") Long userId) throws Exception {
+        var result = this.userPostsService.getPostByUserIdService(userId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }
