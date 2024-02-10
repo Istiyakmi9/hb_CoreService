@@ -2,13 +2,11 @@ package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.JobRequirementRepository;
 import com.bot.coreservice.Repository.JobTypeRepository;
+import com.bot.coreservice.Repository.LikedPostsRepository;
 import com.bot.coreservice.Repository.UserPostsRepository;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
-import com.bot.coreservice.entity.JobRequirement;
-import com.bot.coreservice.entity.JobType;
-import com.bot.coreservice.entity.Login;
-import com.bot.coreservice.entity.UserPosts;
+import com.bot.coreservice.entity.*;
 import com.bot.coreservice.model.Currency;
 import com.bot.coreservice.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,6 +40,9 @@ public class UserPostsServiceImpl implements IUserPostsService {
     JobTypeRepository jobTypeRepository;
     @Autowired
     UserContextDetail userContextDetail;
+
+    @Autowired
+    LikedPostsRepository likedPostsRepository;
 
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
@@ -314,4 +315,44 @@ public class UserPostsServiceImpl implements IUserPostsService {
     public List<JobType> getAllJobTypeService() {
         return jobTypeRepository.findAll();
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String addLikedPostService(UserPosts userPost, ServerWebExchange exchange) throws Exception {
+        Date utilDate = new Date();
+        var currentDate = new Timestamp(utilDate.getTime());
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+        try {
+            Optional<UserPosts> userPostByUserPostId = getUserPostByUserPostId(userPost.getUserPostId());
+            if (userPostByUserPostId.isEmpty()) throw new Exception("post return not found");
+            var existingPost = userPostByUserPostId.get();
+            var likedUserIds = new ArrayList<Long>();
+            if (existingPost.getLikedUserIds() != null && existingPost.getLikedUserIds() != "[]") {
+                likedUserIds = objectMapper.readValue(existingPost.getLikedUserIds(), new TypeReference<ArrayList<Long>>() {
+                });
+            }
+            likedUserIds.add(currentUser.getUserId());
+            existingPost.setLikedUserIds(objectMapper.writeValueAsString(likedUserIds));
+            userPostsRepository.save(existingPost);
+
+            LikedPosts likedPosts = new LikedPosts();
+            likedPosts.setPostId(userPost.getUserPostId());
+            likedPosts.setUserId(userPost.getPostedBy());
+            likedPosts.setLikedOn(currentDate);
+            likedPosts.setLongitude("");
+            likedPosts.setLatitude("");
+            this.likedPostsRepository.save(likedPosts);
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+
+        return "Thanks for Like";
+    }
+
+    public Optional<UserPosts> getUserPostByUserPostId(long userPostId){
+        Optional<UserPosts> result = this.userPostsRepository.findById(userPostId);
+        return result;
+    }
+
+
 }

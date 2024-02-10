@@ -83,4 +83,11 @@ public class UserPostsController {
         var result = this.userPostsService.getAllJobTypeService();
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
+
+    @PostMapping("addLikedPost")
+    public ResponseEntity<ApiResponse> addLikedPost(@RequestBody UserPosts userPost, ServerWebExchange exchange) throws Exception {
+        var result = this.userPostsService.addLikedPostService(userPost, exchange);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
 }

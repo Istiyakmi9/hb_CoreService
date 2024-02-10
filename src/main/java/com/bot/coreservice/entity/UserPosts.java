@@ -43,6 +43,10 @@ public class UserPosts {
         @JsonProperty("JobRequirementId")
         long jobRequirementId;
 
+        @Column(name = "LikedUserIds")
+        @JsonProperty("LikedUserIds")
+        String likedUserIds;
+
         @Column(name = "PostedBy")
         @JsonProperty("PostedBy")
         Long postedBy;
