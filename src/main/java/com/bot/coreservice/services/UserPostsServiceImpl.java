@@ -113,9 +113,15 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return  result;
     }
 
+    @Override
     public String deleteUserPostByUserPostIdService(long userPostId) {
+        return null;
+    }
+
+    public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId, ServerWebExchange exchange) throws Exception {
         this.userPostsRepository.deleteById(userPostId);
-        return "User post has been deleted";
+        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+        return getPostByUserIdService(currentUser.getUserId());
     }
 
     public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
@@ -314,6 +320,29 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
     public List<JobType> getAllJobTypeService() {
         return jobTypeRepository.findAll();
+    }
+
+    public List<UserPosts> getPostByUserIdService(Long userId) throws Exception {
+        if (userId == 0)
+            throw new Exception("Invalid userId");
+
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_UserId", userId, Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getby_userid", dbParameters);
+        var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
+        if (result != null && result.size() > 0) {
+            result.forEach(x -> {
+                if (!Objects.equals(x.getFileDetail(), "[]")){
+                    try {
+                        x.setFiles(objectMapper.readValue(x.getFileDetail(), new TypeReference<List<FileDetail>>() {
+                        }));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
+        return result;
     }
 
     @Override

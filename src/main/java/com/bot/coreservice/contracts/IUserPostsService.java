@@ -21,6 +21,7 @@ public interface IUserPostsService {
     public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception;
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
     public  List<JobType> getAllJobTypeService();
+    public List<UserPosts> getPostByUserIdService(Long userId) throws Exception;
 
     public String addLikedPostService(UserPosts userPost, ServerWebExchange exchange) throws Exception;
 }
