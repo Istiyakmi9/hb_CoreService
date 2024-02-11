@@ -22,12 +22,15 @@ public class User {
 
         @Id
         @Column(name = "UserId")
+        @JsonProperty("UserId")
         Long userId;
 
         @Column(name = "FirstName")
+        @JsonProperty("FirstName")
         String firstName;
 
         @Column(name = "LastName")
+        @JsonProperty("LastName")
         String lastName;
 
         @Column(name = "FatherName")
@@ -37,9 +40,11 @@ public class User {
         String motherName;
 
         @Column(name = "Email")
+        @JsonProperty("Email")
         String email;
 
         @Column(name = "Mobile")
+        @JsonProperty("Mobile")
         String mobile;
 
         @Column(name = "AlternateNumber")
