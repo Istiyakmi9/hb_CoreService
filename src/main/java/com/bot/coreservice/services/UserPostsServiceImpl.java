@@ -166,7 +166,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         userPosts.setPostedBy(currentUser.getUserId());
         userPosts.setPostedOn(currentDate);
         userPosts.setUpdatedOn(currentDate);
-        userPosts.setFullName(currentUser.getFirstName() + currentUser.getLastName());
+        userPosts.setFullName(currentUser.getFirstName() + " " + currentUser.getLastName());
         this.userPostsRepository.save(userPosts);
     }
 
