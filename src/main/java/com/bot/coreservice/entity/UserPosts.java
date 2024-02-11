@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="userposts")
+@Table(name="user_posts")
 public class UserPosts {
 
         @Id
@@ -43,10 +43,6 @@ public class UserPosts {
         @JsonProperty("JobRequirementId")
         long jobRequirementId;
 
-        @Column(name = "LikedUserIds")
-        @JsonProperty("LikedUserIds")
-        String likedUserIds;
-
         @Column(name = "PostedBy")
         @JsonProperty("PostedBy")
         Long postedBy;
@@ -61,7 +57,7 @@ public class UserPosts {
         Date updatedOn;
 
         @JsonProperty("FullName")
-        @Transient
+        @Column(name = "FullName")
         String fullName;
 
         @JsonProperty("Files")

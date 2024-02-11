@@ -19,6 +19,10 @@ import java.util.Date;
 public class LikedPosts {
 
     @Id
+    @Column(name = "LikedPostsId")
+    @JsonProperty("LikedPostsId")
+    Long likedPostsId;
+
     @Column(name = "PostId")
     @JsonProperty("PostId")
     Long postId;
@@ -43,4 +47,11 @@ public class LikedPosts {
     @JsonProperty("Longitude")
     String longitude;
 
+    @Column(name = "PostUserId")
+    @JsonProperty("PostUserId")
+    Long postUserId;
+
+    @Column(name = "IsLiked")
+    @JsonProperty("IsLiked")
+    boolean isLiked;
 }

@@ -2,6 +2,7 @@ package com.bot.coreservice.filter;
 
 import com.bot.coreservice.config.RouteValidator;
 import com.bot.coreservice.entity.Login;
+import com.bot.coreservice.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.bot.coreservice.model.CurrentSession;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +61,7 @@ public class RequestFilter implements WebFilter {
                 if (userData == null)
                   throw new Exception("Invalid token found. Please contact to admin.");
 
-                var loginDetail = objectMapper.readValue(userData.getUserDetail(), Login.class);
+                var userDetail = objectMapper.readValue(userData.getUserDetail(), User.class);
             }
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());

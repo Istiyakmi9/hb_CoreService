@@ -57,8 +57,6 @@ public class UserPostsServiceImpl implements IUserPostsService {
         this.userPostsRepository.save(userPost);
 
         return "Posted successfully";
-
-
     }
 
     public String updateUserPostService(UserPosts userPost, long userPostId) throws Exception {
@@ -133,7 +131,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveUserPostedData(String userPost, Flux<FilePart> postImages, Login currentUser) throws Exception {
+    public void saveUserPostedData(String userPost, Flux<FilePart> postImages, User currentUser) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
@@ -162,15 +160,17 @@ public class UserPostsServiceImpl implements IUserPostsService {
         addUserPostDetailService(userPosts, currentUser);
     }
 
-    private void addUserPostDetailService(UserPosts userPosts, Login currentUser) {
+    private void addUserPostDetailService(UserPosts userPosts, User currentUser) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         userPosts.setPostedBy(currentUser.getUserId());
         userPosts.setPostedOn(currentDate);
+        userPosts.setUpdatedOn(currentDate);
+        userPosts.setFullName(currentUser.getFirstName() + currentUser.getLastName());
         this.userPostsRepository.save(userPosts);
     }
 
-    private long addJobRequirement(JobRequirement jobRequirement, Login currentUser) {
+    private long addJobRequirement(JobRequirement jobRequirement, User currentUser) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var lastJobRequirementRecord = this.jobRequirementRepository.getLastJobRequirementRecord();
@@ -186,14 +186,14 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
-        Login currentUser = userContextDetail.getCurrentUserDetail(exchange);
+        User currentUser = userContextDetail.getCurrentUserDetail(exchange);
         saveUpdatedUserPosts(userPost, postImages, currentUser);
 
         return getAllUserPosts();
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveUpdatedUserPosts(String userPost, Flux<FilePart> postImages, Login currentUser) throws Exception {
+    public void saveUpdatedUserPosts(String userPost, Flux<FilePart> postImages, User currentUser) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
@@ -226,7 +226,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         this.userPostsRepository.save(existingUserPost);
     }
 
-    private void updateJobRequirementService(UserPostRequest userPostRequest, Login currentUser) throws Exception {
+    private void updateJobRequirementService(UserPostRequest userPostRequest, User currentUser) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var result = this.jobRequirementRepository.findById(userPostRequest.getJobRequirementId());
@@ -346,42 +346,32 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public String addLikedPostService(UserPosts userPost, ServerWebExchange exchange) throws Exception {
-        Date utilDate = new Date();
-        var currentDate = new Timestamp(utilDate.getTime());
         var currentUser = userContextDetail.getCurrentUserDetail(exchange);
-        try {
-            Optional<UserPosts> userPostByUserPostId = getUserPostByUserPostId(userPost.getUserPostId());
-            if (userPostByUserPostId.isEmpty()) throw new Exception("post return not found");
-            var existingPost = userPostByUserPostId.get();
-            var likedUserIds = new ArrayList<Long>();
-            if (existingPost.getLikedUserIds() != null && existingPost.getLikedUserIds() != "[]") {
-                likedUserIds = objectMapper.readValue(existingPost.getLikedUserIds(), new TypeReference<ArrayList<Long>>() {
-                });
-            }
-            likedUserIds.add(currentUser.getUserId());
-            existingPost.setLikedUserIds(objectMapper.writeValueAsString(likedUserIds));
-            userPostsRepository.save(existingPost);
-
-            LikedPosts likedPosts = new LikedPosts();
-            likedPosts.setPostId(userPost.getUserPostId());
-            likedPosts.setUserId(userPost.getPostedBy());
-            likedPosts.setLikedOn(currentDate);
-            likedPosts.setLongitude("");
-            likedPosts.setLatitude("");
-            this.likedPostsRepository.save(likedPosts);
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
-        }
+        var existingPost = likedPostsRepository.existingLikedPostBy(userPost.getUserPostId(), currentUser.getUserId());
+        if (existingPost == null)
+            addLikedPost(userPost, currentUser.getUserId());
 
         return "Thanks for Like";
     }
 
-    public Optional<UserPosts> getUserPostByUserPostId(long userPostId){
-        Optional<UserPosts> result = this.userPostsRepository.findById(userPostId);
-        return result;
+    private void addLikedPost(UserPosts userPost, long userId) {
+        Date utilDate = new Date();
+        var currentDate = new Timestamp(utilDate.getTime());
+        var lastLikePost = likedPostsRepository.getLastLikedPost();
+        LikedPosts likedPosts = new LikedPosts();
+        if (lastLikePost == null)
+            likedPosts.setLikedPostsId(1L);
+        else
+            likedPosts.setLikedPostsId(lastLikePost.getLikedPostsId() + 1);
+
+        likedPosts.setPostId(userPost.getUserPostId());
+        likedPosts.setUserId(userId);
+        likedPosts.setPostUserId(userPost.getPostedBy());
+        likedPosts.setLiked(true);
+        likedPosts.setLikedOn(currentDate);
+        likedPosts.setLongitude("");
+        likedPosts.setLatitude("");
+        this.likedPostsRepository.save(likedPosts);
     }
-
-
 }
