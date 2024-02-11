@@ -1,19 +1,18 @@
 package com.bot.coreservice.services;
 
-import com.bot.coreservice.entity.Login;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.bot.coreservice.Repository.BankAccountRepository;
 import com.bot.coreservice.Repository.ClientRepository;
 import com.bot.coreservice.Repository.ClientTypeRepository;
 import com.bot.coreservice.Repository.CountryRepository;
+import com.bot.coreservice.contracts.ClientService;
 import com.bot.coreservice.db.LowLevelExecution;
+import com.bot.coreservice.entity.User;
 import com.bot.coreservice.model.BankAccount;
 import com.bot.coreservice.model.Client;
 import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.FilterModel;
-import com.bot.coreservice.contracts.ClientService;
-import lombok.extern.java.Log;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,7 +96,7 @@ public class ClientServiceImpl implements ClientService {
             throw new Exception("IFSC Code is invalid");
     }
 
-    private int manageBankDetail(Client client, Login currentUser) throws Exception {
+    private int manageBankDetail(Client client, User currentUser) throws Exception {
         java.util.Date utilDate = new java.util.Date();
         var date = new java.sql.Timestamp(utilDate.getTime());
         BankAccount bankAccount = new BankAccount();
@@ -125,7 +124,7 @@ public class ClientServiceImpl implements ClientService {
         return  bankAccount.getBankAccountId();
     }
 
-    private void insertClientDetail(Client client, Login currentUser) {
+    private void insertClientDetail(Client client, User currentUser) {
         java.util.Date utilDate = new java.util.Date();
         var date = new java.sql.Timestamp(utilDate.getTime());
         var lastClient = clientRepository.getLastClient();
@@ -141,7 +140,7 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.save(client);
     }
 
-    private void updateClientDetail(Client client, Login currentUser) throws Exception {
+    private void updateClientDetail(Client client, User currentUser) throws Exception {
         java.util.Date utilDate = new java.util.Date();
         var date = new java.sql.Timestamp(utilDate.getTime());
 

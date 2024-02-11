@@ -1,6 +1,7 @@
 package com.bot.coreservice.services;
 
 import com.bot.coreservice.entity.Login;
+import com.bot.coreservice.entity.User;
 import com.bot.coreservice.filter.RequestFilter;
 import com.bot.coreservice.model.CurrentSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,8 +20,8 @@ public class UserContextDetail {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RequestFilter.class);
 
-    public Login getCurrentUserDetail(ServerWebExchange exchange) throws Exception {
-        Login loginDetail = null;
+    public User getCurrentUserDetail(ServerWebExchange exchange) throws Exception {
+        User userDetail = null;
         try {
             ServerHttpRequest request = exchange.getRequest();
             HttpHeaders headers = request.getHeaders();
@@ -34,12 +35,12 @@ public class UserContextDetail {
                 throw new Exception("Invalid token found. Please contact to admin.");
 
             LOGGER.info("[Current user]: " + userData.getUserDetail());
-            loginDetail = objectMapper.readValue(userData.getUserDetail(), Login.class);
+            userDetail = objectMapper.readValue(userData.getUserDetail(), User.class);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
             throw new Exception("Current userdetail not found from the request session");
         }
 
-        return loginDetail;
+        return userDetail;
     }
 }
