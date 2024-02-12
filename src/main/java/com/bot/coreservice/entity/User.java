@@ -106,12 +106,12 @@ public class User {
         Long updatedBy;
 
         @Column(name = "CreatedOn")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
         @JsonProperty("CreatedOn")
         Date createdOn;
 
         @Column(name = "UpdatedOn")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
         @JsonProperty("UpdatedOn")
         Date updatedOn;
 
