@@ -1,5 +1,6 @@
 package com.bot.coreservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,13 +16,16 @@ public class UserInterests {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "UserInterestId")
+    @JsonProperty("UserInterestId")
     long userInterestId;
 
    @Column(name = "UserId")
-    long userId;
+   @JsonProperty("UserId")
+   long userId;
 
     @Column(name = "InerestId")
-   int inerestId;
+    @JsonProperty("InerestId")
+    int inerestId;
 
     public UserInterests(long userId, int inerestId) {
         this.userId = userId;
