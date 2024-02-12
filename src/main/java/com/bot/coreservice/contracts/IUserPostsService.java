@@ -16,12 +16,11 @@ public interface IUserPostsService {
     public String updateUserPostService(UserPosts userPost, long userPostId) throws Exception;
     public List<UserPosts> getAllUserPosts();
     public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception;
-    public String deleteUserPostByUserPostIdService(long userPostId);
-    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception;
-    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception;
+    public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId) throws Exception;
+    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
+    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception;
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
     public  List<JobType> getAllJobTypeService();
     public List<UserPosts> getPostByUserIdService(Long userId) throws Exception;
-
-    public String addLikedPostService(UserPosts userPost, ServerWebExchange exchange) throws Exception;
+    public String addLikedPostService(UserPosts userPost) throws Exception;
 }

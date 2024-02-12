@@ -21,8 +21,8 @@ public class ClientController {
     }
 
     @PostMapping("manageClient")
-    public ResponseEntity<ApiResponse> manageClient(@RequestBody Client client, ServerWebExchange exchange) throws Exception {
-        var result = clientService.mangeClientService(client, exchange);
+    public ResponseEntity<ApiResponse> manageClient(@RequestBody Client client) throws Exception {
+        var result = clientService.mangeClientService(client);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 

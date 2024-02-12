@@ -10,12 +10,11 @@ import java.util.List;
 
 public interface UserService {
 
-    public String addUserService(UserMaster userMaster, ServerWebExchange exchange) throws Exception;
-    public String updateUserService(UserMaster userMaster, long userId, ServerWebExchange exchange) throws Exception;
+    public String addUserService(UserMaster userMaster) throws Exception;
+    public String updateUserService(UserMaster userMaster, long userId) throws Exception;
     public ArrayList<User> getAllUserService();
     public UserMaster getUserByUserIdService(long userId);
     public String deleteUserByUserIdService(long userId) throws Exception;
-
-    public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest, ServerWebExchange exchange) throws Exception;
+    public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest) throws Exception;
 
 }

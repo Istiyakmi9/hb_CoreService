@@ -7,15 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.File;
 
 @Configuration
-public class WebCorsConfiguration implements WebFluxConfigurer {
+public class WebCorsConfiguration implements WebMvcConfigurer {
     @Autowired
     FileStorageProperties fileStorageProperties;
     @Autowired
@@ -23,12 +21,11 @@ public class WebCorsConfiguration implements WebFluxConfigurer {
     private final Logger logger = LoggerFactory.getLogger(WebCorsConfiguration.class);
 
     @Override
-    public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String resourcePath = getResourceDetail();
         System.out.println("Resource path:--------------: " + resourcePath);
         registry.addResourceHandler("/**")
                 .addResourceLocations("file:" + resourcePath);
-        WebFluxConfigurer.super.addResourceHandlers(registry);
     }
 
     private String getResourceDetail() {

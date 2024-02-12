@@ -11,9 +11,6 @@ spring:
     config:
       enabled: false
 
-  main:
-    web-application-type: reactive
-
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true

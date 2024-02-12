@@ -1,17 +1,17 @@
 package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.*;
-import com.bot.coreservice.entity.*;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.bot.coreservice.contracts.UserService;
 import com.bot.coreservice.db.LowLevelExecution;
+import com.bot.coreservice.entity.*;
+import com.bot.coreservice.model.CurrentSession;
 import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.UserMaster;
-import com.bot.coreservice.contracts.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ServerWebExchange;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -39,11 +39,10 @@ public class UserServiceImpl implements UserService {
     ObjectMapper objectMapper;
 
     @Autowired
-    UserContextDetail userContextDetail;
+    CurrentSession currentSession;
 
     @Transactional(rollbackFor = Exception.class)
-    public String addUserService(UserMaster userMaster, ServerWebExchange exchange) throws Exception {
-        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+    public String addUserService(UserMaster userMaster) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         User user = new User();
@@ -87,7 +86,7 @@ public class UserServiceImpl implements UserService {
         loginDetail.setPassword("emp123");
         loginDetail.setRoleId(userMaster.getRoleId());
         loginDetail.setActive(true);
-        loginDetail.setCreatedBy(currentUser.getUserId());
+        loginDetail.setCreatedBy(currentSession.getUser().getUserId());
         loginDetail.setCreatedOn(currentDate);
         this.loginRepository.save(loginDetail);
 
@@ -107,7 +106,7 @@ public class UserServiceImpl implements UserService {
         userDetail.setDesignation(userMaster.getDesignation());
         userDetail.setSalary(userMaster.getSalary());
         userDetail.setExpectedSalary(userMaster.getExpectedSalary());
-        userDetail.setCreatedBy(currentUser.getUserId());
+        userDetail.setCreatedBy(currentSession.getUser().getUserId());
         userDetail.setCreatedOn(currentDate);
         userDetailRepository.save(userDetail);
 
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService {
         userMedicalDetail.setReferenceId(userMaster.getReferenceId());
         userMedicalDetail.setReportId(userMaster.getReportId());
         userMedicalDetail.setReportPath(userMaster.getReportPath());
-        userMedicalDetail.setCreatedBy(currentUser.getUserId());
+        userMedicalDetail.setCreatedBy(currentSession.getUser().getUserId());
         userMedicalDetail.setCreatedOn(currentDate);
         userMedicalDetailRepository.save(userMedicalDetail);
 
@@ -134,8 +133,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public String updateUserService(UserMaster userMaster, long userId, ServerWebExchange exchange) throws Exception {
-        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+    public String updateUserService(UserMaster userMaster, long userId) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         Optional<User> result = this.userRepository.findById(userId);
@@ -158,7 +156,7 @@ public class UserServiceImpl implements UserService {
         existingUser.setDesignationId(userMaster.getDesignationId());
         existingUser.setPinCode(userMaster.getPinCode());
         existingUser.setReporteeId(userMaster.getReporteeId());
-        existingUser.setUpdatedBy(currentUser.getUserId());
+        existingUser.setUpdatedBy(currentSession.getUser().getUserId());
         existingUser.setUpdatedOn(currentDate);
 
         userRepository.save(existingUser);
@@ -171,7 +169,7 @@ public class UserServiceImpl implements UserService {
         login = loginResult.get();
         login.setEmail(userMaster.getEmail());
         login.setMobile(userMaster.getMobile());
-        login.setUpdatedBy(currentUser.getUserId());
+        login.setUpdatedBy(currentSession.getUser().getUserId());
         login.setUpdatedOn(currentDate);
         Login loginData = this.loginRepository.save(login);
         if (loginData == null){
@@ -199,7 +197,7 @@ public class UserServiceImpl implements UserService {
         userDetail.setSalary(userMaster.getSalary());
         userDetail.setExpectedSalary(userMaster.getExpectedSalary());
         userDetail.setExpectedDesignation(userMaster.getExpectedDesignation());
-        userDetail.setUpdatedBy(currentUser.getUserId());
+        userDetail.setUpdatedBy(currentSession.getUser().getUserId());
         userDetail.setUpdatedOn(currentDate);
         UserDetail userDetailData = userDetailRepository.save(userDetail);
         if (userDetail == null){
@@ -216,7 +214,7 @@ public class UserServiceImpl implements UserService {
         userMedicalDetailResult.setReferenceId(userMaster.getReferenceId());
         userMedicalDetailResult.setReportId(userMaster.getReportId());
         userMedicalDetailResult.setReportPath(userMaster.getReportPath());
-        userMedicalDetailResult.setUpdatedBy(currentUser.getUserId());
+        userMedicalDetailResult.setUpdatedBy(currentSession.getUser().getUserId());
         userMedicalDetailResult.setUpdatedOn(currentDate);
         UserMedicalDetail userMedicalDetailData = this.userMedicalDetailRepository.save(userMedicalDetailResult);
         return "User has been updated";
@@ -259,11 +257,10 @@ public class UserServiceImpl implements UserService {
         return "User data is De-active";
     }
 
-    public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest, ServerWebExchange exchange) throws Exception {
+    public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest) throws Exception {
         ArrayList<UserInterests> userInterestList = new ArrayList<UserInterests>();
-        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
         for (var item: userInterest){
-            userInterestList.add(new UserInterests(currentUser.getUserId(), item));
+            userInterestList.add(new UserInterests(currentSession.getUser().getUserId(), item));
         }
         userInterestsRepository.saveAll(userInterestList);
         return userInterestList;

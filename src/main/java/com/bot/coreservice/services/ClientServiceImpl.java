@@ -6,17 +6,12 @@ import com.bot.coreservice.Repository.ClientTypeRepository;
 import com.bot.coreservice.Repository.CountryRepository;
 import com.bot.coreservice.contracts.ClientService;
 import com.bot.coreservice.db.LowLevelExecution;
-import com.bot.coreservice.entity.User;
-import com.bot.coreservice.model.BankAccount;
-import com.bot.coreservice.model.Client;
-import com.bot.coreservice.model.DbParameters;
-import com.bot.coreservice.model.FilterModel;
+import com.bot.coreservice.model.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ServerWebExchange;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -40,7 +35,7 @@ public class ClientServiceImpl implements ClientService {
     ObjectMapper objectMapper;
 
     @Autowired
-    UserContextDetail userContextDetail;
+    CurrentSession currentSession;
     public List<Client> getAllClientService(FilterModel filter) {
         List<DbParameters> dbParameters = new ArrayList<>();
         dbParameters.add(new DbParameters("_searchString", filter.getSearchString(), Types.VARCHAR));
@@ -52,16 +47,15 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String mangeClientService(Client client, ServerWebExchange exchange) throws Exception {
+    public String mangeClientService(Client client) throws Exception {
         try {
-            var currentUser = userContextDetail.getCurrentUserDetail(exchange);
             validateClientDetail(client);
-            var bankAccountId = manageBankDetail(client, currentUser);
+            var bankAccountId = manageBankDetail(client);
             client.setBankDetailId(bankAccountId);
             if (client.getId() == 0) {
-                insertClientDetail(client, currentUser);
+                insertClientDetail(client);
             } else  {
-                updateClientDetail(client, currentUser);
+                updateClientDetail(client);
             }
 
             return "client detail insert/updated successfully";
@@ -96,7 +90,7 @@ public class ClientServiceImpl implements ClientService {
             throw new Exception("IFSC Code is invalid");
     }
 
-    private int manageBankDetail(Client client, User currentUser) throws Exception {
+    private int manageBankDetail(Client client) throws Exception {
         java.util.Date utilDate = new java.util.Date();
         var date = new java.sql.Timestamp(utilDate.getTime());
         BankAccount bankAccount = new BankAccount();
@@ -115,8 +109,8 @@ public class ClientServiceImpl implements ClientService {
         bankAccount.setAccountNo(client.getAccountNo());
         bankAccount.setIfsc(client.getIFSC());
         bankAccount.setBranch(client.getBranch());
-        bankAccount.setCreatedBy(currentUser.getUserId());
-        bankAccount.setUpdatedBy(currentUser.getUserId());
+        bankAccount.setCreatedBy(currentSession.getUser().getUserId());
+        bankAccount.setUpdatedBy(currentSession.getUser().getUserId());
         bankAccount.setCreatedOn(date);
         bankAccount.setUpdatedOn(date);
 
@@ -124,7 +118,7 @@ public class ClientServiceImpl implements ClientService {
         return  bankAccount.getBankAccountId();
     }
 
-    private void insertClientDetail(Client client, User currentUser) {
+    private void insertClientDetail(Client client) {
         java.util.Date utilDate = new java.util.Date();
         var date = new java.sql.Timestamp(utilDate.getTime());
         var lastClient = clientRepository.getLastClient();
@@ -133,14 +127,14 @@ public class ClientServiceImpl implements ClientService {
         else
             client.setId(lastClient.getId() + 1);
 
-        client.setCreatedBy(currentUser.getUserId());
-        client.setUpdatedBy(currentUser.getUserId());
+        client.setCreatedBy(currentSession.getUser().getUserId());
+        client.setUpdatedBy(currentSession.getUser().getUserId());
         client.setCreatedOn(date);
         client.setUpdatedOn(date);
         clientRepository.save(client);
     }
 
-    private void updateClientDetail(Client client, User currentUser) throws Exception {
+    private void updateClientDetail(Client client) throws Exception {
         java.util.Date utilDate = new java.util.Date();
         var date = new java.sql.Timestamp(utilDate.getTime());
 
@@ -170,7 +164,7 @@ public class ClientServiceImpl implements ClientService {
         clientDetail.setCity(client.getCity());
         clientDetail.setPincode(client.getPincode());
         clientDetail.setState(client.getState());
-        clientDetail.setUpdatedBy(currentUser.getUserId());
+        clientDetail.setUpdatedBy(currentSession.getUser().getUserId());
         clientDetail.setUpdatedOn(date);
         clientRepository.save(clientDetail);
     }

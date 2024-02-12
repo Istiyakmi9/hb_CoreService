@@ -19,16 +19,15 @@ public class UserController {
     UserServiceImpl userServiceImpl;
 
     @PostMapping("/addUser")
-    public ResponseEntity<ApiResponse> addUser(@RequestBody UserMaster userMaster, ServerWebExchange exchange) throws Exception {
-        var result = this.userServiceImpl.addUserService(userMaster, exchange);
+    public ResponseEntity<ApiResponse> addUser(@RequestBody UserMaster userMaster) throws Exception {
+        var result = this.userServiceImpl.addUserService(userMaster);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
     @PutMapping("/updateUser/{userId}")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody UserMaster userMaster,
-                                                  @PathVariable("userId") long userId,
-                                                  ServerWebExchange exchange) throws Exception {
-        var result = this.userServiceImpl.updateUserService(userMaster, userId, exchange);
+                                                  @PathVariable("userId") long userId) throws Exception {
+        var result = this.userServiceImpl.updateUserService(userMaster, userId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
@@ -51,8 +50,8 @@ public class UserController {
     }
 
     @PostMapping("/updateUserInterest")
-    public ResponseEntity<ApiResponse> updateUserInterest(@RequestBody List<Integer> userInterest, ServerWebExchange exchange) throws Exception {
-        var result = this.userServiceImpl.updateUserInterestService(userInterest, exchange);
+    public ResponseEntity<ApiResponse> updateUserInterest(@RequestBody List<Integer> userInterest) throws Exception {
+        var result = this.userServiceImpl.updateUserInterestService(userInterest);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }

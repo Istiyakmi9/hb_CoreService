@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
@@ -39,10 +38,9 @@ public class UserPostsServiceImpl implements IUserPostsService {
     @Autowired
     JobTypeRepository jobTypeRepository;
     @Autowired
-    UserContextDetail userContextDetail;
-
-    @Autowired
     LikedPostsRepository likedPostsRepository;
+    @Autowired
+    CurrentSession currentSession;
 
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
@@ -78,7 +76,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
     public List<UserPosts> getAllUserPosts() {
         List<DbParameters> dbParameters = new ArrayList<>();
-        var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getall", dbParameters);
+        dbParameters.add(new DbParameters("_UserId", currentSession.getUser().getUserId(), Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_userposts_filter", dbParameters);
         var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
         if (result != null && result.size() > 0) {
             result.forEach(x -> {
@@ -111,27 +110,20 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return  result;
     }
 
-    @Override
-    public String deleteUserPostByUserPostIdService(long userPostId) {
-        return null;
-    }
-
-    public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId, ServerWebExchange exchange) throws Exception {
+    public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId) throws Exception {
         this.userPostsRepository.deleteById(userPostId);
-        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
-        return getPostByUserIdService(currentUser.getUserId());
+        return getPostByUserIdService(currentSession.getUser().getUserId());
     }
 
-    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
-        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
+    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
         // Save user post
-        saveUserPostedData(userPost, postImages, currentUser);
+        saveUserPostedData(userPost, postImages);
         // Get latest data
         return getAllUserPosts();
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveUserPostedData(String userPost, Flux<FilePart> postImages, User currentUser) throws Exception {
+    public void saveUserPostedData(String userPost, Flux<FilePart> postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
@@ -139,7 +131,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         jobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
         jobRequirement.setJobTypeId(userPosts.getCatagoryTypeId());
 
-        var jobRequirementId = addJobRequirement(jobRequirement, currentUser);
+        var jobRequirementId = addJobRequirement(jobRequirement);
         var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
         if (lastUserPostRecord == null)
             userPosts.setUserPostId(1L);
@@ -157,20 +149,20 @@ public class UserPostsServiceImpl implements IUserPostsService {
             userPosts.setFileDetail("[]");
         }
 
-        addUserPostDetailService(userPosts, currentUser);
+        addUserPostDetailService(userPosts);
     }
 
-    private void addUserPostDetailService(UserPosts userPosts, User currentUser) {
+    private void addUserPostDetailService(UserPosts userPosts) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
-        userPosts.setPostedBy(currentUser.getUserId());
+        userPosts.setPostedBy(currentSession.getUser().getUserId());
         userPosts.setPostedOn(currentDate);
         userPosts.setUpdatedOn(currentDate);
-        userPosts.setFullName(currentUser.getFirstName() + " " + currentUser.getLastName());
+        userPosts.setFullName(currentSession.getUser().getFirstName() + " " + currentSession.getUser().getLastName());
         this.userPostsRepository.save(userPosts);
     }
 
-    private long addJobRequirement(JobRequirement jobRequirement, User currentUser) {
+    private long addJobRequirement(JobRequirement jobRequirement) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var lastJobRequirementRecord = this.jobRequirementRepository.getLastJobRequirementRecord();
@@ -179,21 +171,20 @@ public class UserPostsServiceImpl implements IUserPostsService {
         else
             jobRequirement.setJobRequirementId(lastJobRequirementRecord.getJobRequirementId()+1);
 
-        jobRequirement.setCreatedBy(currentUser.getUserId());
+        jobRequirement.setCreatedBy(currentSession.getUser().getUserId());
         jobRequirement.setCreatedOn(currentDate);
         this.jobRequirementRepository.save(jobRequirement);
         return jobRequirement.getJobRequirementId();
     }
 
-    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages, ServerWebExchange exchange) throws Exception {
-        User currentUser = userContextDetail.getCurrentUserDetail(exchange);
-        saveUpdatedUserPosts(userPost, postImages, currentUser);
+    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+        saveUpdatedUserPosts(userPost, postImages);
 
         return getAllUserPosts();
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveUpdatedUserPosts(String userPost, Flux<FilePart> postImages, User currentUser) throws Exception {
+    public void saveUpdatedUserPosts(String userPost, Flux<FilePart> postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
@@ -201,7 +192,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (userPostRequest.getJobRequirementId() == 0)
             throw new Exception("Invalid Job requirement id");
 
-        updateJobRequirementService(userPostRequest, currentUser);
+        updateJobRequirementService(userPostRequest);
         updateUserPostService(userPostRequest, postImages);
     }
 
@@ -226,7 +217,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         this.userPostsRepository.save(existingUserPost);
     }
 
-    private void updateJobRequirementService(UserPostRequest userPostRequest, User currentUser) throws Exception {
+    private void updateJobRequirementService(UserPostRequest userPostRequest) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var result = this.jobRequirementRepository.findById(userPostRequest.getJobRequirementId());
@@ -256,7 +247,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingjobRequirement.setNoOfPosts(userPostRequest.getNoOfPosts());
         existingjobRequirement.setSalaryCurrency(userPostRequest.getSalaryCurrency());
         existingjobRequirement.setContractPeriodInMonths(userPostRequest.getContractPeriodInMonths());
-        existingjobRequirement.setUpdatedBy(currentUser.getUserId());
+        existingjobRequirement.setUpdatedBy(currentSession.getUser().getUserId());
         existingjobRequirement.setUpdatedOn(currentDate);
     }
 
@@ -345,12 +336,10 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return result;
     }
 
-    @Override
-    public String addLikedPostService(UserPosts userPost, ServerWebExchange exchange) throws Exception {
-        var currentUser = userContextDetail.getCurrentUserDetail(exchange);
-        var existingPost = likedPostsRepository.existingLikedPostBy(userPost.getUserPostId(), currentUser.getUserId());
+    public String addLikedPostService(UserPosts userPost) throws Exception {
+        var existingPost = likedPostsRepository.existingLikedPostBy(userPost.getUserPostId(), currentSession.getUser().getUserId());
         if (existingPost == null)
-            addLikedPost(userPost, currentUser.getUserId());
+            addLikedPost(userPost, currentSession.getUser().getUserId());
 
         return "Thanks for Like";
     }
