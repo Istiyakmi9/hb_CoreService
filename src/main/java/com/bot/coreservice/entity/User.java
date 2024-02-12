@@ -34,9 +34,11 @@ public class User {
         String lastName;
 
         @Column(name = "FatherName")
+        @JsonProperty("FatherName")
         String fatherName;
 
         @Column(name = "MotherName")
+        @JsonProperty("MotherName")
         String motherName;
 
         @Column(name = "Email")
@@ -48,52 +50,69 @@ public class User {
         String mobile;
 
         @Column(name = "AlternateNumber")
+        @JsonProperty("AlternateNumber")
         String alternateNumber;
 
         @Column(name = "Address")
+        @JsonProperty("Address")
         String address;
 
         @Column(name = "City")
+        @JsonProperty("City")
         String city;
 
         @Column(name = "State")
+        @JsonProperty("State")
         String state;
 
         @Column(name = "Country")
+        @JsonProperty("Country")
         String country;
 
         @Column(name = "RoleId")
+        @JsonProperty("RoleId")
         int roleId;
 
         @Column(name = "DesignationId")
+        @JsonProperty("DesignationId")
         int designationId;
 
         @Column(name = "PinCode")
+        @JsonProperty("PinCode")
         int pinCode;
 
         @Column(name = "ReporteeId")
+        @JsonProperty("ReporteeId")
         long reporteeId;
 
         @Column(name = "IsActive")
+        @JsonProperty("IsActive")
         boolean isActive;
 
         @Column(name = "Followers")
+        @JsonProperty("Followers")
         String followers;
 
         @Column(name = "Friends")
+        @JsonProperty("Friends")
         String friends;
 
         @Column(name = "CreatedBy")
+        @JsonProperty("CreatedBy")
         Long createdBy;
 
         @Column(name = "UpdatedBy")
+        @JsonProperty("UpdatedBy")
         Long updatedBy;
 
         @Column(name = "CreatedOn")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+        @JsonProperty("CreatedOn")
         Date createdOn;
+
         @Column(name = "UpdatedOn")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+        @JsonProperty("UpdatedOn")
         Date updatedOn;
 
 }
