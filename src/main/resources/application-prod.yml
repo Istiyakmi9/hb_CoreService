@@ -3,8 +3,6 @@ spring:
     config:
       enabled: false
 
-  main:
-    web-application-type: reactive
   #Local-server(Remote)
   datasource:
     url: jdbc:mysql://178.16.138.169:3308/hiringbell
