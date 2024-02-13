@@ -17,5 +17,6 @@ public interface UserService {
     public UserMaster getUserByUserIdService(long userId);
     public String deleteUserByUserIdService(long userId) throws Exception;
     public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest) throws Exception;
-    public Map<String, Object> getJobandLocationService(int categoryType);
+    public Map<String, Object> getJobandLocationService(int categoryId);
+    public  String addJobandLocationService(UserMaster user) throws Exception;
 }

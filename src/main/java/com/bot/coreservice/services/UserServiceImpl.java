@@ -264,9 +264,10 @@ public class UserServiceImpl implements UserService {
         return userInterestList;
     }
 
-    public Map<String, Object> getJobandLocationService(int categoryType) {
+    public Map<String, Object> getJobandLocationService(int categoryId) {
         List<DbParameters> dbParameters = new ArrayList<>();
-        var dataSet = lowLevelExecution.executeProcedure("sp_jobtotle_by_filter", dbParameters);
+        dbParameters.add(new DbParameters("_CategoryId", categoryId, Types.INTEGER));
+        var dataSet = lowLevelExecution.executeProcedure("sp_jobtitle_by_filter", dbParameters);
         var country =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<Country>>() {
         });
         var jobTitle =  objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<JobType>>() {
@@ -275,5 +276,25 @@ public class UserServiceImpl implements UserService {
         response.put("Countries", country);
         response.put("JobTypes", jobTitle);
         return response;
+    }
+
+    public String addJobandLocationService(UserMaster user) throws Exception {
+        if (user.getUserId() == 0)
+            throw new Exception("Invalid user");
+
+        var existingUserData = userRepository.findById(user.getUserId());
+        if (existingUserData.isEmpty())
+            throw new Exception("User detail not found");
+
+        var existingUser = existingUserData.get();
+        existingUser.setJobCategoryId(user.getJobCategoryId());
+        if (user.getJobLocationIds().size() > 0)
+            existingUser.setJobLocationIds(objectMapper.writeValueAsString(user.getJobLocationIds()));
+
+        if (user.getCategoryTypeIds().size() > 0)
+            existingUser.setCategoryTypeIds(objectMapper.writeValueAsString(user.getCategoryTypeIds()));
+
+        userRepository.save(existingUser);
+        return "Profile detail added successfully";
     }
 }

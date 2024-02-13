@@ -5,10 +5,8 @@ import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/hb/api/core/userposts/")
@@ -49,7 +47,7 @@ public class UserPostsController {
     @PostMapping("uploadUserPosts")
     public ResponseEntity<ApiResponse> uploadUserPosts(
             @RequestPart("userPost") String userPost,
-            @RequestPart(value = "postImages", required = false)Flux<FilePart> postImages) throws Exception {
+            @RequestPart(value = "postImages", required = false) MultipartFile[] postImages) throws Exception {
         var result = userPostsService.uploadUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
@@ -57,7 +55,7 @@ public class UserPostsController {
     @PostMapping("updateUserPosts")
     public ResponseEntity<ApiResponse> updateUserPosts(
             @RequestPart("userPost") String userPost,
-            @RequestPart(value = "postImages", required = false) Flux<FilePart> postImages) throws Exception {
+            @RequestPart(value = "postImages", required = false) MultipartFile[] postImages) throws Exception {
         var result = userPostsService.updateUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }

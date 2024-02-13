@@ -9,12 +9,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 @Component
 public class FileManager {
@@ -56,9 +58,9 @@ public class FileManager {
         return basePath;
     }
 
-    public String uploadFile(FilePart file, long userId, String fileName) throws Exception {
+    public String uploadFile(MultipartFile file, long userId, String fileName) throws Exception {
         FileDetail fileDetail = null;
-        String name = file.filename();
+        String name = file.getOriginalFilename();
         if (!name.isEmpty()) {
             fileDetail = new FileDetail();
             String ext = name.substring(name.lastIndexOf(".") + 1);
@@ -83,7 +85,7 @@ public class FileManager {
 
             Path targetPath = targetDirectory.resolve(newFileName);
             fileDetail.setFilePath(relativePath);
-            file.transferTo(targetPath).block();
+            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
             return (Paths.get(relativePath, newFileName).toString());
         } else {
             return name;

@@ -68,6 +68,10 @@ public class UserPosts {
         @Column(name = "FullName")
         String fullName;
 
+        @Transient
+        @JsonProperty("IsLiked")
+        boolean isLiked;
+
         @JsonProperty("Files")
-        private transient List<FileDetail> files;
+        transient List<FileDetail> files;
 }
