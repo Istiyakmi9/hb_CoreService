@@ -39,6 +39,14 @@ public class UserPosts {
         @JsonProperty("CatagoryTypeId")
         long catagoryTypeId;
 
+        @Column(name = "CountryId")
+        @JsonProperty("CountryId")
+        Integer countryId;
+
+        @Column(name = "JobCategoryId")
+        @JsonProperty("JobCategoryId")
+        Integer jobCategoryId;
+
         @Column(name = "JobRequirementId")
         @JsonProperty("JobRequirementId")
         long jobRequirementId;

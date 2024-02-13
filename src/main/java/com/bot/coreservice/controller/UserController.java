@@ -54,4 +54,10 @@ public class UserController {
         var result = this.userServiceImpl.updateUserInterestService(userInterest);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
+
+    @GetMapping("/getJobandLocation/{categoryType}")
+    public ResponseEntity<ApiResponse> getJobandLocation(@PathVariable int categoryType) {
+        var result = this.userServiceImpl.getJobandLocationService(categoryType);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 }

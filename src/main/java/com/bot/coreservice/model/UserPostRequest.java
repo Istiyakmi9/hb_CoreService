@@ -3,6 +3,7 @@ package com.bot.coreservice.model;
 import com.bot.coreservice.entity.JobRequirement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -33,5 +34,8 @@ public class UserPostRequest extends JobRequirement {
 
     @JsonProperty("Files")
     List<FileDetail> files;
+
+    @JsonProperty("JobCategoryId")
+    Integer jobCategoryId;
 }
 

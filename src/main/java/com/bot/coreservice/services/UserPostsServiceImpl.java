@@ -207,6 +207,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingUserPost.setShortDescription(userPostRequest.getShortDescription());
         existingUserPost.setCompleteDescription(userPostRequest.getCompleteDescription());
         existingUserPost.setCatagoryTypeId(userPostRequest.getCatagoryTypeId());
+        existingUserPost.setCountryId((userPostRequest.getCountryId()));
+        existingUserPost.setJobCategoryId(userPostRequest.getJobCategoryId());
         var fileDetail = saveUpdateFileDetail(existingUserPost.getFileDetail(), postImages, userPostRequest.getUserPostId());
 
         if (fileDetail != null && fileDetail.size() > 0) {
@@ -363,4 +365,5 @@ public class UserPostsServiceImpl implements IUserPostsService {
         likedPosts.setLatitude("");
         this.likedPostsRepository.save(likedPosts);
     }
+
 }

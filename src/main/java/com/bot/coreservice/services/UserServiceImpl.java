@@ -4,6 +4,7 @@ import com.bot.coreservice.Repository.*;
 import com.bot.coreservice.contracts.UserService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;
+import com.bot.coreservice.model.Country;
 import com.bot.coreservice.model.CurrentSession;
 import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.UserMaster;
@@ -15,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -264,5 +262,18 @@ public class UserServiceImpl implements UserService {
         }
         userInterestsRepository.saveAll(userInterestList);
         return userInterestList;
+    }
+
+    public Map<String, Object> getJobandLocationService(int categoryType) {
+        List<DbParameters> dbParameters = new ArrayList<>();
+        var dataSet = lowLevelExecution.executeProcedure("sp_jobtotle_by_filter", dbParameters);
+        var country =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<Country>>() {
+        });
+        var jobTitle =  objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<JobType>>() {
+        });
+        Map<String, Object> response = new HashMap<>();
+        response.put("Countries", country);
+        response.put("JobTypes", jobTitle);
+        return response;
     }
 }

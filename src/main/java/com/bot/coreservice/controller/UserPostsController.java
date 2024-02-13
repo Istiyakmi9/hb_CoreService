@@ -85,5 +85,4 @@ public class UserPostsController {
         var result = this.userPostsService.addLikedPostService(userPost);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
-
 }
