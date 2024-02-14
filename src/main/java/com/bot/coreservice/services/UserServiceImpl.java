@@ -4,6 +4,7 @@ import com.bot.coreservice.Repository.*;
 import com.bot.coreservice.contracts.UserService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;
+import com.bot.coreservice.model.Country;
 import com.bot.coreservice.model.CurrentSession;
 import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.UserMaster;
@@ -15,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -264,5 +262,42 @@ public class UserServiceImpl implements UserService {
         }
         userInterestsRepository.saveAll(userInterestList);
         return userInterestList;
+    }
+
+    public Map<String, Object> getJobandLocationService(int categoryId) {
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_CategoryId", categoryId, Types.INTEGER));
+        var dataSet = lowLevelExecution.executeProcedure("sp_jobtitle_by_filter", dbParameters);
+        var country =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<Country>>() {
+        });
+        var jobTitle =  objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<JobType>>() {
+        });
+        Map<String, Object> response = new HashMap<>();
+        response.put("Countries", country);
+        response.put("JobTypes", jobTitle);
+        return response;
+    }
+
+    public String addJobandLocationService(UserMaster user) throws Exception {
+        if (user.getUserId() == 0)
+            throw new Exception("Invalid user");
+
+        var existingUserData = userRepository.findById(user.getUserId());
+        if (existingUserData.isEmpty())
+            throw new Exception("User detail not found");
+
+        var existingUser = existingUserData.get();
+        existingUser.setJobCategoryId(user.getJobCategoryId());
+        if (user.getJobLocationIds().size() > 0)
+            existingUser.setJobLocationIds(objectMapper.writeValueAsString(user.getJobLocationIds()));
+
+        if (user.getCategoryTypeIds().size() > 0)
+            existingUser.setCategoryTypeIds(objectMapper.writeValueAsString(user.getCategoryTypeIds()));
+
+        var existingLoginDetail = loginRepository.getLoginByUserId(user.getUserId());
+        existingLoginDetail.setAccountConfig(true);
+        userRepository.save(existingUser);
+        loginRepository.save(existingLoginDetail);
+        return "Profile detail added successfully";
     }
 }

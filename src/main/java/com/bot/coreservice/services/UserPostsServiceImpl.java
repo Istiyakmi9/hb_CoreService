@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
@@ -115,7 +116,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return getPostByUserIdService(currentSession.getUser().getUserId());
     }
 
-    public List<UserPosts> uploadUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> uploadUserPostsService(String userPost, MultipartFile[] postImages) throws Exception {
         // Save user post
         saveUserPostedData(userPost, postImages);
         // Get latest data
@@ -123,7 +124,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveUserPostedData(String userPost, Flux<FilePart> postImages) throws Exception {
+    public void saveUserPostedData(String userPost, MultipartFile[] postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
         JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
@@ -177,14 +178,14 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return jobRequirement.getJobRequirementId();
     }
 
-    public List<UserPosts> updateUserPostsService(String userPost, Flux<FilePart> postImages) throws Exception {
+    public List<UserPosts> updateUserPostsService(String userPost, MultipartFile[] postImages) throws Exception {
         saveUpdatedUserPosts(userPost, postImages);
 
         return getAllUserPosts();
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveUpdatedUserPosts(String userPost, Flux<FilePart> postImages) throws Exception {
+    public void saveUpdatedUserPosts(String userPost, MultipartFile[] postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
@@ -196,7 +197,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         updateUserPostService(userPostRequest, postImages);
     }
 
-    private void updateUserPostService(UserPostRequest userPostRequest, Flux<FilePart> postImages) throws Exception {
+    private void updateUserPostService(UserPostRequest userPostRequest, MultipartFile[] postImages) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var data = this.userPostsRepository.findById(userPostRequest.getUserPostId());
@@ -207,6 +208,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingUserPost.setShortDescription(userPostRequest.getShortDescription());
         existingUserPost.setCompleteDescription(userPostRequest.getCompleteDescription());
         existingUserPost.setCatagoryTypeId(userPostRequest.getCatagoryTypeId());
+        existingUserPost.setCountryId((userPostRequest.getCountryId()));
+        existingUserPost.setJobCategoryId(userPostRequest.getJobCategoryId());
         var fileDetail = saveUpdateFileDetail(existingUserPost.getFileDetail(), postImages, userPostRequest.getUserPostId());
 
         if (fileDetail != null && fileDetail.size() > 0) {
@@ -251,7 +254,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingjobRequirement.setUpdatedOn(currentDate);
     }
 
-    private List<FileDetail> saveUpdateFileDetail(String fileDetailJSON, Flux<FilePart> files, long userPostId) throws Exception {
+    private List<FileDetail> saveUpdateFileDetail(String fileDetailJSON, MultipartFile[] files, long userPostId) throws Exception {
         if (files != null) {
             List<FileDetail> existingFiles;
             int id = 0;
@@ -265,7 +268,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
                 id = 1;
             }
 
-            for (var x : files.toIterable()) {
+            for (var x : files) {
                 FileDetail fileDetail = new FileDetail();
                 String filepath = null;
                 try {
@@ -363,4 +366,5 @@ public class UserPostsServiceImpl implements IUserPostsService {
         likedPosts.setLatitude("");
         this.likedPostsRepository.save(likedPosts);
     }
+
 }

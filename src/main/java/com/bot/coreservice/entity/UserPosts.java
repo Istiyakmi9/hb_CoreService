@@ -39,6 +39,14 @@ public class UserPosts {
         @JsonProperty("CatagoryTypeId")
         long catagoryTypeId;
 
+        @Column(name = "CountryId")
+        @JsonProperty("CountryId")
+        Integer countryId;
+
+        @Column(name = "JobCategoryId")
+        @JsonProperty("JobCategoryId")
+        Integer jobCategoryId;
+
         @Column(name = "JobRequirementId")
         @JsonProperty("JobRequirementId")
         long jobRequirementId;
@@ -60,6 +68,10 @@ public class UserPosts {
         @Column(name = "FullName")
         String fullName;
 
+        @Transient
+        @JsonProperty("IsLiked")
+        boolean isLiked;
+
         @JsonProperty("Files")
-        private transient List<FileDetail> files;
+        transient List<FileDetail> files;
 }

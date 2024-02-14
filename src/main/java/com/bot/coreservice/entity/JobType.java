@@ -27,6 +27,10 @@ public class JobType {
     @Column(name = "JobDescription")
     String jobDescription;
 
+    @Column(name = "CategoryId")
+    @JsonProperty("CategoryId")
+    int categoryId;
+
     @Column(name = "CreatedBy")
     @JsonProperty("CreatedBy")
     Long createdBy;

@@ -65,4 +65,8 @@ public class Login {
     @JsonProperty("UpdatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date updatedOn;
+
+    @Column(name = "IsAccountConfig")
+    @JsonProperty("IsAccountConfig")
+    boolean isAccountConfig;
 }

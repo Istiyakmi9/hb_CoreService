@@ -1,11 +1,13 @@
 package com.bot.coreservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -63,6 +65,15 @@ public class UserMaster {
 
     @JsonProperty("IsActive")
     boolean isActive;
+
+    @JsonProperty("JobCategoryId")
+    int jobCategoryId;
+
+    @JsonProperty("CategoryTypeIds")
+    List<Integer> categoryTypeIds;
+
+    @JsonProperty("JobLocationIds")
+    List<Integer> jobLocationIds;
 
 //employee_detail fields
 
