@@ -292,17 +292,17 @@ public class UserServiceImpl implements UserService {
         var existingUser = existingUserData.get();
         logger.info("Existing user detail get successfully");
         existingUser.setJobCategoryId(user.getJobCategoryId());
-        logger.info("Set category id in existing user" + user.getJobCategoryId());
-        logger.info("Selected job location ids count" + user.getJobLocationIds().size());
+        logger.info("Set category id in existing user: " + user.getJobCategoryId());
+        logger.info("Selected job location ids count: " + user.getJobLocationIds().size());
         if (user.getJobLocationIds().size() > 0)
             existingUser.setJobLocationIds(objectMapper.writeValueAsString(user.getJobLocationIds()));
 
-        logger.info("Selected job location ids count" + user.getCategoryTypeIds().size());
+        logger.info("Selected job job types ids count: " + user.getCategoryTypeIds().size());
         if (user.getCategoryTypeIds().size() > 0)
             existingUser.setCategoryTypeIds(objectMapper.writeValueAsString(user.getCategoryTypeIds()));
 
         var existingLoginDetail = loginRepository.getLoginByUserId(user.getUserId());
-        logger.info("Existing login detail get");
+        logger.info("Existing login detail get: " + objectMapper.writeValueAsString(existingLoginDetail));
         existingLoginDetail.setAccountConfig(true);
         userRepository.save(existingUser);
         loginRepository.save(existingLoginDetail);
