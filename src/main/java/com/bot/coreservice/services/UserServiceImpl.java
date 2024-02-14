@@ -1,6 +1,7 @@
 package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.*;
+import com.bot.coreservice.authenticationmodule.WebCorsConfiguration;
 import com.bot.coreservice.contracts.UserService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;
@@ -10,6 +11,8 @@ import com.bot.coreservice.model.DbParameters;
 import com.bot.coreservice.model.UserMaster;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     CurrentSession currentSession;
-
+    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Transactional(rollbackFor = Exception.class)
     public String addUserService(UserMaster userMaster) throws Exception {
         Date utilDate = new Date();
@@ -287,17 +290,23 @@ public class UserServiceImpl implements UserService {
             throw new Exception("User detail not found");
 
         var existingUser = existingUserData.get();
+        logger.info("Existing user detail get successfully");
         existingUser.setJobCategoryId(user.getJobCategoryId());
+        logger.info("Set category id in existing user" + user.getJobCategoryId());
+        logger.info("Selected job location ids count" + user.getJobLocationIds().size());
         if (user.getJobLocationIds().size() > 0)
             existingUser.setJobLocationIds(objectMapper.writeValueAsString(user.getJobLocationIds()));
 
+        logger.info("Selected job location ids count" + user.getCategoryTypeIds().size());
         if (user.getCategoryTypeIds().size() > 0)
             existingUser.setCategoryTypeIds(objectMapper.writeValueAsString(user.getCategoryTypeIds()));
 
         var existingLoginDetail = loginRepository.getLoginByUserId(user.getUserId());
+        logger.info("Existing login detail get");
         existingLoginDetail.setAccountConfig(true);
         userRepository.save(existingUser);
         loginRepository.save(existingLoginDetail);
+        logger.info("Login and user detail saved successfully");
         return "Profile detail added successfully";
     }
 }
