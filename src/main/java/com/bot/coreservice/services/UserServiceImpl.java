@@ -282,10 +282,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public String addJobandLocationService(UserMaster user) throws Exception {
-        if (user.getUserId() == 0)
-            throw new Exception("Invalid user");
-
-        var existingUserData = userRepository.findById(user.getUserId());
+        var existingUserData = userRepository.findById(currentSession.getUser().getUserId());
         if (existingUserData.isEmpty())
             throw new Exception("User detail not found");
 
