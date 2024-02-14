@@ -294,7 +294,7 @@ public class UserServiceImpl implements UserService {
         if (user.getCategoryTypeIds().size() > 0)
             existingUser.setCategoryTypeIds(objectMapper.writeValueAsString(user.getCategoryTypeIds()));
 
-        var existingLoginDetail = loginRepository.getLoginByUserId(user.getUserId());
+        var existingLoginDetail = loginRepository.getLoginByUserId(currentSession.getUser().getUserId());
         logger.info("User login data: " + objectMapper.writeValueAsString(existingLoginDetail));
         logger.info("User data: " + objectMapper.writeValueAsString(existingUser));
 
