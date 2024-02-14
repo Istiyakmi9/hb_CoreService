@@ -294,7 +294,10 @@ public class UserServiceImpl implements UserService {
         if (user.getCategoryTypeIds().size() > 0)
             existingUser.setCategoryTypeIds(objectMapper.writeValueAsString(user.getCategoryTypeIds()));
 
+        var existingLoginDetail = loginRepository.getLoginByUserId(user.getUserId());
+        existingLoginDetail.setAccountConfig(true);
         userRepository.save(existingUser);
+        loginRepository.save(existingLoginDetail);
         return "Profile detail added successfully";
     }
 }
