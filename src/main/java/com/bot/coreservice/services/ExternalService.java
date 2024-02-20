@@ -1,6 +1,8 @@
 package com.bot.coreservice.services;
 
+import com.bot.coreservice.Repository.ResumeDetailRepository;
 import com.bot.coreservice.contracts.IExternalService;
+import com.bot.coreservice.entity.ResumeDetail;
 import com.bot.coreservice.model.ResumeModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -13,12 +15,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Service
 public class ExternalService implements IExternalService {
     @Autowired
     RestTemplate restTemplate;
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    ResumeDetailRepository resumeDetailRepository;
 
     private final Logger logger = LoggerFactory.getLogger(ExternalService.class);
 
@@ -38,4 +45,12 @@ public class ExternalService implements IExternalService {
 
         return response.getBody();
     }
+
+    @Override
+    public ResumeDetail getResumeDetailService(long resumeId) {
+        var result = this.resumeDetailRepository.findById(resumeId);
+        return result.get();
+    }
+
+
 }
