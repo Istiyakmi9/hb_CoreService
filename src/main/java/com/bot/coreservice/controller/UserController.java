@@ -2,6 +2,7 @@ package com.bot.coreservice.controller;
 
 import com.bot.coreservice.entity.User;
 import com.bot.coreservice.model.ApiResponse;
+import com.bot.coreservice.model.FilterModel;
 import com.bot.coreservice.model.UserMaster;
 import com.bot.coreservice.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,24 @@ public class UserController {
     @PostMapping("/addJobandLocation")
     public ResponseEntity<ApiResponse> getJobandLocation(@RequestBody UserMaster user) throws Exception {
         var result = this.userServiceImpl.addJobandLocationService(user);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("/getFriends")
+    public ResponseEntity<ApiResponse> getFriends()  {
+        var result = this.userServiceImpl.getFriendsService();
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @PostMapping("/filterFriend")
+    public  ResponseEntity<ApiResponse> filterFriend(@RequestBody FilterModel filterModel) {
+        var result = userServiceImpl.filterFriendService(filterModel);
+        return  ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("/manageFriend/{userId}")
+    public ResponseEntity<ApiResponse> manageFriend(@PathVariable long userId) throws Exception {
+        var result = this.userServiceImpl.manageFriendService(userId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }

@@ -15,7 +15,7 @@ public interface IUserPostsService {
 
     public String addUserPostService(UserPosts userPost);
     public String updateUserPostService(UserPosts userPost, long userPostId) throws Exception;
-    public List<UserPosts> getAllUserPosts();
+    public List<UserPosts> getHomePageService(int page, int pageSize);
     public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception;
     public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId) throws Exception;
     public List<UserPosts> uploadUserPostsService(String userPost, MultipartFile[] postImages) throws Exception;

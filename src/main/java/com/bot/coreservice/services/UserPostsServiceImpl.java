@@ -75,9 +75,14 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return "User post has been updated";
     }
 
-    public List<UserPosts> getAllUserPosts() {
+    public List<UserPosts> getHomePageService(int page, int pageSize) {
+        if (page == 0)
+            page = 1;
+
         List<DbParameters> dbParameters = new ArrayList<>();
         dbParameters.add(new DbParameters("_UserId", currentSession.getUser().getUserId(), Types.BIGINT));
+        dbParameters.add(new DbParameters("_PageIndex", page, Types.INTEGER));
+        dbParameters.add(new DbParameters("_PageSize", pageSize, Types.INTEGER));
         var dataSet = lowLevelExecution.executeProcedure("sp_userposts_filter", dbParameters);
         var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
         if (result != null && result.size() > 0) {
@@ -120,7 +125,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         // Save user post
         saveUserPostedData(userPost, postImages);
         // Get latest data
-        return getAllUserPosts();
+        return getHomePageService(1, 20);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -181,7 +186,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
     public List<UserPosts> updateUserPostsService(String userPost, MultipartFile[] postImages) throws Exception {
         saveUpdatedUserPosts(userPost, postImages);
 
-        return getAllUserPosts();
+        return getHomePageService(1, 20);
     }
 
     @Transactional(rollbackFor = Exception.class)
