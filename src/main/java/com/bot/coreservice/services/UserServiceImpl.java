@@ -5,10 +5,7 @@ import com.bot.coreservice.authenticationmodule.WebCorsConfiguration;
 import com.bot.coreservice.contracts.UserService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;
-import com.bot.coreservice.model.Country;
-import com.bot.coreservice.model.CurrentSession;
-import com.bot.coreservice.model.DbParameters;
-import com.bot.coreservice.model.UserMaster;
+import com.bot.coreservice.model.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -306,5 +303,51 @@ public class UserServiceImpl implements UserService {
         logger.info("User data: " + objectMapper.writeValueAsString(existingUser));
         logger.info("Login and user detail saved successfully");
         return "Profile detail added successfully";
+    }
+
+    public List<User> getFriendsService() {
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_UserId", currentSession.getUser().getUserId(), Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_get_friends_by_userid", dbParameters);
+        return objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<User>>() {
+        });
+    }
+
+    public List<User> filterFriendService(FilterModel filterModel) {
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_searchString", filterModel.getSearchString(), Types.VARCHAR));
+        dbParameters.add(new DbParameters("_pageIndex", filterModel.getPageIndex(), Types.VARCHAR));
+        dbParameters.add(new DbParameters("_pageSize", filterModel.getPageSize(), Types.VARCHAR));
+        var dataSet = lowLevelExecution.executeProcedure("sp_user_by_filter_name", dbParameters);
+        return objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<User>>() {
+        });
+    }
+
+    public String manageFriendService(long userId) throws Exception {
+        if (userId == 0)
+            throw new Exception("Invalid user selected");
+
+        String status = "";
+        var userData = userRepository.findById(currentSession.getUser().getUserId());
+        if (userData.isEmpty())
+            throw new Exception("User detail not found");
+
+        var user = userData.get();
+        List<Long> existingFriends = new ArrayList<>();
+        if (!Objects.equals(user.getFriends(), "") && !Objects.equals(user.getFriends(), "[]")) {
+            existingFriends = objectMapper.readValue(user.getFriends(), new TypeReference<List<Long>>() {
+            });
+        }
+        if (existingFriends.contains(userId)) {
+            existingFriends.remove(userId);
+            status = "Unfriend successfully";
+        } else {
+            existingFriends.add(userId);
+            status = "Friend added successfully";
+        }
+
+        user.setFriends(objectMapper.writeValueAsString(existingFriends));
+        userRepository.save(user);
+        return status;
     }
 }
