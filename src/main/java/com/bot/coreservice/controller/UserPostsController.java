@@ -28,7 +28,7 @@ public class UserPostsController {
 
     @GetMapping("getHomePage/{page}")
     public ResponseEntity<ApiResponse> getHomePage(@PathVariable int page) throws Exception {
-        var result = this.userPostsService.getHomePageService(page, 20);
+        var result = this.userPostsService.getHomePageService(page, 10);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
