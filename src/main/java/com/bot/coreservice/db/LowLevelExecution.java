@@ -18,6 +18,7 @@ public class LowLevelExecution {
 
     public <T> Map<String, Object> executeProcedure(String procedureName, List<DbParameters> sqlParams) {
         SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withCatalogName("hiringbell")
                 .withProcedureName(procedureName);
 
         Map<String, Object> paramSet = new HashMap<>();

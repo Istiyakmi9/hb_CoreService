@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Data
 public class Currency {
+    @JsonProperty("Id")
+    int id;
+
     @JsonProperty("Name")
     String name;
 
