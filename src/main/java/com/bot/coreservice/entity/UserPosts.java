@@ -22,6 +22,10 @@ public class UserPosts {
         @JsonProperty("UserPostId")
         Long userPostId;
 
+        @JsonProperty("TotalRecords")
+        @Transient
+        Integer totalRecords;
+
         @Column(name = "ShortDescription")
         @JsonProperty("ShortDescription")
         String shortDescription;
