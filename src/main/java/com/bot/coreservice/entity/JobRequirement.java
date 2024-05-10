@@ -145,4 +145,53 @@ public class JobRequirement {
     @JsonProperty("UpdatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Date updatedOn;
+
+    @Column(name = "DailyWorkingHours")
+    @JsonProperty("DailyWorkingHours")
+    int dailyWorkingHours;
+
+    @Column(name = "VisaType")
+    @JsonProperty("VisaType")
+    int visaType;
+
+    @Column(name = "IsMedicalInsuranceProvide")
+    @JsonProperty("IsMedicalInsuranceProvide")
+    boolean isMedicalInsuranceProvide;
+
+    @Column(name = "OverseasExperience")
+
+    @JsonProperty("OverseasExperience")
+    int overseasExperience;
+
+    @Column(name = "LocalExperience")
+    @JsonProperty("LocalExperience")
+    int localExperience;
+
+    @Column(name = "IsMon")
+    @JsonProperty("IsMon")
+    Boolean isMon;
+
+    @Column(name = "IsTue")
+    @JsonProperty("IsTue")
+    Boolean isTue;
+
+    @Column(name = "IsThu")
+    @JsonProperty("IsThu")
+    Boolean isThu;
+
+    @Column(name = "IsWed")
+    @JsonProperty("IsWed")
+    Boolean isWed;
+
+    @Column(name = "IsFri")
+    @JsonProperty("IsFri")
+    Boolean isFri;
+
+    @Column(name = "IsSat")
+    @JsonProperty("IsSat")
+    Boolean isSat;
+
+    @Column(name = "IsSun")
+    @JsonProperty("IsSun")
+    Boolean isSun;
 }
