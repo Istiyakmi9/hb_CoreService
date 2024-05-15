@@ -284,6 +284,10 @@ public class UserServiceImpl implements UserService {
             throw new Exception("User detail not found");
 
         var existingUser = existingUserData.get();
+
+        // Add role Id
+        existingUser.setRoleId(user.getRoleId());
+
         existingUser.setJobCategoryId(user.getJobCategoryId());
         if (user.getJobLocationIds().size() > 0)
             existingUser.setJobLocationIds(objectMapper.writeValueAsString(user.getJobLocationIds()));

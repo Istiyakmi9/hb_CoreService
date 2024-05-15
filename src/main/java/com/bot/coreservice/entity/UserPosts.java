@@ -76,6 +76,10 @@ public class UserPosts {
         @JsonProperty("IsLiked")
         boolean isLiked;
 
+        @Transient
+        @JsonProperty("IsApplied")
+        boolean isApplied;
+
         @JsonProperty("Files")
         transient List<FileDetail> files;
 }

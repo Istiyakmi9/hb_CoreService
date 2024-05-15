@@ -1,9 +1,6 @@
 package com.bot.coreservice.services;
 
-import com.bot.coreservice.Repository.JobRequirementRepository;
-import com.bot.coreservice.Repository.JobTypeRepository;
-import com.bot.coreservice.Repository.LikedPostsRepository;
-import com.bot.coreservice.Repository.UserPostsRepository;
+import com.bot.coreservice.Repository.*;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;
@@ -40,6 +37,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
     JobTypeRepository jobTypeRepository;
     @Autowired
     LikedPostsRepository likedPostsRepository;
+    @Autowired
+    AppliedPostsRepository appliedPostsRepository;
     @Autowired
     CurrentSession currentSession;
 
@@ -370,6 +369,34 @@ public class UserPostsServiceImpl implements IUserPostsService {
         likedPosts.setLongitude("");
         likedPosts.setLatitude("");
         this.likedPostsRepository.save(likedPosts);
+    }
+
+    public String addAppliedPostService(UserPosts userPost) throws Exception {
+        var existingPost = appliedPostsRepository.existingAppliedPostBy(userPost.getUserPostId(), currentSession.getUser().getUserId());
+        if (existingPost == null)
+            addAppliedPost(userPost, currentSession.getUser().getUserId());
+
+        return "Thanks for Apply";
+    }
+
+    private void addAppliedPost(UserPosts userPost, long userId) {
+        Date utilDate = new Date();
+        var currentDate = new Timestamp(utilDate.getTime());
+        var lastApplyPost = appliedPostsRepository.getLastAppliedPost();
+        AppliedPosts appliedPosts = new AppliedPosts();
+        if (lastApplyPost == null)
+            appliedPosts.setAppliedPostsId(1L);
+        else
+            appliedPosts.setAppliedPostsId(lastApplyPost.getAppliedPostsId() + 1);
+
+        appliedPosts.setPostId(userPost.getUserPostId());
+        appliedPosts.setUserId(userId);
+        appliedPosts.setPostUserId(userPost.getPostedBy());
+        appliedPosts.setApplied(true);
+        appliedPosts.setAppliedOn(currentDate);
+        appliedPosts.setLongitude("");
+        appliedPosts.setLatitude("");
+        this.appliedPostsRepository.save(appliedPosts);
     }
 
 }

@@ -83,4 +83,10 @@ public class UserPostsController {
         var result = this.userPostsService.addLikedPostService(userPost);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
+
+    @PostMapping("addAppliedPost")
+    public ResponseEntity<ApiResponse> addAppliedPost(@RequestBody UserPosts userPost) throws Exception {
+        var result = this.userPostsService.addAppliedPostService(userPost);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 }

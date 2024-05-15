@@ -24,4 +24,5 @@ public interface IUserPostsService {
     public  List<JobType> getAllJobTypeService();
     public List<UserPosts> getPostByUserIdService(Long userId) throws Exception;
     public String addLikedPostService(UserPosts userPost) throws Exception;
+    public String addAppliedPostService(UserPosts userPost) throws Exception;
 }
