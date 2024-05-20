@@ -2,8 +2,10 @@ package com.bot.coreservice.contracts;
 
 import com.bot.coreservice.entity.User;
 import com.bot.coreservice.entity.UserInterests;
+import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.FilterModel;
 import com.bot.coreservice.model.UserMaster;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.ArrayList;
@@ -23,4 +25,5 @@ public interface UserService {
     public List<User> getFriendsService();
     public List<User> filterFriendService(FilterModel filterModel);
     public String manageFriendService(long userId) throws Exception;
+    public String addUserImageService(MultipartFile userImage, Long userId) throws Exception;
 }
