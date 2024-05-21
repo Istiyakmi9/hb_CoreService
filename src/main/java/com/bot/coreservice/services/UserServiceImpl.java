@@ -227,12 +227,17 @@ public class UserServiceImpl implements UserService {
         List<DbParameters> dbParameters = new ArrayList<>();
         dbParameters.add(new DbParameters("_UserId", userId, Types.BIGINT));
         var dataSet = lowLevelExecution.executeProcedure("sp_User_getByUserId", dbParameters);
-        var data =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserMaster>>() {
-        });
-        if (data != null)
-            return data.get(0);
-        else
-            return null;
+        try {
+            var data =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserMaster>>() {
+            });
+            if (data != null)
+                return data.get(0);
+            else
+                return null;
+        } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)

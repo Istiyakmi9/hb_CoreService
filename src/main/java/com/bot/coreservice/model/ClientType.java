@@ -12,11 +12,7 @@ import lombok.Data;
 @Table(name = "client_type")
 public class ClientType {
     @Id
-    @Column(name = "ClientTypeId")
-    @JsonProperty("ClientTypeId")
     private int clientTypeId;
 
-    @Column(name = "ClientType")
-    @JsonProperty("ClientType")
     private String clientType;
 }
