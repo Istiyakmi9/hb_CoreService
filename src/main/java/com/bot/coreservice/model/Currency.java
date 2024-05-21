@@ -5,22 +5,12 @@ import lombok.Data;
 
 @Data
 public class Currency {
-    @JsonProperty("Id")
     int id;
 
-    @JsonProperty("Country")
-    String country;
+    String name;
 
-    @JsonProperty("Currency")
-    String currency;
-
-    @JsonProperty("Code")
     String code;
 
-    @JsonProperty("MinorUnit")
-    String minorUnit;
-
-    @JsonProperty("Symbol")
     String symbol;
 }
 

@@ -40,13 +40,13 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-    @GetMapping("/getUserByUserId/{employeeId}")
+    @GetMapping("/getUserByUserId/{userId}")
     public ResponseEntity<ApiResponse> getUserByUserId( @PathVariable("userId") long userId) throws Exception {
         var result = this.userServiceImpl.getUserByUserIdService(userId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
-    @DeleteMapping("/deleteUserByUserId/{employeeId}")
+    @DeleteMapping("/deleteUserByUserId/{userId}")
     public ResponseEntity<ApiResponse> deleteUserByUserId( @PathVariable("userId") long userId) throws Exception {
         var result = this.userServiceImpl.deleteUserByUserIdService(userId);
         return ResponseEntity.ok(ApiResponse.Ok(result));

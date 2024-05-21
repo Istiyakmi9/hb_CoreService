@@ -436,6 +436,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         appliedPosts.setLongitude("");
         appliedPosts.setLatitude("");
         this.appliedPostsRepository.save(appliedPosts);
+
     }
 
 }
