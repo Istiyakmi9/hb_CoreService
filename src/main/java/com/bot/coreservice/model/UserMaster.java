@@ -52,9 +52,11 @@ public class UserMaster {
 
     int jobCategoryId;
 
-    List<Integer> categoryTypeIds;
+    String categoryTypeIds;
+    List<Integer> categoryTypeIdList;
 
-    List<Integer> jobLocationIds;
+    String jobLocationIds;
+    List<Integer> jobLocationIdList;
 
 //employee_detail fields
 
@@ -95,8 +97,6 @@ public class UserMaster {
     long medicalConsultancyId;
 
     String ConsultedBy;
-
-
 
     long referenceId;
 

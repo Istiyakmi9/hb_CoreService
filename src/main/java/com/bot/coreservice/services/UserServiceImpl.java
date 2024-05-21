@@ -5,7 +5,9 @@ import com.bot.coreservice.contracts.UserService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;
 import com.bot.coreservice.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +43,17 @@ public class UserServiceImpl implements UserService {
     CurrentSession currentSession;
 
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Transactional(rollbackFor = Exception.class)
     public String addUserService(UserMaster userMaster) throws Exception {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         User user = new User();
         var lastUserId = this.userRepository.getLastUserId();
-        if (lastUserId == null){
+        if (lastUserId == null) {
             user.setUserId(1L);
-        }else {
-            user.setUserId(lastUserId.getUserId()+1);
+        } else {
+            user.setUserId(lastUserId.getUserId() + 1);
         }
         user.setFirstName(userMaster.getFirstName());
         user.setLastName(userMaster.getLastName());
@@ -75,10 +78,10 @@ public class UserServiceImpl implements UserService {
 
         Login loginDetail = new Login();
         var lastLoginRecord = this.loginRepository.getLastLoginRecord();
-        if (lastLoginRecord == null){
+        if (lastLoginRecord == null) {
             loginDetail.setLoginId(1L);
-        }else {
-            loginDetail.setLoginId(lastLoginRecord.getLoginId()+1);
+        } else {
+            loginDetail.setLoginId(lastLoginRecord.getLoginId() + 1);
         }
         loginDetail.setUserId(user.getUserId());
         loginDetail.setEmail(userMaster.getEmail());
@@ -112,10 +115,10 @@ public class UserServiceImpl implements UserService {
 
         UserMedicalDetail userMedicalDetail = new UserMedicalDetail();
         var lastUserMedicalDetailRecord = this.userMedicalDetailRepository.getLastUserMedicalDetailRecord();
-        if (lastUserMedicalDetailRecord == null){
+        if (lastUserMedicalDetailRecord == null) {
             userMedicalDetail.setUserMedicalDetailId(1L);
-        }else {
-            userMedicalDetail.setUserMedicalDetailId(lastUserMedicalDetailRecord.getUserMedicalDetailId()+1);
+        } else {
+            userMedicalDetail.setUserMedicalDetailId(lastUserMedicalDetailRecord.getUserMedicalDetailId() + 1);
         }
         userMedicalDetail.setUserId(user.getUserId());
         userMedicalDetail.setMedicalConsultancyId(userMaster.getMedicalConsultancyId());
@@ -163,7 +166,7 @@ public class UserServiceImpl implements UserService {
 
         Login login;
         Optional<Login> loginResult = Optional.ofNullable(this.loginRepository.getLoginByUserId(userId));
-        if (loginResult.isEmpty()){
+        if (loginResult.isEmpty()) {
             throw new Exception("Fail to get login, please contact to admin");
         }
         login = loginResult.get();
@@ -172,7 +175,7 @@ public class UserServiceImpl implements UserService {
         login.setUpdatedBy(currentSession.getUser().getUserId());
         login.setUpdatedOn(currentDate);
         Login loginData = this.loginRepository.save(login);
-        if (loginData == null){
+        if (loginData == null) {
             throw new Exception("fail to update login. please contact to admin");
         }
 
@@ -200,12 +203,12 @@ public class UserServiceImpl implements UserService {
         userDetail.setUpdatedBy(currentSession.getUser().getUserId());
         userDetail.setUpdatedOn(currentDate);
         UserDetail userDetailData = userDetailRepository.save(userDetail);
-        if (userDetail == null){
+        if (userDetail == null) {
             throw new Exception("fail to update UserDetail");
         }
         UserMedicalDetail userMedicalDetail;
         UserMedicalDetail userMedicalDetailResult = this.userMedicalDetailRepository.getUserMedicalDetailByUserId(userId);
-        if (userMedicalDetailResult == null){
+        if (userMedicalDetailResult == null) {
             throw new Exception("UserMedicalDetail not found");
         }
         userMedicalDetailResult.setMedicalConsultancyId(userMaster.getMedicalConsultancyId());
@@ -231,14 +234,23 @@ public class UserServiceImpl implements UserService {
         dbParameters.add(new DbParameters("_UserId", userId, Types.BIGINT));
         var dataSet = lowLevelExecution.executeProcedure("sp_User_getByUserId", dbParameters);
         try {
-            var data =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserMaster>>() {
+            var data = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserMaster>>() {
             });
-            if (data != null)
-                return data.get(0);
-            else
-                return null;
+
+            if (data != null) {
+                var result = data.get(0);
+
+                result.setCategoryTypeIdList(Arrays.stream(objectMapper.readValue(result.getCategoryTypeIds(), Integer[].class)).toList());
+                result.setJobLocationIdList(Arrays.stream(objectMapper.readValue(result.getJobLocationIds(), Integer[].class)).toList());
+
+                return result;
+            }
+
+            return null;
         } catch (IllegalArgumentException e) {
             logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -254,17 +266,17 @@ public class UserServiceImpl implements UserService {
         this.userRepository.save(existingUser);
 
         Login loginResult = this.loginRepository.getLoginByUserId(userId);
-        if (loginResult == null){
+        if (loginResult == null) {
             throw new Exception("login record not found");
         }
-        loginResult.setActive (false);
+        loginResult.setActive(false);
         this.loginRepository.save(loginResult);
         return "User data is De-active";
     }
 
     public ArrayList<UserInterests> updateUserInterestService(List<Integer> userInterest) throws Exception {
         ArrayList<UserInterests> userInterestList = new ArrayList<UserInterests>();
-        for (var item: userInterest){
+        for (var item : userInterest) {
             userInterestList.add(new UserInterests(currentSession.getUser().getUserId(), item));
         }
         userInterestsRepository.saveAll(userInterestList);
@@ -275,9 +287,9 @@ public class UserServiceImpl implements UserService {
         List<DbParameters> dbParameters = new ArrayList<>();
         dbParameters.add(new DbParameters("_CategoryId", categoryId, Types.INTEGER));
         var dataSet = lowLevelExecution.executeProcedure("sp_jobtitle_by_filter", dbParameters);
-        var country =  objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<Country>>() {
+        var country = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<Country>>() {
         });
-        var jobTitle =  objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<JobType>>() {
+        var jobTitle = objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<JobType>>() {
         });
         Map<String, Object> response = new HashMap<>();
         response.put("Countries", country);
@@ -296,10 +308,10 @@ public class UserServiceImpl implements UserService {
         existingUser.setRoleId(user.getRoleId());
 
         existingUser.setJobCategoryId(user.getJobCategoryId());
-        if (user.getJobLocationIds().size() > 0)
+        if (user.getJobLocationIdList().size() > 0)
             existingUser.setJobLocationIds(objectMapper.writeValueAsString(user.getJobLocationIds()));
 
-        if (user.getCategoryTypeIds().size() > 0)
+        if (user.getCategoryTypeIdList().size() > 0)
             existingUser.setCategoryTypeIds(objectMapper.writeValueAsString(user.getCategoryTypeIds()));
 
         var existingLoginDetail = loginRepository.getLoginByUserId(currentSession.getUser().getUserId());
