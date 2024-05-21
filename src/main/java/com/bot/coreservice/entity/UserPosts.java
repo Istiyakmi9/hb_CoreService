@@ -18,68 +18,67 @@ import java.util.List;
 public class UserPosts {
 
         @Id
-        @Column(name = "UserPostId")
-        @JsonProperty("UserPostId")
+        @Column(name = "userPostId")
+        @JsonProperty("userPostId")
         Long userPostId;
 
-        @JsonProperty("TotalRecords")
+        @JsonProperty("totalRecords")
         @Transient
         Integer totalRecords;
 
-        @Column(name = "ShortDescription")
-        @JsonProperty("ShortDescription")
+        @Column(name = "shortDescription")
+        @JsonProperty("shortDescription")
         String shortDescription;
 
-        @Column(name = "CompleteDescription")
-        @JsonProperty("CompleteDescription")
+        @Column(name = "completeDescription")
+        @JsonProperty("completeDescription")
         String completeDescription;
 
-        @Column(name = "FileDetail")
-        @JsonProperty("FileDetail")
+        @Column(name = "fileDetail")
+        @JsonProperty("fileDetail")
         String fileDetail;
 
+        @Column(name = "categoryTypeId")
+        @JsonProperty("categoryTypeId")
+        long categoryTypeId;
 
-        @Column(name = "CatagoryTypeId")
-        @JsonProperty("CatagoryTypeId")
-        long catagoryTypeId;
-
-        @Column(name = "CountryId")
-        @JsonProperty("CountryId")
+        @Column(name = "countryId")
+        @JsonProperty("countryId")
         Integer countryId;
 
-        @Column(name = "JobCategoryId")
-        @JsonProperty("JobCategoryId")
+        @Column(name = "jobCategoryId")
+        @JsonProperty("jobCategoryId")
         Integer jobCategoryId;
 
-        @Column(name = "JobRequirementId")
-        @JsonProperty("JobRequirementId")
+        @Column(name = "jobRequirementId")
+        @JsonProperty("jobRequirementId")
         long jobRequirementId;
 
-        @Column(name = "PostedBy")
-        @JsonProperty("PostedBy")
+        @Column(name = "postedBy")
+        @JsonProperty("postedBy")
         Long postedBy;
 
-        @Column(name = "PostedOn")
-        @JsonProperty("PostedOn")
+        @Column(name = "postedOn")
+        @JsonProperty("postedOn")
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         Date postedOn;
 
-        @Column(name = "UpdatedOn")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @Column(name = "updatedOn")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         Date updatedOn;
 
-        @JsonProperty("FullName")
-        @Column(name = "FullName")
+        @JsonProperty("fullName")
+        @Column(name = "fullName")
         String fullName;
 
         @Transient
-        @JsonProperty("IsLiked")
+        @JsonProperty("isLiked")
         boolean isLiked;
 
         @Transient
-        @JsonProperty("IsApplied")
+        @JsonProperty("isApplied")
         boolean isApplied;
 
-        @JsonProperty("Files")
+        @JsonProperty("files")
         transient List<FileDetail> files;
 }

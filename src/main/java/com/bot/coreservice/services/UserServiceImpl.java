@@ -1,7 +1,6 @@
 package com.bot.coreservice.services;
 
 import com.bot.coreservice.Repository.*;
-import com.bot.coreservice.authenticationmodule.WebCorsConfiguration;
 import com.bot.coreservice.contracts.UserService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;

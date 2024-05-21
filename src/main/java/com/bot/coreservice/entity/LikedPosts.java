@@ -19,39 +19,39 @@ import java.util.Date;
 public class LikedPosts {
 
     @Id
-    @Column(name = "LikedPostsId")
-    @JsonProperty("LikedPostsId")
+    @Column(name = "likedPostsId")
+    @JsonProperty("likedPostsId")
     Long likedPostsId;
 
-    @Column(name = "PostId")
-    @JsonProperty("PostId")
+    @Column(name = "postId")
+    @JsonProperty("postId")
     Long postId;
 
-    @Column(name = "UserId")
-    @JsonProperty("UserId")
+    @Column(name = "userId")
+    @JsonProperty("userId")
     Long userId;
 
-    @Column(name = "LikedOn")
-    @JsonProperty("LikedOn")
+    @Column(name = "likedOn")
+    @JsonProperty("likedOn")
     Date likedOn;
 
-    @Column(name = "Location")
-    @JsonProperty("Location")
+    @Column(name = "location")
+    @JsonProperty("location")
     String location;
 
-    @Column(name = "Latitude")
-    @JsonProperty("Latitude")
+    @Column(name = "latitude")
+    @JsonProperty("latitude")
     String latitude;
 
-    @Column(name = "Longitude")
-    @JsonProperty("Longitude")
+    @Column(name = "longitude")
+    @JsonProperty("longitude")
     String longitude;
 
-    @Column(name = "PostUserId")
-    @JsonProperty("PostUserId")
+    @Column(name = "postUserId")
+    @JsonProperty("postUserId")
     Long postUserId;
 
-    @Column(name = "IsLiked")
-    @JsonProperty("IsLiked")
+    @Column(name = "isLiked")
+    @JsonProperty("isLiked")
     boolean isLiked;
 }

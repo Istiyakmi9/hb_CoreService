@@ -19,39 +19,39 @@ import java.util.Date;
 public class AppliedPosts {
 
     @Id
-    @Column(name = "AppliedPostsId")
-    @JsonProperty("AppliedPostsId")
+    @Column(name = "appliedPostsId")
+    @JsonProperty("appliedPostsId")
     Long appliedPostsId;
 
-    @Column(name = "PostId")
-    @JsonProperty("PostId")
+    @Column(name = "postId")
+    @JsonProperty("postId")
     Long postId;
 
-    @Column(name = "UserId")
-    @JsonProperty("UserId")
+    @Column(name = "userId")
+    @JsonProperty("userId")
     Long userId;
 
-    @Column(name = "AppliedOn")
-    @JsonProperty("AppliedOn")
+    @Column(name = "appliedOn")
+    @JsonProperty("appliedOn")
     Date appliedOn;
 
-    @Column(name = "Location")
-    @JsonProperty("Location")
+    @Column(name = "location")
+    @JsonProperty("location")
     String location;
 
-    @Column(name = "Latitude")
-    @JsonProperty("Latitude")
+    @Column(name = "latitude")
+    @JsonProperty("latitude")
     String latitude;
 
-    @Column(name = "Longitude")
-    @JsonProperty("Longitude")
+    @Column(name = "longitude")
+    @JsonProperty("longitude")
     String longitude;
 
-    @Column(name = "PostUserId")
-    @JsonProperty("PostUserId")
+    @Column(name = "postUserId")
+    @JsonProperty("postUserId")
     Long postUserId;
 
-    @Column(name = "IsApplied")
-    @JsonProperty("IsApplied")
+    @Column(name = "isApplied")
+    @JsonProperty("isApplied")
     boolean isApplied;
 }

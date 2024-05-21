@@ -3,7 +3,6 @@ package com.bot.coreservice.model;
 import com.bot.coreservice.entity.JobRequirement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,29 +12,29 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UserPostRequest extends JobRequirement {
-    @JsonProperty("UserPostId")
+    @JsonProperty("userPostId")
     Long userPostId;
 
-    @JsonProperty("ShortDescription")
+    @JsonProperty("shortDescription")
     String shortDescription;
 
-    @JsonProperty("CatagoryTypeId")
-    long catagoryTypeId;
+    @JsonProperty("categoryTypeId")
+    long categoryTypeId;
 
-    @JsonProperty("PostedBy")
+    @JsonProperty("postedBy")
     Long postedBy;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonProperty("PostedOn")
+    @JsonProperty("postedOn")
     Date postedOn;
 
-    @JsonProperty("FileDetail")
+    @JsonProperty("fileDetail")
     String fileDetail;
 
-    @JsonProperty("Files")
+    @JsonProperty("files")
     List<FileDetail> files;
 
-    @JsonProperty("JobCategoryId")
+    @JsonProperty("jobCategoryId")
     Integer jobCategoryId;
 }
 

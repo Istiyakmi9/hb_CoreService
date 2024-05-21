@@ -1,13 +1,17 @@
 package com.bot.coreservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileDetail {
-    @JsonProperty("FileDetailId")
+    @JsonProperty("fileDetailId")
     private int fileDetailId;
 
-    @JsonProperty("FilePath")
+    @JsonProperty("filePath")
     private String filePath;
 }

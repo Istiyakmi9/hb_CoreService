@@ -16,9 +16,11 @@ public interface IUserPostsService {
     public String addUserPostService(UserPosts userPost);
     public String updateUserPostService(UserPosts userPost, long userPostId) throws Exception;
     public List<UserPosts> getHomePageService(int page, int pageSize);
+    public List<UserPosts> getOwnPageService(int page, int pageSize);
     public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception;
     public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId) throws Exception;
     public List<UserPosts> uploadUserPostsService(String userPost, MultipartFile[] postImages) throws Exception;
+    public void saveUserPostedData(String userPost, MultipartFile[] postImages) throws Exception;
     public List<UserPosts> updateUserPostsService(String userPost, MultipartFile[] postImages) throws Exception;
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
     public  List<JobType> getAllJobTypeService();

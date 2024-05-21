@@ -21,55 +21,55 @@ import java.util.Date;
 public class UserMedicalDetail {
 
     @Id
-    @Column(name = "UserMedicalDetailId")
-    @JsonProperty("UserMedicalDetailId")
+    @Column(name = "userMedicalDetailId")
+    @JsonProperty("userMedicalDetailId")
     long userMedicalDetailId;
 
-    @Column(name = "UserId")
-    @JsonProperty("UserId")
+    @Column(name = "userId")
+    @JsonProperty("userId")
     long userId;
 
-    @Column(name = "MedicalConsultancyId")
-    @JsonProperty("MedicalConsultancyId")
+    @Column(name = "medicalConsultancyId")
+    @JsonProperty("medicalConsultancyId")
     long medicalConsultancyId;
 
-    @Column (name = "ConsultedBy")
-    @JsonProperty("ConsultedBy")
+    @Column (name = "consultedBy")
+    @JsonProperty("consultedBy")
     String ConsultedBy;
 
-    @Column(name = "ConsultedOn")
+    @Column(name = "consultedOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("ConsultedOn")
+    @JsonProperty("consultedOn")
     Date consultedOn;
 
-    @Column(name = "ReferenceId")
-    @JsonProperty("ReferenceId")
+    @Column(name = "referenceId")
+    @JsonProperty("referenceId")
     long referenceId;
 
-    @Column(name = "ReportId")
-    @JsonProperty("ReportId")
+    @Column(name = "reportId")
+    @JsonProperty("reportId")
     long reportId;
 
-    @Column(name = "ReportPath")
-    @JsonProperty("ReportPath")
+    @Column(name = "reportPath")
+    @JsonProperty("reportPath")
     String ReportPath;
 
-    @Column(name = "CreatedBy")
-    @JsonProperty("CreatedBy")
+    @Column(name = "createdBy")
+    @JsonProperty("createdBy")
     Long createdBy;
 
-    @Column(name = "UpdatedBy")
-    @JsonProperty("UpdatedBy")
+    @Column(name = "updatedBy")
+    @JsonProperty("updatedBy")
     Long updatedBy;
 
-    @Column(name = "CreatedOn")
+    @Column(name = "createdOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("CreatedOn")
+    @JsonProperty("createdOn")
     Date createdOn;
 
-    @Column(name = "UpdatedOn")
+    @Column(name = "updatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("UpdatedOn")
+    @JsonProperty("updatedOn")
     Date updatedOn;
 
 }

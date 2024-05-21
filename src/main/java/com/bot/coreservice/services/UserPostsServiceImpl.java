@@ -9,12 +9,13 @@ import com.bot.coreservice.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -42,14 +43,16 @@ public class UserPostsServiceImpl implements IUserPostsService {
     @Autowired
     CurrentSession currentSession;
 
+    private final Logger logger = LoggerFactory.getLogger(ExternalService.class);
+
     public String addUserPostService(UserPosts userPost) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
-        if (lastUserPostRecord == null){
+        if (lastUserPostRecord == null) {
             userPost.setUserPostId(1L);
-        }else {
-            userPost.setUserPostId(lastUserPostRecord.getUserPostId()+1);
+        } else {
+            userPost.setUserPostId(lastUserPostRecord.getUserPostId() + 1);
         }
         userPost.setPostedOn(currentDate);
         this.userPostsRepository.save(userPost);
@@ -61,13 +64,13 @@ public class UserPostsServiceImpl implements IUserPostsService {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
         Optional<UserPosts> result = this.userPostsRepository.findById(userPostId);
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             throw new Exception("No user post found");
         }
         UserPosts existingUserPost = result.get();
         existingUserPost.setShortDescription(userPost.getShortDescription());
         existingUserPost.setCompleteDescription(userPost.getCompleteDescription());
-        existingUserPost.setCatagoryTypeId(1);
+        existingUserPost.setCategoryTypeId(1);
         existingUserPost.setJobRequirementId(1);
         existingUserPost.setUpdatedOn(currentDate);
         this.userPostsRepository.save(existingUserPost);
@@ -75,18 +78,28 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     public List<UserPosts> getHomePageService(int page, int pageSize) {
+        return getPosts(page, pageSize, Constants.USERPOSTS_FILTER);
+    }
+
+    public List<UserPosts> getOwnPageService(int page, int pageSize) {
+        return getPosts(page, pageSize, Constants.OWN_POSTS);
+    }
+
+    public List<UserPosts> getPosts(int page, int pageSize, String procedure) {
         if (page == 0)
             page = 1;
 
         List<DbParameters> dbParameters = new ArrayList<>();
-        dbParameters.add(new DbParameters("_UserId", currentSession.getUser().getUserId(), Types.BIGINT));
-        dbParameters.add(new DbParameters("_PageIndex", page, Types.INTEGER));
-        dbParameters.add(new DbParameters("_PageSize", pageSize, Types.INTEGER));
-        var dataSet = lowLevelExecution.executeProcedure("sp_userposts_filter", dbParameters);
-        var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
-        if (result != null && result.size() > 0) {
+        dbParameters.add(new DbParameters("_userId", currentSession.getUser().getUserId(), Types.BIGINT));
+        dbParameters.add(new DbParameters("_pageIndex", page, Types.INTEGER));
+        dbParameters.add(new DbParameters("_pageSize", pageSize, Types.INTEGER));
+        var dataSet = lowLevelExecution.executeProcedure(procedure, dbParameters);
+        var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {
+        });
+
+        if (result != null && !result.isEmpty()) {
             result.forEach(x -> {
-                if (!Objects.equals(x.getFileDetail(), "[]")){
+                if (!Objects.equals(x.getFileDetail(), "[]")) {
                     try {
                         x.setFiles(objectMapper.readValue(x.getFileDetail(), new TypeReference<List<FileDetail>>() {
                         }));
@@ -103,16 +116,20 @@ public class UserPostsServiceImpl implements IUserPostsService {
         List<DbParameters> dbParameters = new ArrayList<>();
         dbParameters.add(new DbParameters("_UserPostId", userPostId, Types.BIGINT));
         var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getbyid", dbParameters);
-        var userPost = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPostRequest>>() {});
-        var countries = objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<Country>>() {});
-        var currencies = objectMapper.convertValue(dataSet.get("#result-set-3"), new TypeReference<List<Currency>>() {});
-        var jobTypes = objectMapper.convertValue(dataSet.get("#result-set-4"), new TypeReference<List<JobType>>() {});
+        var userPost = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPostRequest>>() {
+        });
+        var countries = objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<Country>>() {
+        });
+        var currencies = objectMapper.convertValue(dataSet.get("#result-set-3"), new TypeReference<List<Currency>>() {
+        });
+        var jobTypes = objectMapper.convertValue(dataSet.get("#result-set-4"), new TypeReference<List<JobType>>() {
+        });
         Map<String, Object> result = new HashMap<>();
         result.put("UserPost", userPost);
         result.put("Countries", countries);
         result.put("Currencies", currencies);
         result.put("JobTypes", jobTypes);
-        return  result;
+        return result;
     }
 
     public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId) throws Exception {
@@ -129,32 +146,37 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
     @Transactional(rollbackFor = Exception.class)
     public void saveUserPostedData(String userPost, MultipartFile[] postImages) throws Exception {
-        UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
-        UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
-        JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
+        try {
+            UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
+            UserPosts userPosts = objectMapper.convertValue(userPostRequest, UserPosts.class);
+            JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
 
-        jobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
-        jobRequirement.setJobTypeId(userPosts.getCatagoryTypeId());
+            jobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
+            jobRequirement.setJobTypeId(userPosts.getCategoryTypeId());
 
-        var jobRequirementId = addJobRequirement(jobRequirement);
-        var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
-        if (lastUserPostRecord == null)
-            userPosts.setUserPostId(1L);
-        else
-            userPosts.setUserPostId(lastUserPostRecord.getUserPostId()+1);
+            var jobRequirementId = addJobRequirement(jobRequirement);
+            var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
+            if (lastUserPostRecord == null)
+                userPosts.setUserPostId(1L);
+            else
+                userPosts.setUserPostId(lastUserPostRecord.getUserPostId() + 1);
 
-        userPosts.setJobRequirementId(jobRequirementId);
-        userPostRequest.setUserPostId(userPosts.getUserPostId());
+            userPosts.setJobRequirementId(jobRequirementId);
+            userPostRequest.setUserPostId(userPosts.getUserPostId());
 
-        var fileDetail = saveUpdateFileDetail(userPostRequest.getFileDetail(), postImages, userPosts.getUserPostId());
-        if (fileDetail != null) {
-            var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
-            userPosts.setFileDetail(jsonFileDetail);
-        } else  {
-            userPosts.setFileDetail("[]");
+            var fileDetail = saveUpdateFileDetail(userPostRequest.getFileDetail(), postImages, userPosts.getUserPostId());
+            if (fileDetail != null) {
+                var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
+                userPosts.setFileDetail(jsonFileDetail);
+            } else {
+                userPosts.setFileDetail("[]");
+            }
+
+            addUserPostDetailService(userPosts);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            throw ex;
         }
-
-        addUserPostDetailService(userPosts);
     }
 
     private void addUserPostDetailService(UserPosts userPosts) {
@@ -174,7 +196,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (lastJobRequirementRecord == null)
             jobRequirement.setJobRequirementId(1L);
         else
-            jobRequirement.setJobRequirementId(lastJobRequirementRecord.getJobRequirementId()+1);
+            jobRequirement.setJobRequirementId(lastJobRequirementRecord.getJobRequirementId() + 1);
 
         jobRequirement.setCreatedBy(currentSession.getUser().getUserId());
         jobRequirement.setCreatedOn(currentDate);
@@ -211,12 +233,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
         UserPosts existingUserPost = data.get();
         existingUserPost.setShortDescription(userPostRequest.getShortDescription());
         existingUserPost.setCompleteDescription(userPostRequest.getCompleteDescription());
-        existingUserPost.setCatagoryTypeId(userPostRequest.getCatagoryTypeId());
+        existingUserPost.setCategoryTypeId(userPostRequest.getCategoryTypeId());
         existingUserPost.setCountryId((userPostRequest.getCountryId()));
         existingUserPost.setJobCategoryId(userPostRequest.getJobCategoryId());
         var fileDetail = saveUpdateFileDetail(existingUserPost.getFileDetail(), postImages, userPostRequest.getUserPostId());
 
-        if (fileDetail != null && fileDetail.size() > 0) {
+        if (fileDetail != null && !fileDetail.isEmpty()) {
             var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
             existingUserPost.setFileDetail(jsonFileDetail);
         }
@@ -234,17 +256,17 @@ public class UserPostsServiceImpl implements IUserPostsService {
         JobRequirement existingjobRequirement = result.get();
         existingjobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
         existingjobRequirement.setCompleteDescription(userPostRequest.getCompleteDescription());
-        existingjobRequirement.setJobTypeId(userPostRequest.getCatagoryTypeId());
+        existingjobRequirement.setJobTypeId(userPostRequest.getCategoryTypeId());
         existingjobRequirement.setIsHRAAllowance(userPostRequest.getIsHRAAllowance());
-        existingjobRequirement.setHraAllowanceAmount(userPostRequest.getHraAllowanceAmount());
+        existingjobRequirement.setHRAAllowanceAmount(userPostRequest.getHRAAllowanceAmount());
         existingjobRequirement.setIsTravelAllowance(userPostRequest.getIsTravelAllowance());
         existingjobRequirement.setTravelAllowanceAmount(userPostRequest.getTravelAllowanceAmount());
         existingjobRequirement.setIsFoodAllowance(userPostRequest.getIsFoodAllowance());
         existingjobRequirement.setFoodAllowanceAmount(userPostRequest.getFoodAllowanceAmount());
         existingjobRequirement.setIsForeignReturnCompulsory(userPostRequest.getIsForeignReturnCompulsory());
-        existingjobRequirement.setMinimunDaysRequired(userPostRequest.getMinimunDaysRequired());
-        existingjobRequirement.setMinimunCTC(userPostRequest.getMinimunCTC());
-        existingjobRequirement.setMaximunCTC(userPostRequest.getMaximunCTC());
+        existingjobRequirement.setMinimumDaysRequired(userPostRequest.getMinimumDaysRequired());
+        existingjobRequirement.setMinimumCTC(userPostRequest.getMinimumCTC());
+        existingjobRequirement.setMaximumCTC(userPostRequest.getMaximumCTC());
         existingjobRequirement.setIsOTIncluded(userPostRequest.getIsOTIncluded());
         existingjobRequirement.setMaxOTHours(userPostRequest.getMaxOTHours());
         existingjobRequirement.setBonus(userPostRequest.getBonus());
@@ -265,7 +287,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
             if (fileDetailJSON != null && !fileDetailJSON.equals("[]")) {
                 existingFiles = objectMapper.readValue(fileDetailJSON, new TypeReference<List<FileDetail>>() {
                 });
-                Collections.sort(existingFiles, Comparator.comparingInt(FileDetail::getFileDetailId).reversed());
+
+                existingFiles.sort(Comparator.comparingInt(FileDetail::getFileDetailId).reversed());
                 id = existingFiles.get(0).getFileDetailId();
             } else {
                 existingFiles = new ArrayList<>();
@@ -286,6 +309,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
             }
             return existingFiles;
         }
+
         return null;
     }
 
@@ -293,24 +317,28 @@ public class UserPostsServiceImpl implements IUserPostsService {
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception {
         try {
             var existingUserPostData = this.userPostsRepository.findById(userPostId);
-            var existingUserPost = existingUserPostData.get();
-            if (existingUserPost == null)
+            if (existingUserPostData.isPresent()) {
+                var existingUserPost = existingUserPostData.get();
+
+                if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail().equals("[]")) {
+                    throw new Exception("File not found");
+                }
+
+                var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>() {
+                });
+                var file = existingFiles.stream().filter(x -> x.getFileDetailId() == fileDetailId).findFirst().orElse(null);
+                if (file == null)
+                    throw new Exception("File detail not found");
+
+                var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
+                existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
+                fileManager.DeleteFile(file.getFilePath());
+                userPostsRepository.save(existingUserPost);
+                return updatedFiles;
+            } else {
                 throw new Exception("UserPostId does not exists");
+            }
 
-            if (existingUserPost.getFileDetail() == null || existingUserPost.getFileDetail().equals("[]"))
-                throw new Exception("File not found");
-
-            var existingFiles = objectMapper.readValue(existingUserPost.getFileDetail(), new TypeReference<List<FileDetail>>() {
-            });
-            var file = existingFiles.stream().filter(x -> x.getFileDetailId() == fileDetailId).findFirst().orElse(null);
-            if (file == null)
-                throw new Exception("File detail not found");
-
-            var updatedFiles = existingFiles.stream().filter(x -> x.getFileDetailId() != fileDetailId).toList();
-            existingUserPost.setFileDetail(objectMapper.writeValueAsString(updatedFiles));
-            fileManager.DeleteFile(file.getFilePath());
-            userPostsRepository.save(existingUserPost);
-            return updatedFiles;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -327,10 +355,11 @@ public class UserPostsServiceImpl implements IUserPostsService {
         List<DbParameters> dbParameters = new ArrayList<>();
         dbParameters.add(new DbParameters("_UserId", userId, Types.BIGINT));
         var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getby_userid", dbParameters);
-        var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {});
-        if (result != null && result.size() > 0) {
+        var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {
+        });
+        if (result != null && !result.isEmpty()) {
             result.forEach(x -> {
-                if (!Objects.equals(x.getFileDetail(), "[]")){
+                if (!Objects.equals(x.getFileDetail(), "[]")) {
                     try {
                         x.setFiles(objectMapper.readValue(x.getFileDetail(), new TypeReference<List<FileDetail>>() {
                         }));
@@ -352,9 +381,15 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     private void addLikedPost(UserPosts userPost, long userId) {
+        var lastLikePost = likedPostsRepository.getLastLikedPost();
+        LikedPosts likedPosts = getLikedPosts(userPost, userId, lastLikePost);
+        this.likedPostsRepository.save(likedPosts);
+    }
+
+    @NotNull
+    private static LikedPosts getLikedPosts(UserPosts userPost, long userId, LikedPosts lastLikePost) {
         Date utilDate = new Date();
         var currentDate = new Timestamp(utilDate.getTime());
-        var lastLikePost = likedPostsRepository.getLastLikedPost();
         LikedPosts likedPosts = new LikedPosts();
         if (lastLikePost == null)
             likedPosts.setLikedPostsId(1L);
@@ -368,7 +403,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         likedPosts.setLikedOn(currentDate);
         likedPosts.setLongitude("");
         likedPosts.setLatitude("");
-        this.likedPostsRepository.save(likedPosts);
+        return likedPosts;
     }
 
     public String addAppliedPostService(UserPosts userPost) throws Exception {

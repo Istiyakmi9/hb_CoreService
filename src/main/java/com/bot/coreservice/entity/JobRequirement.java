@@ -16,182 +16,181 @@ import java.util.Date;
 @Table(name = "job_requirement")
 public class JobRequirement {
     @Id
-    @Column(name = "JobRequirementId")
-    @JsonProperty("JobRequirementId")
+    @Column(name = "jobRequirementId")
+    @JsonProperty("jobRequirementId")
     private Long jobRequirementId;
 
-    @Column(name = "RequiredShortDesc")
-    @JsonProperty("RequiredShortDesc")
+    @Column(name = "requiredShortDesc")
+    @JsonProperty("requiredShortDesc")
     private String requiredShortDesc;
 
-    @Column(name = "CompleteDescription")
-    @JsonProperty("CompleteDescription")
+    @Column(name = "completeDescription")
+    @JsonProperty("completeDescription")
     private String completeDescription;
 
-    @Column(name = "JobTypeId")
-    @JsonProperty("JobTypeId")
+    @Column(name = "jobTypeId")
+    @JsonProperty("jobTypeId")
     private Long jobTypeId;
 
-    @Column(name = "ClientId")
-    @JsonProperty("ClientId")
+    @Column(name = "clientId")
+    @JsonProperty("clientId")
     private Long clientId;
 
-    @Column(name = "AgentId")
-    @JsonProperty("AgentId")
+    @Column(name = "agentId")
+    @JsonProperty("agentId")
     private Long agentId;
 
-    @Column(name = "PartnerId")
-    @JsonProperty("PartnerId")
+    @Column(name = "partnerId")
+    @JsonProperty("partnerId")
     private Long partnerId;
 
-    @Column(name = "ShiftId")
-    @JsonProperty("ShiftId")
+    @Column(name = "shiftId")
+    @JsonProperty("shiftId")
     private Integer shiftId;
 
-    @Column(name = "IsHRAAllowance")
-    @JsonProperty("IsHRAAllowance")
+    @Column(name = "isHRAAllowance")
+    @JsonProperty("isHRAAllowance")
     private Boolean isHRAAllowance;
 
-    @Column(name = "HRAAllowanceAmount")
-    @JsonProperty("HRAAllowanceAmount")
-    private Long hraAllowanceAmount;
+    @Column(name = "hRAAllowanceAmount")
+    @JsonProperty("hRAAllowanceAmount")
+    private Long hRAAllowanceAmount;
 
-    @Column(name = "IsTravelAllowance")
-    @JsonProperty("IsTravelAllowance")
+    @Column(name = "isTravelAllowance")
+    @JsonProperty("isTravelAllowance")
     private Boolean isTravelAllowance;
 
-    @Column(name = "TravelAllowanceAmount")
-    @JsonProperty("TravelAllowanceAmount")
+    @Column(name = "travelAllowanceAmount")
+    @JsonProperty("travelAllowanceAmount")
     private Long travelAllowanceAmount;
 
-    @Column(name = "IsFoodAllowance")
-    @JsonProperty("IsFoodAllowance")
+    @Column(name = "isFoodAllowance")
+    @JsonProperty("isFoodAllowance")
     private Boolean isFoodAllowance;
 
-    @Column(name = "FoodAllowanceAmount")
-    @JsonProperty("FoodAllowanceAmount")
+    @Column(name = "foodAllowanceAmount")
+    @JsonProperty("foodAllowanceAmount")
     private Long foodAllowanceAmount;
 
-    @Column(name = "IsForeignReturnCompulsory")
-    @JsonProperty("IsForeignReturnCompulsory")
+    @Column(name = "isForeignReturnCompulsory")
+    @JsonProperty("isForeignReturnCompulsory")
     private Boolean isForeignReturnCompulsory;
 
-    @Column(name = "MinimunDaysRequired")
-    @JsonProperty("MinimunDaysRequired")
-    private Integer minimunDaysRequired;
+    @Column(name = "minimumDaysRequired")
+    @JsonProperty("minimumDaysRequired")
+    private Integer minimumDaysRequired;
 
-    @Column(name = "CertificateRequiredId")
-    @JsonProperty("CertificateRequiredId")
+    @Column(name = "certificateRequiredId")
+    @JsonProperty("certificateRequiredId")
     private Integer certificateRequiredId;
 
-    @Column(name = "MinimunCTC")
-    @JsonProperty("MinimunCTC")
-    private Long minimunCTC;
+    @Column(name = "minimumCTC")
+    @JsonProperty("minimumCTC")
+    private Long minimumCTC;
 
-    @Column(name = "MaximunCTC")
-    @JsonProperty("MaximunCTC")
-    private Long maximunCTC;
+    @Column(name = "maximumCTC")
+    @JsonProperty("maximumCTC")
+    private Long maximumCTC;
 
-    @Column(name = "IsOTIncluded")
-    @JsonProperty("IsOTIncluded")
+    @Column(name = "isOTIncluded")
+    @JsonProperty("isOTIncluded")
     private Boolean isOTIncluded;
 
-    @Column(name = "MaxOTHours")
-    @JsonProperty("MaxOTHours")
+    @Column(name = "maxOTHours")
+    @JsonProperty("maxOTHours")
     private Integer maxOTHours;
 
-    @Column(name = "Bonus")
-    @JsonProperty("Bonus")
+    @Column(name = "bonus")
+    @JsonProperty("bonus")
     private Long bonus;
 
-    @Column(name = "CountryId")
-    @JsonProperty("CountryId")
+    @Column(name = "countryId")
+    @JsonProperty("countryId")
     private Integer countryId;
 
-    @Column(name = "MinAgeLimit")
-    @JsonProperty("MinAgeLimit")
+    @Column(name = "minAgeLimit")
+    @JsonProperty("minAgeLimit")
     private String minAgeLimit;
 
-    @Column(name = "MaxAgeLimit")
-    @JsonProperty("MaxAgeLimit")
+    @Column(name = "maxAgeLimit")
+    @JsonProperty("maxAgeLimit")
     private String maxAgeLimit;
 
-    @Column(name = "NoOfPosts")
-    @JsonProperty("NoOfPosts")
+    @Column(name = "noOfPosts")
+    @JsonProperty("noOfPosts")
     private String noOfPosts;
 
-    @Column(name = "SalaryCurrency")
-    @JsonProperty("SalaryCurrency")
+    @Column(name = "salaryCurrency")
+    @JsonProperty("salaryCurrency")
     private String salaryCurrency;
 
-    @Column(name = "ContractPeriodInMonths")
-    @JsonProperty("ContractPeriodInMonths")
+    @Column(name = "contractPeriodInMonths")
+    @JsonProperty("contractPeriodInMonths")
     private Integer contractPeriodInMonths;
 
-    @Column(name = "CreatedBy")
-    @JsonProperty("CreatedBy")
+    @Column(name = "createdBy")
+    @JsonProperty("createdBy")
     private Long createdBy;
 
-    @Column(name = "UpdatedBy")
-    @JsonProperty("UpdatedBy")
+    @Column(name = "updatedBy")
+    @JsonProperty("updatedBy")
     private Long updatedBy;
 
-    @Column(name = "CreatedOn")
-    @JsonProperty("CreatedOn")
+    @Column(name = "createdOn")
+    @JsonProperty("createdOn")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Date createdOn;
 
-    @Column(name = "UpdatedOn")
-    @JsonProperty("UpdatedOn")
+    @Column(name = "updatedOn")
+    @JsonProperty("updatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Date updatedOn;
 
-    @Column(name = "DailyWorkingHours")
-    @JsonProperty("DailyWorkingHours")
+    @Column(name = "dailyWorkingHours")
+    @JsonProperty("dailyWorkingHours")
     int dailyWorkingHours;
 
-    @Column(name = "VisaType")
-    @JsonProperty("VisaType")
+    @Column(name = "visaType")
+    @JsonProperty("visaType")
     int visaType;
 
-    @Column(name = "IsMedicalInsuranceProvide")
-    @JsonProperty("IsMedicalInsuranceProvide")
+    @Column(name = "isMedicalInsuranceProvide")
+    @JsonProperty("isMedicalInsuranceProvide")
     boolean isMedicalInsuranceProvide;
 
-    @Column(name = "OverseasExperience")
-
-    @JsonProperty("OverseasExperience")
+    @Column(name = "overseasExperience")
+    @JsonProperty("overseasExperience")
     int overseasExperience;
 
-    @Column(name = "LocalExperience")
-    @JsonProperty("LocalExperience")
+    @Column(name = "localExperience")
+    @JsonProperty("localExperience")
     int localExperience;
 
-    @Column(name = "IsMon")
-    @JsonProperty("IsMon")
+    @Column(name = "isMon")
+    @JsonProperty("isMon")
     Boolean isMon;
 
-    @Column(name = "IsTue")
-    @JsonProperty("IsTue")
+    @Column(name = "isTue")
+    @JsonProperty("isTue")
     Boolean isTue;
 
-    @Column(name = "IsThu")
-    @JsonProperty("IsThu")
+    @Column(name = "isThu")
+    @JsonProperty("isThu")
     Boolean isThu;
 
-    @Column(name = "IsWed")
-    @JsonProperty("IsWed")
+    @Column(name = "isWed")
+    @JsonProperty("isWed")
     Boolean isWed;
 
-    @Column(name = "IsFri")
-    @JsonProperty("IsFri")
+    @Column(name = "isFri")
+    @JsonProperty("isFri")
     Boolean isFri;
 
-    @Column(name = "IsSat")
-    @JsonProperty("IsSat")
+    @Column(name = "isSat")
+    @JsonProperty("isSat")
     Boolean isSat;
 
-    @Column(name = "IsSun")
-    @JsonProperty("IsSun")
+    @Column(name = "isSun")
+    @JsonProperty("isSun")
     Boolean isSun;
 }
