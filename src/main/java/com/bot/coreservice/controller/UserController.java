@@ -8,6 +8,7 @@ import com.bot.coreservice.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.List;
@@ -84,6 +85,13 @@ public class UserController {
     @GetMapping("/manageFriend/{userId}")
     public ResponseEntity<ApiResponse> manageFriend(@PathVariable long userId) throws Exception {
         var result = this.userServiceImpl.manageFriendService(userId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @PostMapping("/addUserImage/{userId}")
+    public ResponseEntity<ApiResponse> addUserImage(@RequestPart(value = "userimage") MultipartFile userImage,
+                                                    @PathVariable Long userId) throws Exception {
+        var result = this.userServiceImpl.addUserImageService(userImage, userId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }

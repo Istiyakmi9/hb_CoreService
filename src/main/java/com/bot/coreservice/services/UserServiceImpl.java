@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -34,9 +35,11 @@ public class UserServiceImpl implements UserService {
     LowLevelExecution lowLevelExecution;
     @Autowired
     ObjectMapper objectMapper;
-
+    @Autowired
+    FileManager fileManager;
     @Autowired
     CurrentSession currentSession;
+
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Transactional(rollbackFor = Exception.class)
     public String addUserService(UserMaster userMaster) throws Exception {
@@ -357,5 +360,36 @@ public class UserServiceImpl implements UserService {
         user.setFriends(objectMapper.writeValueAsString(existingFriends));
         userRepository.save(user);
         return status;
+    }
+
+    @Override
+    public String addUserImageService(MultipartFile userImage, Long userId) throws Exception {
+        if (userId == 0)
+            throw new Exception("Invalid user");
+
+        var userData = userRepository.findById(userId);
+        if (userData.isEmpty())
+            throw new Exception("User not found");
+
+        var user = userData.get();
+        String filePath = saveUpdateFileDetail(user.getImageURL(), userImage, userId);
+        user.setImageURL(filePath);
+        userRepository.save(user);
+        return filePath;
+    }
+
+    private String saveUpdateFileDetail(String oldFilePath, MultipartFile file, long userPostId) throws Exception {
+        String filepath = null;
+        if (file != null) {
+            try {
+                if (oldFilePath != null)
+                    fileManager.DeleteFile(oldFilePath);
+
+                filepath = fileManager.uploadFile(file, userPostId, "user_" + new Date().getTime(), "user");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return filepath;
     }
 }

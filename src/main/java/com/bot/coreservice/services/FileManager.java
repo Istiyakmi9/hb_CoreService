@@ -58,14 +58,14 @@ public class FileManager {
         return basePath;
     }
 
-    public String uploadFile(MultipartFile file, long userId, String fileName) throws Exception {
+    public String uploadFile(MultipartFile file, long userId, String fileName, String type) throws Exception {
         FileDetail fileDetail = null;
         String name = file.getOriginalFilename();
         if (!name.isEmpty()) {
             fileDetail = new FileDetail();
             String ext = name.substring(name.lastIndexOf(".") + 1);
             String nameOnly = name.substring(0, name.lastIndexOf("."));
-            String relativePath = Paths.get("post_" + String.valueOf(userId)).toString();
+            String relativePath = Paths.get(type + String.valueOf(userId)).toString();
 
             if(name.contains(".."))
                 throw new Exception("File name contain invalid character.");

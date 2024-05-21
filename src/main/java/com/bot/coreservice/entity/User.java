@@ -127,4 +127,8 @@ public class User {
         @JsonProperty("updatedOn")
         Date updatedOn;
 
+        @Column(name = "imageURL")
+        @JsonProperty("imageURL")
+        String imageURL;
+
 }

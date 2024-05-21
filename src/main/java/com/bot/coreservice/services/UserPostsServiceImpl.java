@@ -185,7 +185,11 @@ public class UserPostsServiceImpl implements IUserPostsService {
         userPosts.setPostedBy(currentSession.getUser().getUserId());
         userPosts.setPostedOn(currentDate);
         userPosts.setUpdatedOn(currentDate);
-        userPosts.setFullName(currentSession.getUser().getFirstName() + " " + currentSession.getUser().getLastName());
+        if (currentSession.getUser().getLastName() == null)
+            userPosts.setFullName(currentSession.getUser().getFirstName());
+        else
+            userPosts.setFullName(currentSession.getUser().getFirstName() + " " + currentSession.getUser().getLastName());
+
         this.userPostsRepository.save(userPosts);
     }
 
@@ -299,7 +303,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
                 FileDetail fileDetail = new FileDetail();
                 String filepath = null;
                 try {
-                    filepath = fileManager.uploadFile(x, userPostId, "post_" + new Date().getTime());
+                    filepath = fileManager.uploadFile(x, userPostId, "post_" + new Date().getTime(), "post");
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
