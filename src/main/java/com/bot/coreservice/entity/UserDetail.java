@@ -21,87 +21,87 @@ import java.util.Date;
 public class UserDetail {
 
     @Id
-    @Column(name = "UserId")
-    @JsonProperty("UserId")
+    @Column(name = "userId")
+    @JsonProperty("userId")
     long userId;
 
-    @Column(name = "PAN")
-    @JsonProperty("PAN")
+    @Column(name = "pan")
+    @JsonProperty("pan")
     String pan;
 
-    @Column(name = "Aadhar")
-    @JsonProperty("Aadhar")
+    @Column(name = "aadhar")
+    @JsonProperty("aadhar")
     String aadhar;
 
-    @Column(name = "PassportNumber")
-    @JsonProperty("PassportNumber")
+    @Column(name = "passportNumber")
+    @JsonProperty("passportNumber")
     String passportNumber;
 
-    @Column(name = "BankName")
-    @JsonProperty("BankName")
+    @Column(name = "bankName")
+    @JsonProperty("bankName")
     String bankName;
 
-    @Column(name = "AccountNo")
-    @JsonProperty("AccountNo")
+    @Column(name = "accountNo")
+    @JsonProperty("accountNo")
     String accountNo;
 
-    @Column(name = "Branch")
-    @JsonProperty("Branch")
+    @Column(name = "branch")
+    @JsonProperty("branch")
     String branch;
 
-    @Column(name = "IFSCCode")
-    @JsonProperty("IFSCCode")
-    String IfscCode;
+    @Column(name = "iFSCCode")
+    @JsonProperty("iFSCCode")
+    String ifscCode;
 
-    @Column(name = "JobTypeId")
-    @JsonProperty("JobTypeId")
+    @Column(name = "jobTypeId")
+    @JsonProperty("jobTypeId")
     int jobTypeId;
 
-    @Column(name = "ExperienceInMonths")
-    @JsonProperty("ExperienceInMonths")
+    @Column(name = "experienceInMonths")
+    @JsonProperty("experienceInMonths")
     int experienceInMonths;
 
     @Column(name = "lastCompanyName")
     @JsonProperty("lastCompanyName")
     String LastCompanyName;
 
-    @Column(name = "LastWorkingDate")
+    @Column(name = "lastWorkingDate")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("LastWorkingDate")
+    @JsonProperty("lastWorkingDate")
     Date lastWorkingDate;
 
-    @Column(name = "Designation")
-    @JsonProperty("LastWorkingDate")
+    @Column(name = "designation")
+    @JsonProperty("designation")
     String designation;
 
-    @Column(name = "Salary")
-    @JsonProperty("Salary")
+    @Column(name = "salary")
+    @JsonProperty("salary")
     BigDecimal salary;
 
-    @Column(name = "ExpectedSalary")
-    @JsonProperty("ExpectedSalary")
+    @Column(name = "expectedSalary")
+    @JsonProperty("expectedSalary")
     BigDecimal expectedSalary;
 
-    @Column(name = "ExpectedDesignation")
-    @JsonProperty("ExpectedDesignation")
+    @Column(name = "expectedDesignation")
+    @JsonProperty("expectedDesignation")
     String expectedDesignation;
 
-    @Column(name = "CreatedBy")
-    @JsonProperty("CreatedBy")
+    @Column(name = "createdBy")
+    @JsonProperty("createdBy")
     Long createdBy;
 
-    @Column(name = "UpdatedBy")
-    @JsonProperty("UpdatedBy")
+    @Column(name = "updatedBy")
+    @JsonProperty("updatedBy")
     Long updatedBy;
 
-    @Column(name = "CreatedOn")
+    @Column(name = "createdOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("CreatedOn")
+    @JsonProperty("createdOn")
     Date createdOn;
 
-    @Column(name = "UpdatedOn")
+    @Column(name = "updatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("UpdatedOn")
+    @JsonProperty("updatedOn")
     Date updatedOn;
 
 }

@@ -15,37 +15,37 @@ import java.util.Date;
 @Table(name = "job_type")
 public class JobType {
     @Id
-    @JsonProperty("JobTypeId")
-    @Column(name = "JobTypeId")
+    @JsonProperty("jobTypeId")
+    @Column(name = "jobTypeId")
     Long jobTypeId;
 
-    @JsonProperty("JobTypeName")
-    @Column(name = "JobTypeName")
+    @JsonProperty("jobTypeName")
+    @Column(name = "jobTypeName")
     String jobTypeName;
 
-    @JsonProperty("JobDescription")
-    @Column(name = "JobDescription")
+    @JsonProperty("jobDescription")
+    @Column(name = "jobDescription")
     String jobDescription;
 
-    @Column(name = "CategoryId")
-    @JsonProperty("CategoryId")
+    @Column(name = "categoryId")
+    @JsonProperty("categoryId")
     int categoryId;
 
-    @Column(name = "CreatedBy")
-    @JsonProperty("CreatedBy")
+    @Column(name = "createdBy")
+    @JsonProperty("createdBy")
     Long createdBy;
 
-    @Column(name = "UpdatedBy")
-    @JsonProperty("UpdatedBy")
+    @Column(name = "updatedBy")
+    @JsonProperty("updatedBy")
     Long updatedBy;
 
-    @Column(name = "CreatedOn")
-    @JsonProperty("CreatedOn")
+    @Column(name = "createdOn")
+    @JsonProperty("createdOn")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Date createdOn;
 
-    @Column(name = "UpdatedOn")
-    @JsonProperty("UpdatedOn")
+    @Column(name = "updatedOn")
+    @JsonProperty("updatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Date updatedOn;
 }

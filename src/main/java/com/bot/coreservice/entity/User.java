@@ -21,110 +21,110 @@ import java.util.Date;
 public class User {
 
         @Id
-        @Column(name = "UserId")
-        @JsonProperty("UserId")
+        @Column(name = "userId")
+        @JsonProperty("userId")
         Long userId;
 
-        @Column(name = "FirstName")
-        @JsonProperty("FirstName")
+        @Column(name = "firstName")
+        @JsonProperty("firstName")
         String firstName;
 
-        @Column(name = "LastName")
-        @JsonProperty("LastName")
+        @Column(name = "lastName")
+        @JsonProperty("lastName")
         String lastName;
 
-        @Column(name = "FatherName")
-        @JsonProperty("FatherName")
+        @Column(name = "fatherName")
+        @JsonProperty("fatherName")
         String fatherName;
 
-        @Column(name = "MotherName")
-        @JsonProperty("MotherName")
+        @Column(name = "motherName")
+        @JsonProperty("motherName")
         String motherName;
 
-        @Column(name = "Email")
-        @JsonProperty("Email")
+        @Column(name = "email")
+        @JsonProperty("email")
         String email;
 
-        @Column(name = "Mobile")
-        @JsonProperty("Mobile")
+        @Column(name = "mobile")
+        @JsonProperty("mobile")
         String mobile;
 
-        @Column(name = "AlternateNumber")
-        @JsonProperty("AlternateNumber")
+        @Column(name = "alternateNumber")
+        @JsonProperty("alternateNumber")
         String alternateNumber;
 
-        @Column(name = "Address")
-        @JsonProperty("Address")
+        @Column(name = "address")
+        @JsonProperty("address")
         String address;
 
-        @Column(name = "City")
-        @JsonProperty("City")
+        @Column(name = "city")
+        @JsonProperty("city")
         String city;
 
-        @Column(name = "State")
-        @JsonProperty("State")
+        @Column(name = "state")
+        @JsonProperty("state")
         String state;
 
-        @Column(name = "Country")
-        @JsonProperty("Country")
+        @Column(name = "country")
+        @JsonProperty("country")
         String country;
 
-        @Column(name = "RoleId")
-        @JsonProperty("RoleId")
+        @Column(name = "roleId")
+        @JsonProperty("roleId")
         int roleId;
 
-        @Column(name = "JobCategoryId")
-        @JsonProperty("JobCategoryId")
+        @Column(name = "jobCategoryId")
+        @JsonProperty("jobCategoryId")
         int jobCategoryId;
 
-        @Column(name = "CategoryTypeIds")
-        @JsonProperty("CategoryTypeIds")
+        @Column(name = "categoryTypeIds")
+        @JsonProperty("categoryTypeIds")
         String categoryTypeIds;
 
-        @Column(name = "JobLocationIds")
-        @JsonProperty("JobLocationIds")
+        @Column(name = "jobLocationIds")
+        @JsonProperty("jobLocationIds")
         String jobLocationIds;
 
-        @Column(name = "DesignationId")
-        @JsonProperty("DesignationId")
+        @Column(name = "designationId")
+        @JsonProperty("designationId")
         int designationId;
 
-        @Column(name = "PinCode")
-        @JsonProperty("PinCode")
+        @Column(name = "pinCode")
+        @JsonProperty("pinCode")
         int pinCode;
 
-        @Column(name = "ReporteeId")
-        @JsonProperty("ReporteeId")
+        @Column(name = "reporteeId")
+        @JsonProperty("reporteeId")
         long reporteeId;
 
-        @Column(name = "IsActive")
-        @JsonProperty("IsActive")
+        @Column(name = "isActive")
+        @JsonProperty("isActive")
         boolean isActive;
 
-        @Column(name = "Followers")
-        @JsonProperty("Followers")
+        @Column(name = "followers")
+        @JsonProperty("followers")
         String followers;
 
-        @Column(name = "Friends")
-        @JsonProperty("Friends")
+        @Column(name = "friends")
+        @JsonProperty("friends")
         String friends;
 
-        @Column(name = "CreatedBy")
-        @JsonProperty("CreatedBy")
+        @Column(name = "createdBy")
+        @JsonProperty("createdBy")
         Long createdBy;
 
-        @Column(name = "UpdatedBy")
-        @JsonProperty("UpdatedBy")
+        @Column(name = "updatedBy")
+        @JsonProperty("updatedBy")
         Long updatedBy;
 
-        @Column(name = "CreatedOn")
+        @Column(name = "createdOn")
         @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
-        @JsonProperty("CreatedOn")
+        @JsonProperty("createdOn")
         Date createdOn;
 
-        @Column(name = "UpdatedOn")
+        @Column(name = "updatedOn")
         @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
-        @JsonProperty("UpdatedOn")
+        @JsonProperty("updatedOn")
         Date updatedOn;
 
         @Column(name = "ImageURL")

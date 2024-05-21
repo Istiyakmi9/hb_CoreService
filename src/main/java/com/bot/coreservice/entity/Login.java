@@ -19,54 +19,53 @@ import java.util.Date;
 @Table(name="login")
 public class Login {
     @Id
-    @Column(name = "LoginId")
-    @JsonProperty("LoginId")
+    @Column(name = "loginId")
+    @JsonProperty("loginId")
     Long loginId;
 
-    @Column(name = "UserId")
-    @JsonProperty("UserId")
+    @Column(name = "userId")
+    @JsonProperty("userId")
     Long userId;
 
-    @Column(name = "Email")
-    @JsonProperty("Email")
+    @Column(name = "email")
+    @JsonProperty("email")
     String email;
 
-    @Column(name = "Mobile")
-    @JsonProperty("Mobile")
+    @Column(name = "mobile")
+    @JsonProperty("mobile")
     String mobile;
 
-    @Column(name = "Password")
-    @JsonProperty("Password")
+    @Column(name = "password")
+    @JsonProperty("password")
     String password;
 
-
-    @Column(name = "RoleId")
-    @JsonProperty("RoleId")
+    @Column(name = "roleId")
+    @JsonProperty("roleId")
     int roleId;
 
-    @Column(name = "IsActive")
-    @JsonProperty("IsActive")
+    @Column(name = "isActive")
+    @JsonProperty("isActive")
     boolean isActive;
 
-    @Column(name = "CreatedBy")
-    @JsonProperty("CreatedBy")
+    @Column(name = "createdBy")
+    @JsonProperty("createdBy")
     Long createdBy;
 
-    @Column(name = "UpdatedBy")
-    @JsonProperty("UpdatedBy")
+    @Column(name = "updatedBy")
+    @JsonProperty("updatedBy")
     Long updatedBy;
 
-    @Column(name = "CreatedOn")
-    @JsonProperty("CreatedOn")
+    @Column(name = "createdOn")
+    @JsonProperty("createdOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date createdOn;
 
-    @Column(name = "UpdatedOn")
-    @JsonProperty("UpdatedOn")
+    @Column(name = "updatedOn")
+    @JsonProperty("updatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date updatedOn;
 
-    @Column(name = "IsAccountConfig")
-    @JsonProperty("IsAccountConfig")
+    @Column(name = "isAccountConfig")
+    @JsonProperty("isAccountConfig")
     boolean isAccountConfig;
 }

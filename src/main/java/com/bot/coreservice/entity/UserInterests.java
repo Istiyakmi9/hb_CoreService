@@ -15,20 +15,20 @@ public class UserInterests {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "UserInterestId")
-    @JsonProperty("UserInterestId")
+    @Column(name = "userInterestId")
+    @JsonProperty("userInterestId")
     long userInterestId;
 
-   @Column(name = "UserId")
-   @JsonProperty("UserId")
-   long userId;
+    @Column(name = "userId")
+    @JsonProperty("userId")
+    long userId;
 
-    @Column(name = "InerestId")
-    @JsonProperty("InerestId")
-    int inerestId;
+    @Column(name = "interestId")
+    @JsonProperty("interestId")
+    int interestId;
 
-    public UserInterests(long userId, int inerestId) {
+    public UserInterests(long userId, int interestId) {
         this.userId = userId;
-        this.inerestId = inerestId;
+        this.interestId = interestId;
     }
 }

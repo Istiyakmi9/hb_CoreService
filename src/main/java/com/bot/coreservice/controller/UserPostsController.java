@@ -3,6 +3,7 @@ package com.bot.coreservice.controller;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.ApiResponse;
+import com.bot.coreservice.model.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,12 @@ public class UserPostsController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @GetMapping("getOwnPosts/{page}")
+    public ResponseEntity<ApiResponse> getOwnPosts(@PathVariable int page) throws Exception {
+        var result = this.userPostsService.getOwnPageService(page, 10);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
     @GetMapping("getUserPostByUserPostId/{userPostId}")
     public ResponseEntity<ApiResponse> getUserPostByUserPostId(@PathVariable("userPostId") long userPostId) throws Exception {
         var result = this.userPostsService.getUserPostByUserPostIdService(userPostId);
@@ -50,6 +57,14 @@ public class UserPostsController {
             @RequestPart(value = "postImages", required = false) MultipartFile[] postImages) throws Exception {
         var result = userPostsService.uploadUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @PostMapping("uploadUserPostsMobile")
+    public ResponseEntity<ApiResponse> uploadUserPostsMobile(
+            @RequestPart("userPost") String userPost,
+            @RequestPart(value = "postImages", required = false) MultipartFile[] postImages) throws Exception {
+        userPostsService.saveUserPostedData(userPost, postImages);
+        return ResponseEntity.ok(ApiResponse.Ok(Constants.Success));
     }
 
     @PostMapping("updateUserPosts")
