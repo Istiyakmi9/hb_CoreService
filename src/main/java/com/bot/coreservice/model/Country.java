@@ -12,31 +12,20 @@ import lombok.Data;
 @Table(name = "country")
 public class Country {
     @Id
-    @Column(name = "Id")
     @JsonProperty("Id")
     private int id;
 
-    @Column(name = "ISO")
-    @JsonProperty("ISO")
+    @JsonProperty("iSO")
     private String iso;
 
-    @Column(name = "Name")
-    @JsonProperty("Name")
     private String name;
 
-    @Column(name = "NiceName")
-    @JsonProperty("NiceName")
     private String niceName;
 
-    @Column(name = "ISO3")
-    @JsonProperty("ISO3")
+    @JsonProperty("iso3")
     private String iso3;
 
-    @Column(name = "NumCode")
-    @JsonProperty("NumCode")
     private short numCode;
 
-    @Column(name = "PhoneCode")
-    @JsonProperty("PhoneCode")
     private String phoneCode;
 }
