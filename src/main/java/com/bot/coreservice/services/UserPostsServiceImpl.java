@@ -152,7 +152,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
             JobRequirement jobRequirement = objectMapper.convertValue(userPostRequest, JobRequirement.class);
 
             jobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
-            jobRequirement.setJobTypeId(userPosts.getCategoryTypeId());
+//            jobRequirement.setJobTypeId(userPosts.getCategoryTypeId());
 
             var jobRequirementId = addJobRequirement(jobRequirement);
             var lastUserPostRecord = this.userPostsRepository.getLastUserPostRecord();
@@ -260,7 +260,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         JobRequirement existingjobRequirement = result.get();
         existingjobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
         existingjobRequirement.setCompleteDescription(userPostRequest.getCompleteDescription());
-        existingjobRequirement.setJobTypeId(userPostRequest.getCategoryTypeId());
+//        existingjobRequirement.setJobTypeId(userPostRequest.getCategoryTypeId());
         existingjobRequirement.setIsHRAAllowance(userPostRequest.getIsHRAAllowance());
         existingjobRequirement.setHRAAllowanceAmount(userPostRequest.getHRAAllowanceAmount());
         existingjobRequirement.setIsTravelAllowance(userPostRequest.getIsTravelAllowance());

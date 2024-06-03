@@ -2,10 +2,7 @@ package com.bot.coreservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,9 +12,10 @@ import java.util.Date;
 @Table(name = "job_type")
 public class JobType {
     @Id
+//    @OneToOne(mappedBy = "jobTypeId", cascade = CascadeType.ALL)
     @JsonProperty("jobTypeId")
     @Column(name = "jobTypeId")
-    Long jobTypeId;
+    int jobTypeId;
 
     @JsonProperty("jobTypeName")
     @Column(name = "jobTypeName")
