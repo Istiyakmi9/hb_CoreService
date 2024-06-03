@@ -76,8 +76,9 @@ public class UserPosts {
         boolean isLiked;
 
         @Transient
-        @JsonProperty("isApplied")
-        boolean isApplied;
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        @JsonProperty("appliedOn")
+        Date appliedOn;
 
         @JsonProperty("files")
         transient List<FileDetail> files;

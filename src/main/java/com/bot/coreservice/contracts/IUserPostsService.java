@@ -3,6 +3,7 @@ package com.bot.coreservice.contracts;
 import com.bot.coreservice.entity.JobType;
 import com.bot.coreservice.entity.UserPosts;
 import com.bot.coreservice.model.FileDetail;
+import com.bot.coreservice.model.UserPostRequest;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ServerWebExchange;
@@ -25,6 +26,7 @@ public interface IUserPostsService {
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
     public  List<JobType> getAllJobTypeService();
     public List<UserPosts> getPostByUserIdService(Long userId) throws Exception;
+    public UserPostRequest getPostByPostIdService(Long postId) throws Exception;
     public String addLikedPostService(UserPosts userPost) throws Exception;
     public String addAppliedPostService(UserPosts userPost) throws Exception;
 }

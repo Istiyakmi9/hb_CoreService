@@ -93,6 +93,12 @@ public class UserPostsController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @GetMapping("getPostByPostId/{postId}")
+    public ResponseEntity<ApiResponse> getPostByPostId(@PathVariable("postId") Long postId) throws Exception {
+        var result = this.userPostsService.getPostByPostIdService(postId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
     @PostMapping("addLikedPost")
     public ResponseEntity<ApiResponse> addLikedPost(@RequestBody UserPosts userPost) throws Exception {
         var result = this.userPostsService.addLikedPostService(userPost);

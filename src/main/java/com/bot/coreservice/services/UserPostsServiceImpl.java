@@ -352,6 +352,34 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return jobTypeRepository.findAll();
     }
 
+    public UserPostRequest getPostByPostIdService(Long postId) throws Exception {
+        if (postId == 0)
+            throw new Exception("Invalid post Id");
+
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_userPostId", postId, Types.BIGINT));
+        dbParameters.add(new DbParameters("_userId", currentSession.getUser().getUserId(), Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_userposts_getby_postid", dbParameters);
+        var userPostRequest = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPostRequest>>() {
+        });
+
+        if (userPostRequest != null && !userPostRequest.isEmpty()) {
+            userPostRequest.forEach(x -> {
+                if (!Objects.equals(x.getFileDetail(), "[]")) {
+                    try {
+                        x.setFiles(objectMapper.readValue(x.getFileDetail(), new TypeReference<List<FileDetail>>() {
+                        }));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
+
+        assert userPostRequest != null;
+        return userPostRequest.get(0);
+    }
+
     public List<UserPosts> getPostByUserIdService(Long userId) throws Exception {
         if (userId == 0)
             throw new Exception("Invalid userId");
@@ -413,30 +441,24 @@ public class UserPostsServiceImpl implements IUserPostsService {
     public String addAppliedPostService(UserPosts userPost) throws Exception {
         var existingPost = appliedPostsRepository.existingAppliedPostBy(userPost.getUserPostId(), currentSession.getUser().getUserId());
         if (existingPost == null)
-            addAppliedPost(userPost, currentSession.getUser().getUserId());
+            return addAppliedPost(userPost.getUserPostId());
 
-        return "Thanks for Apply";
+        return "fail";
     }
 
-    private void addAppliedPost(UserPosts userPost, long userId) {
-        Date utilDate = new Date();
-        var currentDate = new Timestamp(utilDate.getTime());
-        var lastApplyPost = appliedPostsRepository.getLastAppliedPost();
-        AppliedPosts appliedPosts = new AppliedPosts();
-        if (lastApplyPost == null)
-            appliedPosts.setAppliedPostsId(1L);
-        else
-            appliedPosts.setAppliedPostsId(lastApplyPost.getAppliedPostsId() + 1);
+    public String addAppliedPost(Long postIs) throws Exception {
+        if (postIs == 0)
+            throw new Exception("Invalid post detail");
 
-        appliedPosts.setPostId(userPost.getUserPostId());
-        appliedPosts.setUserId(userId);
-        appliedPosts.setPostUserId(userPost.getPostedBy());
-        appliedPosts.setApplied(true);
-        appliedPosts.setAppliedOn(currentDate);
-        appliedPosts.setLongitude("");
-        appliedPosts.setLatitude("");
-        this.appliedPostsRepository.save(appliedPosts);
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_postId", postIs, Types.BIGINT));
+        dbParameters.add(new DbParameters("_userId", currentSession.getUser().getUserId(), Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_liked_posts_ins", dbParameters, true);
 
+        if (dataSet.get("_ProcessingResult") != null && Objects.equals(dataSet.get("_ProcessingResult").toString(), "inserted"))
+            return "success";
+
+        return "fail";
     }
 
 }

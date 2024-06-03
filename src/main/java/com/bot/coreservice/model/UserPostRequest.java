@@ -15,6 +15,14 @@ public class UserPostRequest extends JobRequirement {
     @JsonProperty("userPostId")
     Long userPostId;
 
+    String fullName;
+    String jobTypeName;
+    String countryName;
+    String currencyName;
+
+    @JsonProperty("jobAppliedOn")
+    Date jobAppliedOn;
+
     @JsonProperty("shortDescription")
     String shortDescription;
 
