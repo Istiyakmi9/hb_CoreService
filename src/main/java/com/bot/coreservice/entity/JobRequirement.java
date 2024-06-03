@@ -29,8 +29,10 @@ public class JobRequirement {
     private String completeDescription;
 
     @Column(name = "jobTypeId")
+//    @OneToOne
+//    @JoinColumn(name = "jobTypeId")
     @JsonProperty("jobTypeId")
-    private Long jobTypeId;
+    private int jobTypeId;
 
     @Column(name = "clientId")
     @JsonProperty("clientId")
