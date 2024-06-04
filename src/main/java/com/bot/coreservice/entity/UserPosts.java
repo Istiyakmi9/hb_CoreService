@@ -37,10 +37,10 @@ public class UserPosts {
         @Column(name = "fileDetail")
         @JsonProperty("fileDetail")
         String fileDetail;
-
+/*
         @Column(name = "categoryTypeId")
         @JsonProperty("categoryTypeId")
-        long categoryTypeId;
+        long categoryTypeId;*/
 
         @Column(name = "countryId")
         @JsonProperty("countryId")

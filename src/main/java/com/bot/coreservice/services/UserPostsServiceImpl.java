@@ -70,7 +70,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         UserPosts existingUserPost = result.get();
         existingUserPost.setShortDescription(userPost.getShortDescription());
         existingUserPost.setCompleteDescription(userPost.getCompleteDescription());
-        existingUserPost.setCategoryTypeId(1);
+        // existingUserPost.setCategoryTypeId(1);
         existingUserPost.setJobRequirementId(1);
         existingUserPost.setUpdatedOn(currentDate);
         this.userPostsRepository.save(existingUserPost);
@@ -237,7 +237,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         UserPosts existingUserPost = data.get();
         existingUserPost.setShortDescription(userPostRequest.getShortDescription());
         existingUserPost.setCompleteDescription(userPostRequest.getCompleteDescription());
-        existingUserPost.setCategoryTypeId(userPostRequest.getCategoryTypeId());
+        // existingUserPost.setCategoryTypeId(userPostRequest.getCategoryTypeId());
         existingUserPost.setCountryId((userPostRequest.getCountryId()));
         existingUserPost.setJobCategoryId(userPostRequest.getJobCategoryId());
         var fileDetail = saveUpdateFileDetail(existingUserPost.getFileDetail(), postImages, userPostRequest.getUserPostId());

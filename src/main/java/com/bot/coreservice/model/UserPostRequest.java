@@ -20,6 +20,7 @@ public class UserPostRequest extends JobRequirement {
     String countryName;
     String currencyName;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonProperty("jobAppliedOn")
     Date jobAppliedOn;
 
