@@ -23,6 +23,7 @@ public interface IUserPostsService {
     public List<UserPosts> uploadUserPostsService(String userPost, MultipartFile[] postImages) throws Exception;
     public void saveUserPostedData(String userPost, MultipartFile[] postImages) throws Exception;
     public List<UserPosts> updateUserPostsService(String userPost, MultipartFile[] postImages) throws Exception;
+    public UserPostRequest updateUserPostsServiceMobile(String userPost, MultipartFile[] postImages) throws Exception;
     public List<FileDetail> deleteImagesService(Long userPostId, int fileDetailId) throws Exception;
     public  List<JobType> getAllJobTypeService();
     public List<UserPosts> getPostByUserIdService(Long userId) throws Exception;

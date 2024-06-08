@@ -74,6 +74,13 @@ public class UserPostsController {
         var result = userPostsService.updateUserPostsService(userPost, postImages);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
+    @PostMapping("updateUserPostsMobile")
+    public ResponseEntity<ApiResponse> updateUserPostsMobile(
+            @RequestPart("userPost") String userPost,
+            @RequestPart(value = "postImages", required = false) MultipartFile[] postImages) throws Exception {
+        var result = userPostsService.updateUserPostsServiceMobile(userPost, postImages);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 
     @DeleteMapping("deleteImages/{userPostId}/{fileDetailId}")
     public ResponseEntity<ApiResponse> deleteImages(@PathVariable("userPostId") Long userPostId, @PathVariable("fileDetailId") int fileDetailId) throws Exception {

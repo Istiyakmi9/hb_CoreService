@@ -164,7 +164,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
             userPosts.setJobRequirementId(jobRequirementId);
             userPostRequest.setUserPostId(userPosts.getUserPostId());
 
-            var fileDetail = saveUpdateFileDetail(userPostRequest.getFileDetail(), postImages, userPosts.getUserPostId());
+            var fileDetail = saveUpdateFileDetail(postImages, userPostRequest);
             if (fileDetail != null) {
                 var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
                 userPosts.setFileDetail(jsonFileDetail);
@@ -214,8 +214,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return getHomePageService(1, 20);
     }
 
+    public UserPostRequest updateUserPostsServiceMobile(String userPost, MultipartFile[] postImages) throws Exception {
+        return saveUpdatedUserPosts(userPost, postImages);
+    }
+
     @Transactional(rollbackFor = Exception.class)
-    public void saveUpdatedUserPosts(String userPost, MultipartFile[] postImages) throws Exception {
+    public UserPostRequest saveUpdatedUserPosts(String userPost, MultipartFile[] postImages) throws Exception {
         UserPostRequest userPostRequest = objectMapper.readValue(userPost, UserPostRequest.class);
         if (userPostRequest.getUserPostId() == 0)
             throw new Exception("Invalid post selected");
@@ -225,6 +229,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
 
         updateJobRequirementService(userPostRequest);
         updateUserPostService(userPostRequest, postImages);
+
+        return userPostRequest;
     }
 
     private void updateUserPostService(UserPostRequest userPostRequest, MultipartFile[] postImages) throws Exception {
@@ -240,11 +246,14 @@ public class UserPostsServiceImpl implements IUserPostsService {
         // existingUserPost.setCategoryTypeId(userPostRequest.getCategoryTypeId());
         existingUserPost.setCountryId((userPostRequest.getCountryId()));
         existingUserPost.setJobCategoryId(userPostRequest.getJobCategoryId());
-        var fileDetail = saveUpdateFileDetail(existingUserPost.getFileDetail(), postImages, userPostRequest.getUserPostId());
+        var fileDetail = saveUpdateFileDetail(postImages, userPostRequest);
 
         if (fileDetail != null && !fileDetail.isEmpty()) {
             var jsonFileDetail = objectMapper.writeValueAsString(fileDetail);
             existingUserPost.setFileDetail(jsonFileDetail);
+        }
+        else {
+            existingUserPost.setFileDetail("[]");
         }
         existingUserPost.setUpdatedOn(currentDate);
         this.userPostsRepository.save(existingUserPost);
@@ -281,40 +290,64 @@ public class UserPostsServiceImpl implements IUserPostsService {
         existingjobRequirement.setSalaryCurrency(userPostRequest.getSalaryCurrency());
         existingjobRequirement.setContractPeriodInMonths(userPostRequest.getContractPeriodInMonths());
         existingjobRequirement.setUpdatedBy(currentSession.getUser().getUserId());
+        existingjobRequirement.setIsMon(userPostRequest.getIsMon());
+        existingjobRequirement.setIsTue(userPostRequest.getIsTue());
+        existingjobRequirement.setIsWed(userPostRequest.getIsWed());
+        existingjobRequirement.setIsThu(userPostRequest.getIsThu());
+        existingjobRequirement.setIsFri(userPostRequest.getIsFri());
+        existingjobRequirement.setIsSat(userPostRequest.getIsSat());
+        existingjobRequirement.setIsSun(userPostRequest.getIsSun());
         existingjobRequirement.setUpdatedOn(currentDate);
     }
 
-    private List<FileDetail> saveUpdateFileDetail(String fileDetailJSON, MultipartFile[] files, long userPostId) throws Exception {
-        if (files != null) {
-            List<FileDetail> existingFiles;
-            int id = 0;
-            if (fileDetailJSON != null && !fileDetailJSON.equals("[]")) {
-                existingFiles = objectMapper.readValue(fileDetailJSON, new TypeReference<List<FileDetail>>() {
-                });
+    private List<FileDetail> saveUpdateFileDetail(MultipartFile[] newFiles, UserPostRequest userPost) throws Exception {
+        String fileDetailJSON = userPost.getFileDetail();
+        List<FileDetail> existingFiles = objectMapper.readValue(fileDetailJSON, new TypeReference<List<FileDetail>>(){});
+         existingFiles = deleteOldFiles(userPost, existingFiles);
 
-                existingFiles.sort(Comparator.comparingInt(FileDetail::getFileDetailId).reversed());
-                id = existingFiles.get(0).getFileDetailId();
-            } else {
-                existingFiles = new ArrayList<>();
-                id = 1;
-            }
+        existingFiles = UploadNewFiles(newFiles, userPost, existingFiles);
+        return existingFiles;
+    }
 
-            for (var x : files) {
-                FileDetail fileDetail = new FileDetail();
-                String filepath = null;
-                try {
-                    filepath = fileManager.uploadFile(x, userPostId, "post_" + new Date().getTime(), "post");
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                fileDetail.setFileDetailId(id++);
-                fileDetail.setFilePath(filepath);
-                existingFiles.add(fileDetail);
-            }
-            return existingFiles;
+    private List<FileDetail> deleteOldFiles(UserPostRequest userPost, List<FileDetail> existingFiles) throws Exception {
+        var deletedFiles = getDifference(existingFiles, userPost.getFiles());
+        if ((long) deletedFiles.size() == 0) return existingFiles;
+        for (var file : deletedFiles) {
+            fileManager.DeleteFile(file.getFilePath());
+//            existingFiles.remove(file);
+            existingFiles.removeIf(f -> Objects.equals(f.getFilePath(), file.getFilePath()));
+        }
+        userPost.setFileDetail(objectMapper.writeValueAsString(existingFiles));
+        return  existingFiles;
+    }
+
+    private List<FileDetail> UploadNewFiles(MultipartFile[] newFiles, UserPostRequest userPost, List<FileDetail> existingFiles) {
+        if (newFiles == null) return existingFiles;
+        String fileDetailJSON = userPost.getFileDetail();
+        int id = 0;
+        if (fileDetailJSON != null && !fileDetailJSON.equals("[]")) {
+            existingFiles.sort(Comparator.comparingInt(FileDetail::getFileDetailId).reversed());
+            id = existingFiles.get(0).getFileDetailId()+1;
+        } else {
+            existingFiles = new ArrayList<>();
+            id = 1;
         }
 
-        return null;
+        for (var x : newFiles) {
+            FileDetail fileDetail = new FileDetail();
+            String filepath = null;
+            try {
+                filepath = fileManager.uploadFile(x, userPost.getUserPostId(), "post_" + new Date().getTime(), "post");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            fileDetail.setFileDetailId(id);
+            fileDetail.setFilePath(filepath);
+            existingFiles.add(fileDetail);
+            userPost.getFiles().add(fileDetail);
+        }
+
+        return existingFiles;
     }
 
     @Override
@@ -459,6 +492,12 @@ public class UserPostsServiceImpl implements IUserPostsService {
             return "success";
 
         return "fail";
+    }
+
+    public static <T> List<T> getDifference(List<T> allItems, List<T> someItems) {
+        Set<T> uniqueElements = new HashSet<>(allItems);
+        someItems.forEach(uniqueElements::remove);
+        return new ArrayList<>(uniqueElements);
     }
 
 }
