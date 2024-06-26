@@ -7,7 +7,6 @@ import com.bot.coreservice.entity.*;
 import com.bot.coreservice.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserInterestsRepository userInterestsRepository;
     @Autowired
+    UserDocumentRepository userDocumentRepository;
+    @Autowired
     LowLevelExecution lowLevelExecution;
     @Autowired
     ObjectMapper objectMapper;
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
     FileManager fileManager;
     @Autowired
     CurrentSession currentSession;
+
 
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -86,7 +88,7 @@ public class UserServiceImpl implements UserService {
         loginDetail.setUserId(user.getUserId());
         loginDetail.setEmail(userMaster.getEmail());
         loginDetail.setMobile(userMaster.getMobile());
-        loginDetail.setPassword("emp123");
+        loginDetail.setPassword(userMaster.getPassword());
         loginDetail.setRoleId(userMaster.getRoleId());
         loginDetail.setActive(true);
         loginDetail.setCreatedBy(currentSession.getUser().getUserId());
@@ -132,6 +134,91 @@ public class UserServiceImpl implements UserService {
         userMedicalDetailRepository.save(userMedicalDetail);
 
         return "New User has been added in User and Login table";
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String addUserServiceMobile(String userMaster,MultipartFile profileImage, MultipartFile[] userDocs) throws Exception {
+        Date utilDate = new Date();
+        var currentDate = new Timestamp(utilDate.getTime());
+        var lastUserId = this.userRepository.getLastUserId();
+        User user =objectMapper.readValue(userMaster, User.class);
+        if (lastUserId == null) {
+            user.setUserId(1L);
+        } else {
+            user.setUserId(lastUserId.getUserId() + 1);
+        }
+        var filePath = UploadNewFile(profileImage, user.getUserId(), "profile_","profile");
+        user.setImageURL(filePath);
+
+        user.setActive(true);
+        user.setFriends("[]");
+        user.setFollowers("[]");
+        user.setCreatedOn(currentDate);
+        userRepository.save(user);
+
+        UploadDocuments(userDocs, user);
+
+        AddLoginDetails(user, currentDate);
+
+        return "New User has been added in User and Login table";
+    }
+
+    private void UploadDocuments(MultipartFile[] userDocs, User user) throws Exception {
+        if (userDocs == null) return;
+        List<UserDocument> docs = new ArrayList<>();
+        for (int i = 0; i < userDocs.length; i++) {
+            var _file = userDocs[i];
+            var fileName = _file.getName();
+            var fileOrigName = _file.getOriginalFilename();
+            var userDoc = new UserDocument();
+            userDoc.setUserId(user.getUserId());
+            userDoc.setDocName(user.getUserDocs().get(i).getDocName());
+            var _filePath = UploadNewFile(userDocs[i], user.getUserId(), "userDoc_","userDoc");
+            userDoc.setDocPath(_filePath);
+            docs.add(userDoc);
+        }
+        userDocumentRepository.saveAll(docs);
+    }
+
+    private String UploadNewFile(MultipartFile newFile, long userId, String folderName,String fileType) throws Exception{
+        if(newFile == null) return "";
+        String filepath = "";
+        try {
+//            filepath = fileManager.uploadFile(newFile, userId, "profile_" + new Date().getTime(), "profile");
+            filepath = fileManager.uploadFile(newFile, userId, folderName + new Date().getTime(), fileType);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return  filepath;
+    }
+
+    private void DeleteOldFile(String filePath) throws Exception {
+        if(filePath == null || filePath.isEmpty()) return;
+        fileManager.DeleteFile(filePath);
+    }
+
+    private String UpdateFile(MultipartFile newFile, String filePath ,long userId, String folderName,String fileType) throws Exception {
+        DeleteOldFile(filePath);
+        return UploadNewFile(newFile, userId, folderName,fileType);
+    }
+
+    private void AddLoginDetails(User user,  Timestamp currentDate) {
+        Login loginDetail = new Login();
+        var lastLoginRecord = this.loginRepository.getLastLoginRecord();
+        if (lastLoginRecord == null) {
+            loginDetail.setLoginId(1L);
+        } else {
+            loginDetail.setLoginId(lastLoginRecord.getLoginId() + 1);
+        }
+        loginDetail.setUserId(user.getUserId());
+        loginDetail.setEmail(user.getEmail());
+        loginDetail.setMobile(user.getMobile());
+        loginDetail.setPassword(user.getPassword());
+        loginDetail.setRoleId(user.getRoleId());
+        loginDetail.setActive(true);
+        loginDetail.setCreatedBy(currentSession.getUser().getUserId());
+        loginDetail.setCreatedOn(currentDate);
+        this.loginRepository.save(loginDetail);
     }
 
 
@@ -223,6 +310,55 @@ public class UserServiceImpl implements UserService {
         return "User has been updated";
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public String updateUserServiceMobile(long userId,String userMaster, MultipartFile profileImage, MultipartFile[] userDocs) throws Exception {
+        Date utilDate = new Date();
+        var currentDate = new Timestamp(utilDate.getTime());
+        Optional<User> result = this.userRepository.findById(userId);
+        if (result.isEmpty())
+            throw new Exception("user record not found");
+
+        User existingUser = objectMapper.readValue(userMaster, User.class);
+        existingUser.setUpdatedBy(currentSession.getUser().getUserId());
+        existingUser.setUpdatedOn(currentDate);
+//        if (profileImage != null && !existingUser.getImageURL().isEmpty()) {
+        if (profileImage != null) {
+            var newFilePath = UpdateFile(profileImage, existingUser.getImageURL(), existingUser.getUserId(),"profile_","profile");
+            existingUser.setImageURL(newFilePath);
+        }
+
+        userRepository.save(existingUser);
+
+        UploadDocuments(userDocs, existingUser);
+
+        // Delete Documents
+        if (existingUser.getDeletedDocsId() != null){
+            for (var docId : existingUser.getDeletedDocsId()) {
+                var docPath = existingUser.getUserDocs().stream().filter(x-> x.getDocId()==docId).map(UserDocument::getDocPath).findFirst();
+                if(docPath.isPresent())
+                {
+                    fileManager.DeleteFile(docPath.get());
+                    userDocumentRepository.deleteById(docId);
+                }
+            }
+        }
+
+        Login login;
+        Optional<Login> loginResult = Optional.ofNullable(this.loginRepository.getLoginByUserId(userId));
+        if (loginResult.isEmpty()) {
+            throw new Exception("Fail to get login, please contact to admin");
+        }
+        login = loginResult.get();
+        login.setEmail(existingUser.getEmail());
+        login.setMobile(existingUser.getMobile());
+        login.setMobile(existingUser.getPassword());
+        login.setUpdatedBy(currentSession.getUser().getUserId());
+        login.setUpdatedOn(currentDate);
+        this.loginRepository.save(login);
+
+        return "User has been updated";
+    }
+
 
     public ArrayList<User> getAllUserService() {
         List<User> result = this.userRepository.findAll();
@@ -253,6 +389,35 @@ public class UserServiceImpl implements UserService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Map<String, Object> getUserByUserIdWithRelatedDataService(long userId) throws Exception {
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_UserId", userId, Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_user_by_userid_with_related_data", dbParameters);
+        var user = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserMaster>>() {
+        });
+        var userDocs = objectMapper.convertValue(dataSet.get("#result-set-2"), new TypeReference<List<UserDocument>>() {
+        });
+        var educations = objectMapper.convertValue(dataSet.get("#result-set-3"), new TypeReference<List<Education>>() {
+        });
+        var religions = objectMapper.convertValue(dataSet.get("#result-set-4"), new TypeReference<List<Religion>>() {
+        });
+        var jobTypes = objectMapper.convertValue(dataSet.get("#result-set-5"), new TypeReference<List<JobType>>() {
+        });
+        var languages = objectMapper.convertValue(dataSet.get("#result-set-6"), new TypeReference<List<Language>>() {
+        });
+        var countries = objectMapper.convertValue(dataSet.get("#result-set-7"), new TypeReference<List<Country>>() {
+        });
+        Map<String, Object> result = new HashMap<>();
+        result.put("User", user);
+        result.put("UserDocs", userDocs);
+        result.put("Educations", educations);
+        result.put("Religions", religions);
+        result.put("JobTypes", jobTypes);
+        result.put("Languages", languages);
+        result.put("Countries", countries);
+        return result;
     }
 
     @Transactional(rollbackFor = Exception.class)

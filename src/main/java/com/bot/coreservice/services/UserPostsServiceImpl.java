@@ -266,38 +266,43 @@ public class UserPostsServiceImpl implements IUserPostsService {
         if (result.isEmpty())
             throw new Exception("JobRequirement record not found");
 
-        JobRequirement existingjobRequirement = result.get();
-        existingjobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
-        existingjobRequirement.setCompleteDescription(userPostRequest.getCompleteDescription());
-//        existingjobRequirement.setJobTypeId(userPostRequest.getCategoryTypeId());
-        existingjobRequirement.setIsHRAAllowance(userPostRequest.getIsHRAAllowance());
-        existingjobRequirement.setHRAAllowanceAmount(userPostRequest.getHRAAllowanceAmount());
-        existingjobRequirement.setIsTravelAllowance(userPostRequest.getIsTravelAllowance());
-        existingjobRequirement.setTravelAllowanceAmount(userPostRequest.getTravelAllowanceAmount());
-        existingjobRequirement.setIsFoodAllowance(userPostRequest.getIsFoodAllowance());
-        existingjobRequirement.setFoodAllowanceAmount(userPostRequest.getFoodAllowanceAmount());
-        existingjobRequirement.setIsForeignReturnCompulsory(userPostRequest.getIsForeignReturnCompulsory());
-        existingjobRequirement.setMinimumDaysRequired(userPostRequest.getMinimumDaysRequired());
-        existingjobRequirement.setMinimumCTC(userPostRequest.getMinimumCTC());
-        existingjobRequirement.setMaximumCTC(userPostRequest.getMaximumCTC());
-        existingjobRequirement.setIsOTIncluded(userPostRequest.getIsOTIncluded());
-        existingjobRequirement.setMaxOTHours(userPostRequest.getMaxOTHours());
-        existingjobRequirement.setBonus(userPostRequest.getBonus());
-        existingjobRequirement.setCountryId(userPostRequest.getCountryId());
-        existingjobRequirement.setMinAgeLimit(userPostRequest.getMinAgeLimit());
-        existingjobRequirement.setMaxAgeLimit(userPostRequest.getMaxAgeLimit());
-        existingjobRequirement.setNoOfPosts(userPostRequest.getNoOfPosts());
-        existingjobRequirement.setSalaryCurrency(userPostRequest.getSalaryCurrency());
-        existingjobRequirement.setContractPeriodInMonths(userPostRequest.getContractPeriodInMonths());
+//        JobRequirement existingjobRequirement = result.get();
+        JobRequirement existingjobRequirement = objectMapper.convertValue(userPostRequest,JobRequirement.class);
+
+//        existingjobRequirement.setRequiredShortDesc(userPostRequest.getShortDescription());
+//        existingjobRequirement.setCompleteDescription(userPostRequest.getCompleteDescription());
+////        existingjobRequirement.setJobTypeId(userPostRequest.getCategoryTypeId());
+//        existingjobRequirement.setIsHRAAllowance(userPostRequest.getIsHRAAllowance());
+//        existingjobRequirement.setHRAAllowanceAmount(userPostRequest.getHRAAllowanceAmount());
+//        existingjobRequirement.setIsTravelAllowance(userPostRequest.getIsTravelAllowance());
+//        existingjobRequirement.setTravelAllowanceAmount(userPostRequest.getTravelAllowanceAmount());
+//        existingjobRequirement.setIsFoodAllowance(userPostRequest.getIsFoodAllowance());
+//        existingjobRequirement.setFoodAllowanceAmount(userPostRequest.getFoodAllowanceAmount());
+//        existingjobRequirement.setIsForeignReturnCompulsory(userPostRequest.getIsForeignReturnCompulsory());
+//        existingjobRequirement.setMinimumDaysRequired(userPostRequest.getMinimumDaysRequired());
+//        existingjobRequirement.setMinimumCTC(userPostRequest.getMinimumCTC());
+//        existingjobRequirement.setMaximumCTC(userPostRequest.getMaximumCTC());
+//        existingjobRequirement.setIsOTIncluded(userPostRequest.getIsOTIncluded());
+//        existingjobRequirement.setMaxOTHours(userPostRequest.getMaxOTHours());
+//        existingjobRequirement.setBonus(userPostRequest.getBonus());
+//        existingjobRequirement.setCountryId(userPostRequest.getCountryId());
+//        existingjobRequirement.setMinAgeLimit(userPostRequest.getMinAgeLimit());
+//        existingjobRequirement.setMaxAgeLimit(userPostRequest.getMaxAgeLimit());
+//        existingjobRequirement.setNoOfPosts(userPostRequest.getNoOfPosts());
+//        existingjobRequirement.setSalaryCurrency(userPostRequest.getSalaryCurrency());
+//        existingjobRequirement.setContractPeriodInMonths(userPostRequest.getContractPeriodInMonths());
+//        existingjobRequirement.setIsMon(userPostRequest.getIsMon());
+//        existingjobRequirement.setIsTue(userPostRequest.getIsTue());
+//        existingjobRequirement.setIsWed(userPostRequest.getIsWed());
+//        existingjobRequirement.setIsThu(userPostRequest.getIsThu());
+//        existingjobRequirement.setIsFri(userPostRequest.getIsFri());
+//        existingjobRequirement.setIsSat(userPostRequest.getIsSat());
+//        existingjobRequirement.setIsSun(userPostRequest.getIsSun());
+//        existingjobRequirement.setOverseasExperience(userPostRequest.getOverseasExperience());
+//        existingjobRequirement.setLocalExperience(userPostRequest.getLocalExperience());
         existingjobRequirement.setUpdatedBy(currentSession.getUser().getUserId());
-        existingjobRequirement.setIsMon(userPostRequest.getIsMon());
-        existingjobRequirement.setIsTue(userPostRequest.getIsTue());
-        existingjobRequirement.setIsWed(userPostRequest.getIsWed());
-        existingjobRequirement.setIsThu(userPostRequest.getIsThu());
-        existingjobRequirement.setIsFri(userPostRequest.getIsFri());
-        existingjobRequirement.setIsSat(userPostRequest.getIsSat());
-        existingjobRequirement.setIsSun(userPostRequest.getIsSun());
         existingjobRequirement.setUpdatedOn(currentDate);
+        this.jobRequirementRepository.save(existingjobRequirement);
     }
 
     private List<FileDetail> saveUpdateFileDetail(MultipartFile[] newFiles, UserPostRequest userPost) throws Exception {
@@ -435,6 +440,14 @@ public class UserPostsServiceImpl implements IUserPostsService {
             });
         }
         return result;
+    }
+
+    public String deleteLikedPostService(long userPostId) throws Exception {
+        var existingPost = likedPostsRepository.existingLikedPostBy(userPostId, currentSession.getUser().getUserId());
+        if (existingPost != null)
+            this.likedPostsRepository.deleteById(existingPost.getLikedPostsId());
+
+        return "Removed Liked";
     }
 
     public String addLikedPostService(UserPosts userPost) throws Exception {

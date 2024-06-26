@@ -27,10 +27,33 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @PostMapping("/addUserMobile")
+    public ResponseEntity<ApiResponse> addUserMobile(
+            @RequestPart("user") String userMaster,
+            @RequestPart(value = "profileImage", required = false) MultipartFile[] profileImage,
+            @RequestPart(value = "Documents", required = false) MultipartFile[] userDocs
+                                                     ) throws Exception {
+        var _profileImage = profileImage == null ? null : profileImage[0];
+        var result = this.userServiceImpl.addUserServiceMobile(userMaster, _profileImage, userDocs);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
     @PutMapping("/updateUser/{userId}")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody UserMaster userMaster,
                                                   @PathVariable("userId") long userId) throws Exception {
         var result = this.userServiceImpl.updateUserService(userMaster, userId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @PostMapping("/updateUserMobile/{userId}")
+    public ResponseEntity<ApiResponse> updateUserMobile(
+            @RequestPart("user") String userMaster,
+            @RequestPart(value = "profileImage", required = false) MultipartFile[] profileImage,
+            @RequestPart(value = "Documents", required = false) MultipartFile[] userDocs,
+//            @RequestPart(value = "deletedDocsId", required = false) Long[] deletedDocsId,
+            @PathVariable("userId") long userId) throws Exception {
+        var _profileImage = profileImage == null ? null : profileImage[0];
+        var result = this.userServiceImpl.updateUserServiceMobile(userId, userMaster, _profileImage, userDocs);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
@@ -43,6 +66,12 @@ public class UserController {
     @GetMapping("/getUserByUserId/{userId}")
     public ResponseEntity<ApiResponse> getUserByUserId( @PathVariable("userId") long userId) throws Exception {
         var result = this.userServiceImpl.getUserByUserIdService(userId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("/getUserByUserIdWithRelatedData/{userId}")
+    public ResponseEntity<ApiResponse> getUserByUserIdWithRelatedData( @PathVariable("userId") long userId) throws Exception {
+        var result = this.userServiceImpl.getUserByUserIdWithRelatedDataService(userId);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
