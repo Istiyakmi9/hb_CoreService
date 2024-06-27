@@ -2,15 +2,13 @@ package com.bot.coreservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -131,4 +129,41 @@ public class User {
         @JsonProperty("imageURL")
         String imageURL;
 
+        @Column(nullable = true)
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        Date dateOfBirth;
+
+        String gender = "m";
+
+        @Column(nullable = true)
+        boolean maritalStatus;
+
+        @Column(nullable = true)
+        int religionId;
+
+        @Column(nullable = true)
+        String nationality;
+
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        @Column(nullable = true)
+        Date availabilityDate;
+
+        @Column(nullable = true)
+        int educationId;
+
+        @Column(nullable = true)
+        boolean currentEmploymentStatus;
+
+        int localExperience = 0;
+
+        int overseasExperience = 0;
+
+        @Transient
+        String password = "";
+
+        @Transient
+        List<UserDocument> userDocs;
+
+        @Transient
+        Long[] deletedDocsId;
 }

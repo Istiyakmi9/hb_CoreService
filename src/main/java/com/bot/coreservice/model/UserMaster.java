@@ -1,5 +1,6 @@
 package com.bot.coreservice.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -58,6 +60,20 @@ public class UserMaster {
     String jobLocationIds;
     List<Integer> jobLocationIdList;
 
+    String password;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    Date dateOfBirth;
+    String gender = "m";
+    boolean maritalStatus;
+    int religionId;
+    String nationality;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    Date availabilityDate;
+    int educationId;
+    boolean currentEmploymentStatus;
+    int localExperience = 0;
+    int overseasExperience = 0;
+
 //employee_detail fields
 
     String pan;
@@ -103,5 +119,7 @@ public class UserMaster {
     long reportId;
 
     String ReportPath;
+    @JsonProperty("imageURL")
+    String imageURL;
 
 }

@@ -112,6 +112,12 @@ public class UserPostsController {
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 
+    @DeleteMapping("deleteLikedPost/{userPostId}")
+    public ResponseEntity<ApiResponse> deleteLikedPost(@PathVariable("userPostId") long userPostId) throws Exception {
+        var result = this.userPostsService.deleteLikedPostService(userPostId);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
     @PostMapping("addAppliedPost")
     public ResponseEntity<ApiResponse> addAppliedPost(@RequestBody UserPosts userPost) throws Exception {
         var result = this.userPostsService.addAppliedPostService(userPost);
