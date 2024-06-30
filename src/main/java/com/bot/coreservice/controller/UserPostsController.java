@@ -38,6 +38,17 @@ public class UserPostsController {
         var result = this.userPostsService.getOwnPageService(page, 10);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
+    @GetMapping("getAppliedJobs/{page}")
+    public ResponseEntity<ApiResponse> getAppliedJobs(@PathVariable int page) throws Exception {
+        var result = this.userPostsService.getAppliedJobPageService(page, 10);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @GetMapping("getSavedJobs/{page}")
+    public ResponseEntity<ApiResponse> getSavedJobs(@PathVariable int page) throws Exception {
+        var result = this.userPostsService.getSavedJobPageService(page, 10);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
 
     @GetMapping("getUserPostByUserPostId/{userPostId}")
     public ResponseEntity<ApiResponse> getUserPostByUserPostId(@PathVariable("userPostId") long userPostId) throws Exception {
@@ -121,6 +132,12 @@ public class UserPostsController {
     @PostMapping("addAppliedPost")
     public ResponseEntity<ApiResponse> addAppliedPost(@RequestBody UserPosts userPost) throws Exception {
         var result = this.userPostsService.addAppliedPostService(userPost);
+        return ResponseEntity.ok(ApiResponse.Ok(result));
+    }
+
+    @PostMapping("addSavedPost")
+    public ResponseEntity<ApiResponse> addSavedPost(@RequestBody UserPosts userPost) throws Exception {
+        var result = this.userPostsService.addSavedPostService(userPost);
         return ResponseEntity.ok(ApiResponse.Ok(result));
     }
 }

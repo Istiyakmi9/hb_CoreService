@@ -15,6 +15,8 @@ public interface IUserPostsService {
     public String updateUserPostService(UserPosts userPost, long userPostId) throws Exception;
     public List<UserPosts> getHomePageService(int page, int pageSize);
     public List<UserPosts> getOwnPageService(int page, int pageSize);
+    public List<UserPosts> getAppliedJobPageService(int page, int pageSize);
+    public List<UserPosts> getSavedJobPageService(int page, int pageSize);
     public Map<String, Object> getUserPostByUserPostIdService(long userPostId) throws Exception;
     public List<UserPosts> deleteUserPostByUserPostIdService(long userPostId) throws Exception;
     public List<UserPosts> uploadUserPostsService(String userPost, MultipartFile[] postImages) throws Exception;
@@ -28,4 +30,5 @@ public interface IUserPostsService {
     public String addLikedPostService(UserPosts userPost) throws Exception;
     public String deleteLikedPostService(long userPostId) throws Exception;
     public String addAppliedPostService(UserPosts userPost) throws Exception;
+    public String addSavedPostService(UserPosts userPost) throws Exception;
 }
