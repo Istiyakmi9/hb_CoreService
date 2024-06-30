@@ -45,5 +45,9 @@ public class UserPostRequest extends JobRequirement {
 
     @JsonProperty("jobCategoryId")
     Integer jobCategoryId;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonProperty("jobSavedOn")
+    Date jobSavedOn;
 }
 

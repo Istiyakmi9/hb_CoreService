@@ -1,6 +1,5 @@
 package com.bot.coreservice.Repository;
 
-import com.bot.coreservice.entity.JobRequirement;
 import com.bot.coreservice.entity.AppliedPosts;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

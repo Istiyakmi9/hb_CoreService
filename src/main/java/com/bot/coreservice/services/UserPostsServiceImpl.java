@@ -4,6 +4,7 @@ import com.bot.coreservice.Repository.*;
 import com.bot.coreservice.contracts.IUserPostsService;
 import com.bot.coreservice.db.LowLevelExecution;
 import com.bot.coreservice.entity.*;
+import com.bot.coreservice.enums.UserPostsType;
 import com.bot.coreservice.model.Currency;
 import com.bot.coreservice.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,6 +41,8 @@ public class UserPostsServiceImpl implements IUserPostsService {
     LikedPostsRepository likedPostsRepository;
     @Autowired
     AppliedPostsRepository appliedPostsRepository;
+    @Autowired
+    SavedPostsRepository savedPostsRepository;
     @Autowired
     CurrentSession currentSession;
 
@@ -78,14 +81,22 @@ public class UserPostsServiceImpl implements IUserPostsService {
     }
 
     public List<UserPosts> getHomePageService(int page, int pageSize) {
-        return getPosts(page, pageSize, Constants.USERPOSTS_FILTER);
+        return getPosts(page, pageSize, UserPostsType.USERPOSTS_FILTER);
     }
 
     public List<UserPosts> getOwnPageService(int page, int pageSize) {
-        return getPosts(page, pageSize, Constants.OWN_POSTS);
+        return getPosts(page, pageSize, UserPostsType.OWN_POSTS);
     }
 
-    public List<UserPosts> getPosts(int page, int pageSize, String procedure) {
+    public List<UserPosts> getAppliedJobPageService(int page, int pageSize) {
+        return getPosts(page, pageSize, UserPostsType.APPLIED_JOBS);
+    }
+
+    public List<UserPosts> getSavedJobPageService(int page, int pageSize) {
+        return getPosts(page, pageSize, UserPostsType.SAVED_JOBS);
+    }
+
+    public List<UserPosts> getPosts(int page, int pageSize, UserPostsType userPostsType) {
         if (page == 0)
             page = 1;
 
@@ -93,7 +104,7 @@ public class UserPostsServiceImpl implements IUserPostsService {
         dbParameters.add(new DbParameters("_userId", currentSession.getUser().getUserId(), Types.BIGINT));
         dbParameters.add(new DbParameters("_pageIndex", page, Types.INTEGER));
         dbParameters.add(new DbParameters("_pageSize", pageSize, Types.INTEGER));
-        var dataSet = lowLevelExecution.executeProcedure(procedure, dbParameters);
+        var dataSet = lowLevelExecution.executeProcedure(userPostsType.getStoredProcedureName(), dbParameters);
         var result = objectMapper.convertValue(dataSet.get("#result-set-1"), new TypeReference<List<UserPosts>>() {
         });
 
@@ -492,14 +503,37 @@ public class UserPostsServiceImpl implements IUserPostsService {
         return "fail";
     }
 
-    public String addAppliedPost(Long postIs) throws Exception {
-        if (postIs == 0)
+    public String addSavedPostService(UserPosts userPost) throws Exception {
+        var existingPost = savedPostsRepository.existingSavedPostBy(userPost.getUserPostId(), currentSession.getUser().getUserId());
+        if (existingPost == null)
+            return addSavedPost(userPost.getUserPostId());
+
+        return "fail";
+    }
+
+    public String addAppliedPost(Long postId) throws Exception {
+        if (postId == 0)
             throw new Exception("Invalid post detail");
 
         List<DbParameters> dbParameters = new ArrayList<>();
-        dbParameters.add(new DbParameters("_postId", postIs, Types.BIGINT));
+        dbParameters.add(new DbParameters("_postId", postId, Types.BIGINT));
         dbParameters.add(new DbParameters("_userId", currentSession.getUser().getUserId(), Types.BIGINT));
         var dataSet = lowLevelExecution.executeProcedure("sp_liked_posts_ins", dbParameters, true);
+
+        if (dataSet.get("_ProcessingResult") != null && Objects.equals(dataSet.get("_ProcessingResult").toString(), "inserted"))
+            return "success";
+
+        return "fail";
+    }
+
+    public String addSavedPost(Long postId) throws Exception {
+        if (postId == 0)
+            throw new Exception("Invalid post detail");
+
+        List<DbParameters> dbParameters = new ArrayList<>();
+        dbParameters.add(new DbParameters("_postId", postId, Types.BIGINT));
+        dbParameters.add(new DbParameters("_userId", currentSession.getUser().getUserId(), Types.BIGINT));
+        var dataSet = lowLevelExecution.executeProcedure("sp_saved_posts_ins", dbParameters, true);
 
         if (dataSet.get("_ProcessingResult") != null && Objects.equals(dataSet.get("_ProcessingResult").toString(), "inserted"))
             return "success";
